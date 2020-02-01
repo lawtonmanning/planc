@@ -10,6 +10,7 @@
 #include "distnmf/disthals.hpp"
 #include "distnmf/distio.hpp"
 #include "distnmf/distmu.hpp"
+#include "distnmf/distr2.hpp"
 #include "distnmf/mpicomm.hpp"
 #include "distnmf/naiveanlsbpp.hpp"
 #ifdef BUILD_CUDA
@@ -333,6 +334,13 @@ class DistNMFDriver {
     this->m_input_normalization = pc.input_normalization();
     pc.printConfig();
     switch (this->m_nmfalgo) {
+      case R2:
+#ifdef BUILD_SPARSE
+        callDistNMF2D<DistR2<SP_MAT> >();
+#else   // ifdef BUILD_SPARSE
+        callDistNMF2D<DistR2<MAT> >();
+#endif  // ifdef BUILD_SPARSE
+        break;
       case MU:
 #ifdef BUILD_SPARSE
         callDistNMF2D<DistMU<SP_MAT> >();
