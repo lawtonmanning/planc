@@ -58,7 +58,7 @@ if(BLAS_FOUND)
   set(NMFLIB_LIBS ${NMFLIB_LIBS} ${BLAS_LIBRARIES})
 endif()
 if(LAPACK_FOUND)
-  set(NMFLIB_LIBS ${NMFLIB_LIBS} ${LAPACK_LIBRARIES})
+  set(NMFLIB_LIBS ${NMFLIB_LIBS} ${LAPACK_LIBRARIES} /usr/lib/x86_64-linux-gnu/liblapacke.so)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
