@@ -38,9 +38,10 @@ set(NMF_SOURCE_DIR ${PROJECT_SOURCE_DIR}/nmf)
 set(NTF_SOURCE_DIR ${PROJECT_SOURCE_DIR}/ntf)
 set(DISTNMF_SOURCE_DIR ${PROJECT_SOURCE_DIR}/nmf)
 set(DISTNTF_SOURCE_DIR ${PROJECT_SOURCE_DIR}/nmf)
+set(HIERNMF_SOURCE_DIR ${PROJECT_SOURCE_DIR}/hiernmf)
 
-set(DENSEDIRS nmf distnmf distntf)
-set(SPARSEDIRS nmf distnmf)
+set(DENSEDIRS nmf distnmf distntf hiernmf)
+set(SPARSEDIRS nmf distnmf hiernmf)
 
 set(CMAKE_BUILD_SPARSE 0)
 foreach (DENSEDIR ${DENSEDIRS})
