@@ -8,29 +8,42 @@ class Node {
     Node * lchild = NULL;
     Node * rchild = NULL;
     Node * parent = NULL;
-    DistR2<INPUTMATTYPE> nmf = NULL;
     INPUTMATTYPE A;
-    double error;
+    INPUTMATTYPE W;
+    double sigma;
+    double score;
     bool activated = false;
+    std::vector<int> cols;
 
-    double compute_error() {
+    double compute_sigma() {
       return 0.0;
+    }
+
+    double compute_score() {
+      if (this->lchild == NULL || this->rchild == NULL) {
+        return -1.0;
+      }
+
+      return 0.0;
+
     }
 
   public:
     Node(const INPUTMATTYPE & A, std::vector<int> cols, Node * parent) {
+      this->cols = cols;
       this->A = A.cols(cols);
       this->parent = parent;
-      this->error = compute_error();
+      this->sigma = compute_sigma();
     }
 
-    bool activate(DistR2<INPUTMATTYPE> nmf) {
-      if (this->activated) {
-        return true;
-      }
-      this->nmf = nmf;
+    bool split() {
       return true;
     }
+
+    bool accept() {
+      return true;
+    }
+
 
 };
 }
