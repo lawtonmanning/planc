@@ -68,7 +68,7 @@ class DistIO {
     SP_MAT::iterator end_it = (*X).end();
     for (SP_MAT::iterator it = start_it; it != end_it; ++it) {
       double currentValue = (*it);
-      (*it) = ceil(kalpha * currentValue + kbeta);
+      (*it) = (kalpha * currentValue + kbeta);
       if ((*it) < 0) (*it) = kbeta;
     }
     // for (uint i=0; i<(*X).n_nonzero;i++){
@@ -86,7 +86,7 @@ class DistIO {
       (*X).randn();
     }
     (*X) = kalpha * (*X) + kbeta;
-    (*X) = ceil(*X);
+    (*X) = (*X);
     (*X).elem(find((*X) < 0)).zeros();
 #endif
   }
@@ -197,7 +197,7 @@ class DistIO {
       VEC Wrndi = vectorise(Wrnd.row(start_row + it.row()));
       VEC Hrndj = Hrnd.col(start_col + it.col());
       tempVal = dot(Wrndi, Hrndj);
-      (*it) = ceil(kalpha * tempVal + kbeta);
+      (*it) = (kalpha * tempVal + kbeta);
     }
 #else
     MAT templr;
@@ -214,7 +214,7 @@ class DistIO {
       MAT myHcols = Hrnd.cols(start_col, end_col);
       templr = myWrnd * myHcols;
     }
-    (*X) = ceil(kalpha * templr + kbeta);
+    (*X) = (kalpha * templr + kbeta);
 #endif
   }
 
