@@ -1,8 +1,16 @@
 //
 // @author John Farrell
-// @date 2/2/20
+// @date created 2/2/20
 //
-// 2/7/20 - begin to parallelize the method
+// 2/17/20
+// Minor improvements to power method
+// 	- Changed lambda to sigma
+// 	- Removed unnecessary if/else statement
+// 	- normalized vector z between calculations
+//
+// 2/../..
+// SUMMARY
+// 	- POINTS
 //
 
 #include <iostream>
@@ -16,13 +24,8 @@ using namespace arma;
 double powIter (mat A);
 
 
-/*
- * This code runs the power iteration using the armadillo library in C++
- * The power iteration calulates the maximum eigenvalue in some matrix A
- * This code in particular will calculate the max(eig(A'*A))
- *
- * Later we will convert this into MPI-based parallelism
- */
+//---------------------------------------------------------------------
+
 int main () {
 
 	// UNIT TESTS
@@ -34,12 +37,20 @@ int main () {
 	return 0;
 }
 
+//---------------------------------------------------------------------
 
-/*
+/*	
  *	Power Method : Parallel Implementation
- *		- This code receives some matrix A, and uses the Power Method to converge to the largest singular value
- *		- In this case we use A' * A to find the principal sigma value, squared
- *	
+ *	INPUT 
+ *		- Matrix A
+ *		-
+ *	OUTPUT
+ *		- The first sigma value of A
+ *		- 
+ *
+ * 	METHOD
+ * 		- Use the convergence of A' * A to find sigma^2
+ * 		- 	
  */
 double powIter (mat A) {
 	
