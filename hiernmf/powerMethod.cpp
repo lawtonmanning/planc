@@ -35,47 +35,43 @@ int main () {
 }
 
 
-/* NOTES:
- * 
- * 	Is there a way to change lambda to auto so that it does not need to convert from vector? Hard code as double?
- *	 
+/*
+ *	Power Method : Parallel Implementation
+ *		- This code receives some matrix A, and uses the Power Method to converge to the largest singular value
+ *		- In this case we use A' * A to find the principal sigma value, squared
+ *	
  */
 double powIter (mat A) {
 	
-	// generate some random q vector
+	// generate some random q vector and normalize
 	vec q = randu<vec>(size(A,1));
-	
-	// normalize q beforehand
 	q = q / norm(q, 2);
 
+	// prepare variables
 	vec z;
-	auto lambda = norm(q,2);
-	auto l2 = lambda;
-	int i = 0;
+	auto sigma = norm(q,2);
+	auto s2 = sigma;
 	double epsilon = 1.0;
 
 	cout << "\nConvergence: " << endl;
 
-	// powerIteration
-	while (i < 10 && epsilon > 0.00001) {
-		z = A * q;
-		q = A.t() * z;
-		q = q / norm(q, 2);
+	// converge to sigma1 using the power method
+	int iter = 0;
+	while (iter < 10 && epsilon > 0.00001) {
+		z = A * q;	
+		z = z / norm(z,2);	// normalize z to manage large numbers
+		q = A.t() * z;		
+		sigma = norm(q,2);	// set sigma here to prevent repetitive calculations
+		q = q / sigma;
+			
+		epsilon = abs(sigma - s2)/(sigma);
+		s2 = sigma;
+		iter++;
 
-		// store previous lambda for convergence measuring
-		if (i == 0)
-			lambda = norm(z,2);
-		else {
-			l2 = lambda;
-			lambda = norm(z,2);
-			epsilon = abs(lambda - l2)/(lambda);
-		}
-		
-		// track convergence
-		cout << "lambda:  " << lambda << endl;
-		i++;
+		// debugging output
+		cout << "Sigma:  " << sigma << endl;
 	}
 
-	return lambda;
+	return sigma;
 }
 
