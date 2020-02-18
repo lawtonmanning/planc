@@ -1,3 +1,5 @@
 # compiling armadillo for c++ requires an additional parameter
-g++ powerMethod.cpp -o test -larmadillo
-./test
+# mpi compiled using mpicxx
+mpicxx powerMethod.cpp -o test -larmadillo
+
+mpirun -n 1 ./test
