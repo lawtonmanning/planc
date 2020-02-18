@@ -7,6 +7,9 @@
 // 	- Changed lambda to sigma
 // 	- Removed unnecessary if/else statement
 // 	- normalized vector z between calculations
+// MPI additions
+// 	- MPI library included
+// 	- AllREDUCE placed after q is calculated the first time
 //
 // 2/../..
 // SUMMARY
@@ -15,18 +18,29 @@
 
 #include <iostream>
 #include <armadillo>
+#include <mpi.h>
 
 using namespace std;
 using namespace arma;
 
 
-// returns the maximum eigenvalue of A-transpose * A
+// calculate and return the max eigenvalue of A' * A
 double powIter (mat A);
 
 
 //---------------------------------------------------------------------
 
 int main () {
+
+	// Initialize the MPI environment
+	MPI_Init(NULL, NULL);
+	int nProcs, rank;
+	MPI_Comm_size(MPI_COMM_WORLD, &nProcs);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	srand(rank*12345);	// seed each proc
+
+	
+	
 
 	// UNIT TESTS
 	mat A = randu<mat>(5,5);
@@ -72,6 +86,11 @@ double powIter (mat A) {
 		z = A * q;	
 		z = z / norm(z,2);	// normalize z to manage large numbers
 		q = A.t() * z;		
+
+		// Use ALLREDUCE to sum each subsection of q together
+		int MPI_Allreduce(const void *sendbuf, void *recvbuf, int count,
+                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+
 		sigma = norm(q,2);	// set sigma here to prevent repetitive calculations
 		q = q / sigma;
 			
