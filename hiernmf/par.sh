@@ -2,4 +2,4 @@
 # mpi compiled using mpicxx
 mpicxx powerMethod.cpp -o test -larmadillo
 
-mpirun -n 1 ./test
+mpirun -n 4 ./test

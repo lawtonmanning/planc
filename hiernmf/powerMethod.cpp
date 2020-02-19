@@ -31,7 +31,7 @@ using namespace arma;
 
 // calculate and return the max eigenvalue of A' * A
 // implemented in parallel
-double powIter (mat A, int &nProcs, int &rank);
+double powIter (mat &localA, int &nProcs, int &rank);
 
 
 //---------------------------------------------------------------------
@@ -42,19 +42,37 @@ int main () {
 	MPI_Init(NULL, NULL);
 	int nProcs, rank;
 	MPI_Comm_size(MPI_COMM_WORLD, &nProcs);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	srand(rank*12345);	// seed each proc
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank); //FIXME dont need?
+	srand(1);	// seed each proc
 	
 
-	// UNIT TESTS
-	if (rank == 1) {
-		mat A = randu<mat>(5,5);
+	mat A = randu<mat>(4,4);
+	if (rank == 0) {
 		cout << A.n_rows << "x" << A.n_cols << " matrix A: " << endl;
 		cout << A << endl;
 		cout << "Max singular value: \n" << max(svd(A)) << endl;
-		cout << (powIter(A, nProcs, rank) - max(svd(A))) << endl;	
 	}
+	MPI_Barrier(MPI_COMM_WORLD);
 	
+	int M,N;
+	M = size(A,0);
+	N = size(A,1);
+	int Pr = M / nProcs;
+	int Pc = N / nProcs;
+	int startRow = Pr * rank;
+	int endRow = startRow + Pr;
+
+	mat At = A.t();
+	mat localA = At.cols(startRow, endRow-1);
+	localA = localA.t();
+	
+
+	// power iteration:
+	double sigmaSquared = powIter(localA,nProcs,rank);
+	double sigma = max(svd(A));
+	cout << abs(sigmaSquared - sigma*sigma) << endl;	
+
+
 	MPI_Finalize();
 	return 0;
 }
@@ -71,23 +89,20 @@ int main () {
  * 	METHOD
  * 		- Use the convergence of A' * A to find sigma
  */
-double powIter (mat A, int &nProcs, int &rank) { // FIXME Pass MAT A by reference?
+double powIter (mat &localA, int &nProcs, int &rank) { // FIXME Pass MAT A by reference?
 	
-	// FIXME NOTE: Armadillo stored column major format (potential time improvement?)
-	
-	int M = size(A,1);
-	int N = size(A,2);
+	int M = size(localA,0);
+	int N = size(localA,1);
 
-	// generate random tmpQ vector for each processor's submatrix operations
-	// and a finalQ denoted for the original A matrix
-	vec tmpQ(N);
-	vec finalQ = randu<vec>(N);
-	finalQ = finalQ / norm(finalQ, 2);
-	cout << "TEST!!!!!!!!!!!!!!!" << endl;
+	// generate random localQ vector for each processor's submatrix operations
+	// and a globalQ denoted for the original A matrix
+	vec localQ(N);
+	vec globalQ = randu<vec>(N);
+	globalQ = globalQ / norm(globalQ, 2);
 
 	// prepare variables
 	vec z;
-	auto sigma = norm(finalQ,2); // FIXME norm of finalQ or tmpQ?
+	auto sigma = norm(globalQ,2);
 	auto s2 = sigma;
 	double epsilon = 1.0;
 
@@ -96,19 +111,14 @@ double powIter (mat A, int &nProcs, int &rank) { // FIXME Pass MAT A by referenc
 	// converge to first sigma value of A
 	int iter = 0;
 	while (iter < 10 && epsilon > 0.00001) {
-		z = A * finalQ;		// FIXME also allreduce for z?	
-		cout << "z1: " << rank << "\n" << z << endl;
-		z = z / norm(z,2);	// normalize z to manage large numbers
-		cout << "z2: " << rank << "\n" << z << endl;
-		tmpQ = A.t() * z;		
+		z = localA * globalQ;
+		localQ = localA.t() * z;		
 
-		// Use ALLREDUCE to sum each tmpQ together
-		// Armadillo is high quality and can be passed through MPI - do not need arrays
-		MPI_Allreduce(tmpQ.begin(), finalQ.begin(), N, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-		cout << "AFTER" << endl;
+		// sum localQ into globalQ
+		MPI_Allreduce(localQ.begin(), globalQ.begin(), N, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
-		sigma = norm(finalQ,2);	// set sigma here to prevent repetitive calculations
-		finalQ = finalQ / sigma;
+		sigma = norm(globalQ,2);	// set sigma here to prevent repetitive calculations
+		globalQ = globalQ / sigma;
 			
 		epsilon = abs(sigma - s2)/(sigma);
 		s2 = sigma;
