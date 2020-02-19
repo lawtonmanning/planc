@@ -1,9 +1,13 @@
 #include <string>
+#include <queue>
 #include "common/distutils.hpp"
 #include "common/parsecommandline.hpp"
 #include "common/utils.hpp"
 #include "distnmf/distr2.hpp"
+#include "distnmf/distio.hpp"
 #include "distnmf/mpicomm.hpp"
+#include "hiernmf/node.hpp"
+#include "hiernmf/matutils.hpp"
 
 using namespace planc;
 
@@ -11,6 +15,7 @@ class HierNMFDriver {
   private:
     int m_argc;
     char **m_argv;
+    int m_k;
     UWORD m_globalm, m_globaln;
     std::string m_Afile_name;
     std::string m_outputfile_name;
@@ -26,9 +31,16 @@ class HierNMFDriver {
     static const int kprimeoffset = 17;
     normtype m_input_normalization;
 
+#ifdef BUILD_SPARSE
+    RootNode<SP_MAT> * root;
+#else
+    RootNode<MAT> * root;
+#endif
+
     void parseCommandLine() {
       ParseCommandLine pc(this->m_argc, this->m_argv);
       pc.parseplancopts();
+      this->m_k = pc.lowrankk();
       this->m_Afile_name = pc.input_file_name();
       this->m_pr = pc.pr();
       this->m_pc = 1;
@@ -47,11 +59,37 @@ class HierNMFDriver {
     }
 
     void buildTree() {
+      std::string rand_prefix("rand_");
       MPICommunicator mpicomm(this->m_argc, this->m_argv, this->m_pr, this->m_pc);
 
+#ifdef BUILD_SPARSE    
+      DistIO<SP_MAT> dio(mpicomm, m_distio);
+#else 
+      DistIO<MAT> dio(mpicomm, m_distio);
+#endif
+
+      if (m_Afile_name.compare(0, rand_prefix.size(), rand_prefix) == 0) {
+        dio.readInput(m_Afile_name, this->m_globalm, this->m_globaln, this->m_k,
+            this->m_sparsity, this->m_pr, this->m_pc,
+            this->m_input_normalization);
+      } else {
+        dio.readInput(m_Afile_name);
+      }
+
+#ifdef BUILD_SPARSE
+      MAT A;
+      return;
+#else 
+      MAT A(dio.A());
+      
+      arma::uvec cols(this->m_globaln);
+      for (unsigned int i = 0; i < this->m_globaln; i++) {
+        cols[i] = i;
+      }
+      this->root = new RootNode<MAT>(A,cols);
+#endif
+
     }
-
-
   public:
     HierNMFDriver(int argc, char * argv[]) {
       this->m_argc = argc;
