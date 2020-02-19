@@ -7,7 +7,6 @@
 #include "distnmf/distio.hpp"
 #include "distnmf/mpicomm.hpp"
 #include "hiernmf/node.hpp"
-#include "hiernmf/matutils.hpp"
 
 using namespace planc;
 
@@ -77,15 +76,21 @@ class HierNMFDriver {
       }
 
 #ifdef BUILD_SPARSE
-      MAT A;
-      return;
+      SP_MAT A(dio.A());
 #else 
       MAT A(dio.A());
+#endif
       
       arma::uvec cols(this->m_globaln);
       for (unsigned int i = 0; i < this->m_globaln; i++) {
         cols[i] = i;
       }
+
+      print(A,"A0");
+
+#ifdef BUILD_SPARSE
+      this->root = new RootNode<SP_MAT>(A,cols);
+#else
       this->root = new RootNode<MAT>(A,cols);
 #endif
 

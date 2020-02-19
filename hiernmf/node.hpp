@@ -1,5 +1,6 @@
-#include "distnmf/distr2.hpp"
 #include <vector>
+#include "distnmf/distr2.hpp"
+#include "hiernmf/matutils.hpp"
 
 namespace planc {
 template <class INPUTMATTYPE>
@@ -17,7 +18,23 @@ class Node {
     UVEC cols;
 
     void allocate_A() {
+#ifdef BUILD_SPARSE
+      int n_cols = this->cols.n_elem;
+
+      arma::umat locs(2,n_cols);
+      for (int i = 0; i < n_cols; i++) {
+        locs(0,i) = i;
+        locs(1,i) = this->cols(i);
+      }
+      VEC vals(n_cols,1);
+
+      //SP_MAT S(locs,vals,this->A0.n_rows,n_cols);
+
+      this->A = this->A0;
+#else
       this->A = this->A0.cols(this->cols);
+#endif
+      print(this->A,"A");
     }
 
     void compute_sigma() {
