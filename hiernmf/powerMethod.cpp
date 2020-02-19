@@ -18,7 +18,8 @@
 // 	- MPI initialization and finalization added
 //	- various fixme problems added
 //
-//
+// 2/19/20
+// MPI Fully functional
 //
 
 #include <iostream>
@@ -42,10 +43,10 @@ int main () {
 	MPI_Init(NULL, NULL);
 	int nProcs, rank;
 	MPI_Comm_size(MPI_COMM_WORLD, &nProcs);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank); //FIXME dont need?
-	srand(1);	// seed each proc
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	srand(1);
 	
-
+	// Create A and partition for each PU's local matrices
 	mat A = randu<mat>(4,4);
 	if (rank == 0) {
 		cout << A.n_rows << "x" << A.n_cols << " matrix A: " << endl;
@@ -54,6 +55,7 @@ int main () {
 	}
 	MPI_Barrier(MPI_COMM_WORLD);
 	
+	// Partition rows to PUs
 	int M,N;
 	M = size(A,0);
 	N = size(A,1);
@@ -61,12 +63,11 @@ int main () {
 	int Pc = N / nProcs;
 	int startRow = Pr * rank;
 	int endRow = startRow + Pr;
-
 	mat At = A.t();
 	mat localA = At.cols(startRow, endRow-1);
 	localA = localA.t();
-	
 
+	
 	// power iteration:
 	double sigmaSquared = powIter(localA,nProcs,rank);
 	double sigma = max(svd(A));
@@ -77,7 +78,6 @@ int main () {
 	return 0;
 }
 
-//---------------------------------------------------------------------
 
 /*	
  *	Power Method : Parallel Implementation
@@ -85,11 +85,9 @@ int main () {
  *		- Matrix A
  *		- nprocs and rank for PUs
  *	OUTPUT
- *		- The first sigma value of A
- * 	METHOD
- * 		- Use the convergence of A' * A to find sigma
+ *		- The first sigma value of A squared
  */
-double powIter (mat &localA, int &nProcs, int &rank) { // FIXME Pass MAT A by reference?
+double powIter (mat &localA, int &nProcs, int &rank) {
 	
 	int M = size(localA,0);
 	int N = size(localA,1);
@@ -106,7 +104,8 @@ double powIter (mat &localA, int &nProcs, int &rank) { // FIXME Pass MAT A by re
 	auto s2 = sigma;
 	double epsilon = 1.0;
 
-	cout << "\nConvergence: " << endl;
+	// DEBUG
+	// cout << "\nConvergence: " << endl;
 
 	// converge to first sigma value of A
 	int iter = 0;
@@ -117,15 +116,15 @@ double powIter (mat &localA, int &nProcs, int &rank) { // FIXME Pass MAT A by re
 		// sum localQ into globalQ
 		MPI_Allreduce(localQ.begin(), globalQ.begin(), N, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
 
-		sigma = norm(globalQ,2);	// set sigma here to prevent repetitive calculations
+		sigma = norm(globalQ,2);
 		globalQ = globalQ / sigma;
 			
 		epsilon = abs(sigma - s2)/(sigma);
 		s2 = sigma;
 		iter++;
 
-		// debugging output
-		cout << "Sigma:  " << sigma << endl;
+		// DEBUG
+		// cout << "Sigma:  " << sigma << endl;
 	}
 
 	return sigma;
