@@ -1,6 +1,9 @@
+#include <string>
+#include "common/distutils.hpp"
 #include "common/parsecommandline.hpp"
-#include "common/utils.h"
-#include "hiernmf/node.hpp"
+#include "common/utils.hpp"
+#include "distnmf/distr2.hpp"
+#include "distnmf/mpicomm.hpp"
 
 using namespace planc;
 
@@ -17,7 +20,7 @@ class HierNMFDriver {
     FVEC m_regW;
     FVEC m_regH;
     double m_sparsity;
-    iodistributions m_distio = TWOD;
+    iodistributions m_distio;
     uint m_compute_error;
     int m_num_k_blocks;
     static const int kprimeoffset = 17;
@@ -28,6 +31,7 @@ class HierNMFDriver {
       pc.parseplancopts();
       this->m_Afile_name = pc.input_file_name();
       this->m_pr = pc.pr();
+      this->m_pc = 1;
       this->m_sparsity = pc.sparsity();
       this->m_num_it = pc.iterations();
       this->m_distio = TWOD;
@@ -42,12 +46,18 @@ class HierNMFDriver {
       pc.printConfig();
     }
 
-  public:
+    void buildTree() {
+      MPICommunicator mpicomm(this->m_argc, this->m_argv, this->m_pr, this->m_pc);
 
+    }
+
+
+  public:
     HierNMFDriver(int argc, char * argv[]) {
       this->m_argc = argc;
       this->m_argv = argv;
       this->parseCommandLine();
+      this->buildTree();
     }
 };
 
