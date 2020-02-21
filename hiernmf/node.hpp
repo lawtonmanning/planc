@@ -44,13 +44,8 @@ namespace planc {
           this->sigma = powIter(this->A);
         }
 
-        double compute_score() {
-          if (this->lchild == NULL || this->rchild == NULL) {
-            return -1.0;
-          }
-
-          return 0.0;
-
+        void compute_score() {
+          this->score = this->sigma - (this->lchild->sigma+this->rchild->sigma);
         }
 
         Node() {
@@ -65,20 +60,28 @@ namespace planc {
         }
 
         bool split() {
-          print(this->H, "H");
+          this->A.reset();
+
           UVEC left = this->H.col(0) > this->H.col(1);
-          print(left, "left");
+
           UVEC lcols = this->cols(find(left == 1));
           UVEC rcols = this->cols(find(left == 0));
-          print(this->cols, "cols");
-          print(lcols, "lcols");
-          print(rcols, "rcols");
+          
+          this->lchild = new Node(this->A0, lcols, this);
+          this->rchild = new Node(this->A0, rcols, this);
+
+          this->compute_score();
+
 
           return true;
         }
 
         bool accept() {
           return true;
+        }
+
+        bool operator<(const Node & lhs, const Node & rhs) {
+          return lhs.score < rhs.score;
         }
 
 
