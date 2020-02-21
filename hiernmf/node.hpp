@@ -3,94 +3,106 @@
 #include "hiernmf/matutils.hpp"
 
 namespace planc {
-template <class INPUTMATTYPE>
-class Node {
-  protected:
-    Node * lchild = NULL;
-    Node * rchild = NULL;
-    Node * parent = NULL;
-    INPUTMATTYPE A0;
-    INPUTMATTYPE A;
-    INPUTMATTYPE W;
-    double sigma;
-    double score;
-    bool activated = false;
-    UVEC cols;
+  template <class INPUTMATTYPE>
+    class Node {
+      public:  
+        Node * lchild = NULL;
+        Node * rchild = NULL;
+        Node * parent = NULL;
+        INPUTMATTYPE A0;
+        INPUTMATTYPE A;
+        MAT W;
+        MAT H;
+        double sigma;
+        double score;
+        bool activated = false;
+        UVEC cols;
 
-    void allocate() {
+        void allocate() {
 #ifdef BUILD_SPARSE
-      int n_cols = this->cols.n_elem;
+          int n_cols = this->cols.n_elem;
 
-      arma::umat locs(2,n_cols);
-      for (int i = 0; i < n_cols; i++) {
-        locs(1,i) = i;
-        locs(0,i) = this->cols(i);
-      }
-      VEC vals(n_cols);
-      vals.fill(1);
+          arma::umat locs(2,n_cols);
+          for (int i = 0; i < n_cols; i++) {
+            locs(1,i) = i;
+            locs(0,i) = this->cols(i);
+          }
+          VEC vals(n_cols);
+          vals.fill(1);
 
-      SP_MAT S(locs,vals,this->A0.n_cols,n_cols);
+          SP_MAT S(locs,vals,this->A0.n_cols,n_cols);
 
-      this->A = this->A0*S;
+          this->A = this->A0*S;
 #else
-      this->A = this->A0.cols(this->cols);
+          this->A = this->A0.cols(this->cols);
 #endif
-    }
+          this->W = arma::randu<MAT>(this->A.n_rows,2);
+          this->H = arma::randu<MAT>(this->A.n_cols,2);
+        }
 
-    void compute_sigma() {
-      this->sigma = powIter(this->A);
-    }
+        void compute_sigma() {
+          this->sigma = powIter(this->A);
+        }
 
-    double compute_score() {
-      if (this->lchild == NULL || this->rchild == NULL) {
-        return -1.0;
-      }
+        double compute_score() {
+          if (this->lchild == NULL || this->rchild == NULL) {
+            return -1.0;
+          }
 
-      return 0.0;
+          return 0.0;
 
-    }
+        }
 
-  public:
-    Node() {
-    }
+        Node() {
+        }
 
-    Node(INPUTMATTYPE & A, UVEC & cols, Node * parent) {
-      this->cols = cols;
-      this->A0 = A;
-      this->parent = parent;
-      this->allocate();
-      this->compute_sigma();
-    }
+        Node(INPUTMATTYPE & A, UVEC & cols, Node * parent) {
+          this->cols = cols;
+          this->A0 = A;
+          this->parent = parent;
+          this->allocate();
+          this->compute_sigma();
+        }
 
-    bool split() {
-      return true;
-    }
+        bool split() {
+          print(this->H, "H");
+          UVEC left = this->H.col(0) > this->H.col(1);
+          print(left, "left");
+          UVEC lcols = this->cols(find(left == 1));
+          UVEC rcols = this->cols(find(left == 0));
+          print(this->cols, "cols");
+          print(lcols, "lcols");
+          print(rcols, "rcols");
 
-    bool accept() {
-      return true;
-    }
+          return true;
+        }
+
+        bool accept() {
+          return true;
+        }
 
 
-};
+    };
 
-template <class INPUTMATTYPE>
-class RootNode : public Node<INPUTMATTYPE> {
-  protected:
-    void allocate() {
-      this->A = this->A0;
-    }
+  template <class INPUTMATTYPE>
+    class RootNode : public Node<INPUTMATTYPE> {
+      public:  
+        void allocate() {
+          this->A = this->A0;
+          this->W = arma::randu<MAT>(this->A.n_rows,2);
+          this->H = arma::randu<MAT>(this->A.n_cols,2);
+        }
 
-    void compute_sigma() {
-      this->sigma = 0.0;
-    }
+        void compute_sigma() {
+          this->sigma = 0.0;
+        }
 
-  public:
-    RootNode(INPUTMATTYPE & A, UVEC & cols) : Node<INPUTMATTYPE>() {
-      this->cols = cols;
-      this->A0 = A;
-      this->parent = NULL;
-      this->allocate();
-      this->compute_sigma();
-    }
-};
+        RootNode(INPUTMATTYPE & A, UVEC & cols) : Node<INPUTMATTYPE>() {
+          this->cols = cols;
+          this->A0 = A;
+          this->parent = NULL;
+          this->allocate();
+          this->compute_sigma();
+        }
+    };
 }
