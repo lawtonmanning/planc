@@ -29,12 +29,41 @@ class HierNMFDriver {
     int m_num_k_blocks;
     static const int kprimeoffset = 17;
     normtype m_input_normalization;
+    MPICommunicator * mpicomm;
 
 #ifdef BUILD_SPARSE
     RootNode<SP_MAT> * root;
 #else
     RootNode<MAT> * root;
 #endif
+
+    template <class INPUTMATTYPE>
+      void computeNMF(Node<INPUTMATTYPE>  node) {
+        printf("Starting NMF\n");
+        print(node.A, "A");
+        print(node.W, "W");
+        print(node.H, "H");
+        DistR2<INPUTMATTYPE> nmf(node.A, node.W, node.H, *this->mpicomm, 1);
+        printf("Created NMF\n");
+        nmf.num_iterations(this->m_num_it);
+        nmf.compute_error(this->m_compute_error);
+        nmf.regW(this->m_regW);
+        nmf.regH(this->m_regH);
+        MPI_Barrier(MPI_COMM_WORLD);
+        try {
+          mpitic();
+          nmf.computeNMF();
+          double temp = mpitoc();
+
+          if (this->mpicomm->rank() == 0) printf("NMF took %.3lf secs.\n", temp);
+        } catch (std::exception &e) {
+          printf("Failed rank %d: %s\n", this->mpicomm->rank(), e.what());
+          MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+        node.W = nmf.getLeftLowRankFactor();
+        node.H = nmf.getRightLowRankFactor();
+        node.split();
+      }
 
     void parseCommandLine() {
       ParseCommandLine pc(this->m_argc, this->m_argv);
@@ -59,12 +88,12 @@ class HierNMFDriver {
 
     void buildTree() {
       std::string rand_prefix("rand_");
-      MPICommunicator mpicomm(this->m_argc, this->m_argv, this->m_pr, this->m_pc);
+      this->mpicomm = new MPICommunicator(this->m_argc, this->m_argv, this->m_pr, this->m_pc);
 
 #ifdef BUILD_SPARSE    
-      DistIO<SP_MAT> dio(mpicomm, m_distio);
+      DistIO<SP_MAT> dio(*mpicomm, m_distio);
 #else 
-      DistIO<MAT> dio(mpicomm, m_distio);
+      DistIO<MAT> dio(*mpicomm, m_distio);
 #endif
 
       if (m_Afile_name.compare(0, rand_prefix.size(), rand_prefix) == 0) {
@@ -80,20 +109,21 @@ class HierNMFDriver {
 #else 
       MAT A(dio.A());
 #endif
-      
+
       arma::uvec cols(this->m_globaln);
       for (unsigned int i = 0; i < this->m_globaln; i++) {
         cols[i] = i;
       }
 
-      print(A,"A0");
-
 #ifdef BUILD_SPARSE
-      this->root = new RootNode<SP_MAT>(A,cols);
+      this->root = new RootNode<SP_MAT>(A, cols);
 #else
-      this->root = new RootNode<MAT>(A,cols);
+      this->root = new RootNode<MAT>(A, cols);
 #endif
 
+      this->computeNMF(*this->root);
+
+      delete this->mpicomm;
     }
   public:
     HierNMFDriver(int argc, char * argv[]) {
