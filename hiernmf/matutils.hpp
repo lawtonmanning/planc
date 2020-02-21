@@ -1,4 +1,3 @@
-
 namespace planc {
   template <class INPUTMATTYPE>
     void print(INPUTMATTYPE M, const char * name) {
@@ -18,4 +17,44 @@ namespace planc {
         MPI_Barrier(MPI_COMM_WORLD);
       }
     }
-} 
+  
+  template <class INPUTMATTYPE>
+  auto powIter (INPUTMATTYPE &A) -> double {
+
+    int M = size(A,0);
+    int N = size(A,1);
+
+    INPUTMATTYPE At = A.t();
+
+    // generate random localQ VECtor for each processor's submatrix operations
+    // and a globalQ denoted for the original A matrix
+    VEC localQ(N);
+    VEC globalQ = arma::randu<VEC>(N);
+    globalQ = globalQ / norm(globalQ, 2);
+
+    // prepare variables
+    VEC z;
+    auto sigma = norm(globalQ,2);
+    auto s2 = sigma;
+    double epsilon = 1.0;
+
+    // converge to first sigma value of A
+    int iter = 0;
+    while (iter < 10 && epsilon > 0.00001) {
+      z = A * globalQ;
+      localQ = At * z;		
+
+      // sum localQ into globalQ
+      MPI_Allreduce(localQ.begin(), globalQ.begin(), N, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+
+      sigma = norm(globalQ,2);
+      globalQ = globalQ / sigma;
+
+      epsilon = abs(sigma - s2)/(sigma);
+      s2 = sigma;
+      iter++;
+    }
+
+    return sigma;
+  }
+}
