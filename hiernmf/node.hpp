@@ -17,28 +17,28 @@ class Node {
     bool activated = false;
     UVEC cols;
 
-    void allocate_A() {
+    void allocate() {
 #ifdef BUILD_SPARSE
       int n_cols = this->cols.n_elem;
 
       arma::umat locs(2,n_cols);
       for (int i = 0; i < n_cols; i++) {
-        locs(0,i) = i;
-        locs(1,i) = this->cols(i);
+        locs(1,i) = i;
+        locs(0,i) = this->cols(i);
       }
-      VEC vals(n_cols,1);
+      VEC vals(n_cols);
+      vals.fill(1);
 
-      //SP_MAT S(locs,vals,this->A0.n_rows,n_cols);
+      SP_MAT S(locs,vals,this->A0.n_cols,n_cols);
 
-      this->A = this->A0;
+      this->A = this->A0*S;
 #else
       this->A = this->A0.cols(this->cols);
 #endif
-      print(this->A,"A");
     }
 
     void compute_sigma() {
-      this->sigma = 0.0;
+      this->sigma = powIter(this->A);
     }
 
     double compute_score() {
@@ -51,11 +51,14 @@ class Node {
     }
 
   public:
+    Node() {
+    }
+
     Node(INPUTMATTYPE & A, UVEC & cols, Node * parent) {
       this->cols = cols;
       this->A0 = A;
       this->parent = parent;
-      this->allocate_A();
+      this->allocate();
       this->compute_sigma();
     }
 
@@ -73,7 +76,7 @@ class Node {
 template <class INPUTMATTYPE>
 class RootNode : public Node<INPUTMATTYPE> {
   protected:
-    void allocate_A() {
+    void allocate() {
       this->A = this->A0;
     }
 
@@ -82,7 +85,12 @@ class RootNode : public Node<INPUTMATTYPE> {
     }
 
   public:
-    RootNode(INPUTMATTYPE & A, UVEC & cols) : Node<INPUTMATTYPE>(A, cols, NULL) {
+    RootNode(INPUTMATTYPE & A, UVEC & cols) : Node<INPUTMATTYPE>() {
+      this->cols = cols;
+      this->A0 = A;
+      this->parent = NULL;
+      this->allocate();
+      this->compute_sigma();
     }
 };
 }
