@@ -148,14 +148,28 @@ namespace planc {
           uint start_row = 0, start_col = 0;
           uint end_row = 0, end_col = 0;
           
-          for (int i = 0; i < m_mpicomm.row_rank(); i++) {
-            start_row += rcounts[i];
+          start_row = startidx(m,m_mpicomm.pr(),m_mpicomm.row_rank());
+          start_col = startidx(n,m_mpicomm.pc(),m_mpicomm.col_rank());
+
+          end_row = startidx(m,m_mpicomm.pr(),m_mpicomm.row_rank()+1)-1;
+          end_col = startidx(n,m_mpicomm.pc(),m_mpicomm.col_rank()+1)-1;
+
+
+          if (start_row > end_row || start_col > end_col) {
+            if (start_row > end_row && start_col > end_col) {
+              (*X).zeros(0,0);
+            }
+            else if (start_row > end_row) {
+              (*X).zeros(0,end_col-start_col);
+            }
+            else if (start_col > end_col) {
+              (*X).zeros(end_row-start_row,0);
+            }
+            return;
           }
-          for (int i = 0; i < m_mpicomm.col_rank(); i++) {
-            start_col += ccounts[i];
-          }
-          end_row = start_row + rcounts[m_mpicomm.row_rank()]-1;
-          end_col = start_col + ccounts[m_mpicomm.col_rank()]-1;
+
+          printf("rows(%d) %d-%d\n",this->m_mpicomm.rank(),start_row,end_row);
+          printf("cols(%d) %d-%d\n",this->m_mpicomm.rank(),start_col,end_col);
 
           /*
           switch (m_distio) {
