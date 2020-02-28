@@ -51,8 +51,8 @@ namespace planc {
 
     public:
       DistR2(const INPUTMATTYPE& input, const MAT& leftlowrankfactor, const MAT& rightlowrankfactor, const MPICommunicator& communicator, const int numkblks) : DistAUNMF<INPUTMATTYPE>(input, leftlowrankfactor, rightlowrankfactor, communicator, numkblks) {
-        Wuv.zeros(2,this->globalm() / MPI_SIZE);
-        Huv.zeros(2,this->globaln() / MPI_SIZE);
+        Wuv.zeros(2,this->W.n_rows);
+        Huv.zeros(2,this->H.n_rows);
         
       }
   };
