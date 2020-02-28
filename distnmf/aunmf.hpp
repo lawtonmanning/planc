@@ -84,9 +84,9 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
     Hjt.zeros(this->perk, this->n);
     AijHj.zeros(this->m, this->perk);
     AijHjt.zeros(this->perk, this->m);
-    AHtij.zeros(this->k, this->globalm() / MPI_SIZE);
+    AHtij.zeros(this->k, this->W.n_rows);
     this->recvAHsize.resize(NUMCOLPROCS);
-    int fillsize = this->perk * (this->globalm() / MPI_SIZE);
+    int fillsize = this->perk * (this->W.n_rows);
     fillVector<int>(fillsize, &recvAHsize);
 #ifdef MPI_VERBOSE
     if (ISROOT) {
@@ -95,25 +95,25 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
     }
 #endif
     // allocated for block implementation.
-    Ht_blk.zeros(this->perk, (this->globalm() / MPI_SIZE));
-    AHtij_blk.zeros(this->perk, this->globalm() / MPI_SIZE);
+    Ht_blk.zeros(this->perk, (this->W.n_rows));
+    AHtij_blk.zeros(this->perk, this->W.n_rows);
 
     // These initialization are for solving H.
-    Wt.zeros(this->k, this->globalm() / MPI_SIZE);
+    Wt.zeros(this->k, this->W.n_rows);
     WtW.zeros(this->k, this->k);
     localWtW.zeros(this->k, this->k);
     Wi.zeros(this->m, this->perk);
     Wit.zeros(this->perk, this->m);
     WitAij.zeros(this->perk, this->n);
     AijWit.zeros(this->n, this->perk);
-    WtAij.zeros(this->k, this->globaln() / MPI_SIZE);
+    WtAij.zeros(this->k, this->H.n_rows);
     this->recvWtAsize.resize(NUMROWPROCS);
-    fillsize = this->perk * (this->globaln() / MPI_SIZE);
+    fillsize = this->perk * (this->H.n_rows);
     fillVector<int>(fillsize, &recvWtAsize);
 
     // allocated for block implementation
-    Wt_blk.zeros(this->perk, this->globalm() / MPI_SIZE);
-    WtAij_blk.zeros(this->perk, this->globaln() / MPI_SIZE);
+    Wt_blk.zeros(this->perk, this->W.n_rows);
+    WtAij_blk.zeros(this->perk, this->H.n_rows);
 #ifdef MPI_VERBOSE
     if (ISROOT) {
       INFO << "::recvWtAsize::";
@@ -220,12 +220,22 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
     this->m_rowcomm->expCommBegin(Wit.memptr(), this->perk);
     this->m_rowcomm->expCommFinish(Wit.memptr(), this->perk);
 #else
-    int sendcnt = (this->globalm() / MPI_SIZE) * this->perk;
-    int recvcnt = (this->globalm() / MPI_SIZE) * this->perk;
+    int sendcnt = (this->W.n_rows) * this->perk;
+    int * recvcnts = (int *)malloc(this->m_mpicomm.pc()*sizeof(int));
+    int * displs = (int *)malloc(this->m_mpicomm.pc()*sizeof(int));
+    
+    recvcnts[0] = itersplit(this->A.n_rows,this->m_mpicomm.pc(),0) * this->perk;
+    displs[0] = 0;
+    for (int i = 1; i < this->m_mpicomm.pc(); i++) {
+      recvcnts[i] = itersplit(this->A.n_rows,this->m_mpicomm.pc(),i) * this->perk;
+      displs[i] = displs[i-1]+recvcnts[i-1];
+    }
     Wit.zeros();
     MPITIC;  // allgather WtA
-    MPI_Allgather(Wt_blk.memptr(), sendcnt, MPI_DOUBLE, Wit.memptr(), recvcnt,
+    MPI_Allgatherv(Wt_blk.memptr(), sendcnt, MPI_DOUBLE, Wit.memptr(), recvcnts, displs,
                   MPI_DOUBLE, this->m_mpicomm.commSubs()[1]);
+    free(recvcnts);
+    free(displs);
 #endif
     double temp = MPITOC;  // allgather WtA
     PRINTROOT("n::" << this->n << "::k::" << this->k << PRINTMATINFO(Wt)
@@ -269,11 +279,16 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
            WtAij_blk.n_rows * WtAij_blk.n_cols * sizeof(WtAij_blk[0]));
 #else
     WtAij_blk.zeros();
+    recvcnts = (int *)malloc(this->m_mpicomm.pr()*sizeof(int));
+    for (int i = 0; i < this->m_mpicomm.pr(); i++) {
+      recvcnts[i] = itersplit(this->A.n_cols,this->m_mpicomm.pr(),i)*this->perk;
+    }
     MPITIC;  // reduce_scatter WtA
     MPI_Reduce_scatter(this->WitAij.memptr(), this->WtAij_blk.memptr(),
-                       &(this->recvWtAsize[0]), MPI_DOUBLE, MPI_SUM,
+                       recvcnts, MPI_DOUBLE, MPI_SUM,
                        this->m_mpicomm.commSubs()[0]);
     temp = MPITOC;  // reduce_scatter WtA
+    free(recvcnts); 
 #endif
     this->time_stats.communication_duration(temp);
     this->time_stats.reducescatter_duration(temp);
@@ -314,17 +329,27 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
     this->m_colcomm->expCommBegin(Hjt.memptr(), this->perk);
     this->m_colcomm->expCommFinish(Hjt.memptr(), this->perk);
 #else
-    int sendcnt = (this->globaln() / MPI_SIZE) * this->perk;
-    int recvcnt = (this->globaln() / MPI_SIZE) * this->perk;
+    int sendcnt = (this->H.n_rows) * this->perk;
+    int * recvcnts = (int *)malloc(this->m_mpicomm.pr()*sizeof(int));
+    int * displs = (int *)malloc(this->m_mpicomm.pr()*sizeof(int));
+    
+    recvcnts[0] = itersplit(this->A.n_cols,this->m_mpicomm.pr(),0) * this->perk;
+    displs[0] = 0;
+    for (int i = 1; i < this->m_mpicomm.pr(); i++) {
+      recvcnts[i] = itersplit(this->A.n_cols,this->m_mpicomm.pr(),i) * this->perk;
+      displs[i] = displs[i-1]+recvcnts[i-1];
+    }
     Hjt.zeros();
     MPITIC;  // allgather AH
-    MPI_Allgather(this->Ht_blk.memptr(), sendcnt, MPI_DOUBLE,
-                  this->Hjt.memptr(), recvcnt, MPI_DOUBLE,
+    MPI_Allgatherv(this->Ht_blk.memptr(), sendcnt, MPI_DOUBLE,
+                  this->Hjt.memptr(), recvcnts, displs, MPI_DOUBLE,
                   this->m_mpicomm.commSubs()[0]);
 #endif
     PRINTROOT("n::" << this->n << "::k::" << this->k << PRINTMATINFO(Ht)
                     << PRINTMATINFO(Hjt));
     double temp = MPITOC;  // allgather AH
+    free(recvcnts);
+    free(displs);
 #ifdef MPI_VERBOSE
     DISTPRINTINFO(PRINTMAT(Ht_blk));
     DISTPRINTINFO(PRINTMAT(Hjt));
@@ -365,11 +390,16 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
            AHtij_blk.n_rows * AHtij_blk.n_cols * sizeof(AHtij_blk[0]));
 #else
     AHtij_blk.zeros();
+    recvcnts = (int *)malloc(this->m_mpicomm.pc()*sizeof(int));
+    for (int i = 0; i < this->m_mpicomm.pc(); i++) {
+      recvcnts[i] = itersplit(this->A.n_rows,this->m_mpicomm.pc(),i)*this->perk;
+    }
     MPITIC;  // reduce_scatter AH
     MPI_Reduce_scatter(this->AijHjt.memptr(), this->AHtij_blk.memptr(),
-                       &(this->recvAHsize[0]), MPI_DOUBLE, MPI_SUM,
+                       recvcnts, MPI_DOUBLE, MPI_SUM,
                        this->m_mpicomm.commSubs()[1]);
     temp = MPITOC;  // reduce_scatter AH
+    free(recvcnts);
 #endif
     this->time_stats.communication_duration(temp);
     this->time_stats.reducescatter_duration(temp);
