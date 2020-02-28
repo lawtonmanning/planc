@@ -168,9 +168,6 @@ namespace planc {
             return;
           }
 
-          printf("rows(%d) %d-%d\n",this->m_mpicomm.rank(),start_row,end_row);
-          printf("cols(%d) %d-%d\n",this->m_mpicomm.rank(),start_col,end_col);
-
           /*
           switch (m_distio) {
             case ONED_ROW:
