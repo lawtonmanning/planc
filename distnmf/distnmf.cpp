@@ -251,8 +251,8 @@ class DistNMFDriver {
     MAT W = arma::randu<MAT>(rowcomm->localOwnedRowCount(), this->m_k);
     MAT H = arma::randu<MAT>(colcomm->localOwnedRowCount(), this->m_k);
 #else   // ifdef USE_PACOSS
-    MAT W = arma::randu<MAT>(this->m_globalm / mpicomm.size(), this->m_k);
-    MAT H = arma::randu<MAT>(this->m_globaln / mpicomm.size(), this->m_k);
+    MAT W = arma::randu<MAT>(itersplit(A.n_rows,m_pc,mpicomm.col_rank()), this->m_k);
+    MAT H = arma::randu<MAT>(itersplit(A.n_cols,m_pr,mpicomm.row_rank()), this->m_k);
 #endif  // ifdef USE_PACOSS
         // sometimes for really very large matrices starting w/
         // rand initialization hurts ANLS BPP running time. For a better
