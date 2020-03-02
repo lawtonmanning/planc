@@ -30,6 +30,7 @@ class HierNMFDriver {
     static const int kprimeoffset = 17;
     normtype m_input_normalization;
     MPICommunicator * mpicomm;
+    ParseCommandLine * pc;
 
 #ifdef BUILD_SPARSE
     RootNode<SP_MAT> * root;
@@ -38,12 +39,10 @@ class HierNMFDriver {
 #endif
 
     template <class INPUTMATTYPE>
-      void computeNMF(Node<INPUTMATTYPE>  node) {
-        printf("Starting NMF\n");
-        print(node.A, "A");
-        print(node.W, "W");
-        print(node.H, "H");
-        DistR2<INPUTMATTYPE> nmf(node.A, node.W, node.H, *this->mpicomm, 1);
+      bool split(Node<INPUTMATTYPE> * node) {
+        MAT W = arma::randu<MAT>(node->A.n_rows/this->m_pc,2);
+        MAT H = arma::randu<MAT>(node->A.n_cols/this->m_pr,2);
+        DistR2<INPUTMATTYPE> nmf(node->A, W, H, *this->mpicomm, 1);
         printf("Created NMF\n");
         nmf.num_iterations(this->m_num_it);
         nmf.compute_error(this->m_compute_error);
@@ -60,30 +59,42 @@ class HierNMFDriver {
           printf("Failed rank %d: %s\n", this->mpicomm->rank(), e.what());
           MPI_Abort(MPI_COMM_WORLD, 1);
         }
-        node.W = nmf.getLeftLowRankFactor();
-        node.H = nmf.getRightLowRankFactor();
-        node.split();
+        node->W = nmf.getLeftLowRankFactor();
+        MAT Ho = nmf.getRightLowRankFactor();
+        H.zeros(2,node->A.n_cols);
+        int sendcnt = Ho.n_rows*Ho.n_cols;
+        int * recvcnts = (int *)malloc(this->mpicomm->size()*sizeof(int));
+        int * displs = (int *)malloc(this->mpicomm->size()*sizeof(int));
+        recvcnts[0] = itersplit(node->A.n_cols,this->mpicomm->size(),0)*2;
+        displs[0] = 0;
+        for (int i = 0; i < this->mpicomm->size(); i++) {
+          recvcnts[i] = itersplit(node->A.n_cols,this->mpicomm->size(),i)*2;
+          displs[i] = displs[i-1]+recvcnts[i-1];
+        }
+        MPI_Allgatherv(Ho.memptr(),recvcnts[this->mpicomm->rank()],MPI_DOUBLE,H.memptr(),recvcnts,displs,MPI_DOUBLE,MPI_COMM_WORLD);
+        node->H = H.t();
+        return node->split();
       }
 
+
     void parseCommandLine() {
-      ParseCommandLine pc(this->m_argc, this->m_argv);
-      pc.parseplancopts();
-      this->m_k = pc.lowrankk();
-      this->m_Afile_name = pc.input_file_name();
-      this->m_pr = pc.pr();
+      pc = new ParseCommandLine(this->m_argc, this->m_argv);
+      pc->parseplancopts();
+      this->m_k = pc->lowrankk();
+      this->m_Afile_name = pc->input_file_name();
+      this->m_pr = pc->pr();
       this->m_pc = 1;
-      this->m_sparsity = pc.sparsity();
-      this->m_num_it = pc.iterations();
+      this->m_sparsity = pc->sparsity();
+      this->m_num_it = pc->iterations();
       this->m_distio = TWOD;
-      this->m_regW = pc.regW();
-      this->m_regH = pc.regH();
+      this->m_regW = pc->regW();
+      this->m_regH = pc->regH();
       this->m_num_k_blocks = 1;
-      this->m_globalm = pc.globalm();
-      this->m_globaln = pc.globaln();
-      this->m_compute_error = pc.compute_error();
-      this->m_distio = TWOD;
-      this->m_input_normalization = pc.input_normalization();
-      pc.printConfig();
+      this->m_globalm = pc->globalm();
+      this->m_globaln = pc->globaln();
+      this->m_compute_error = pc->compute_error();
+      this->m_input_normalization = pc->input_normalization();
+      pc->printConfig();
     }
 
     void buildTree() {
@@ -96,32 +107,60 @@ class HierNMFDriver {
       DistIO<MAT> dio(*mpicomm, m_distio);
 #endif
 
-      if (m_Afile_name.compare(0, rand_prefix.size(), rand_prefix) == 0) {
-        dio.readInput(m_Afile_name, this->m_globalm, this->m_globaln, this->m_k,
-            this->m_sparsity, this->m_pr, this->m_pc,
-            this->m_input_normalization);
-      } else {
-        dio.readInput(m_Afile_name);
-      }
+      dio.readInput(m_Afile_name, this->m_globalm, this->m_globaln, this->m_k,
+          this->m_sparsity, this->m_pr, this->m_pc,
+          this->m_input_normalization);
 
 #ifdef BUILD_SPARSE
       SP_MAT A(dio.A());
 #else 
       MAT A(dio.A());
 #endif
-
+      int rank = this->mpicomm->rank();
       arma::uvec cols(this->m_globaln);
       for (unsigned int i = 0; i < this->m_globaln; i++) {
         cols[i] = i;
       }
 
 #ifdef BUILD_SPARSE
-      this->root = new RootNode<SP_MAT>(A, cols);
+      this->root = new RootNode<SP_MAT>(A, cols, this->mpicomm, this->pc);
 #else
-      this->root = new RootNode<MAT>(A, cols);
+      this->root = new RootNode<MAT>(A, cols, this->mpicomm, this->pc);
 #endif
 
-      this->computeNMF(*this->root);
+#ifdef BUILD_SPARSE
+      std::priority_queue<Node<SP_MAT> *> leaves;
+      Node<SP_MAT> * leaf;
+
+      std::queue<Node<SP_MAT> *> nodes;
+#else
+      std::priority_queue<Node<MAT> *> leaves;
+      Node<MAT> * leaf;
+
+      std::queue<Node<MAT> *> nodes;
+#endif
+      nodes.push(this->root);
+      this->root->split();
+      this->root->accept();
+      this->root->enqueue(leaves);
+      this->root->enqueue(nodes);
+      
+
+      while (leaves.size() < this->m_k) {
+        leaf = leaves.top();
+        leaves.pop();
+        leaf->accept();
+        leaf->enqueue(leaves);
+        leaf->enqueue(nodes);
+      }
+
+      MPI_Barrier(MPI_COMM_WORLD);
+      if (this->mpicomm->rank() == 0) {
+        
+      }
+      MPI_Barrier(MPI_COMM_WORLD);
+
+
 
       delete this->mpicomm;
     }

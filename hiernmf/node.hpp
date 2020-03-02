@@ -1,5 +1,8 @@
+#include <queue>
 #include <vector>
+#include "common/parsecommandline.hpp"
 #include "distnmf/distr2.hpp"
+#include "distnmf/mpicomm.hpp"
 #include "hiernmf/matutils.hpp"
 
 namespace planc {
@@ -8,6 +11,7 @@ namespace planc {
       public:  
         Node * lchild = NULL;
         Node * rchild = NULL;
+        bool lvalid,rvalid;
         Node * parent = NULL;
         INPUTMATTYPE A0;
         INPUTMATTYPE A;
@@ -15,8 +19,11 @@ namespace planc {
         MAT H;
         double sigma;
         double score;
-        bool activated = false;
         UVEC cols;
+        accepted = false;
+
+        MPICommunicator * mpicomm;
+        ParseCommandLine * pc;
 
         void allocate() {
 #ifdef BUILD_SPARSE
@@ -36,8 +43,6 @@ namespace planc {
 #else
           this->A = this->A0.cols(this->cols);
 #endif
-          this->W = arma::randu<MAT>(this->A.n_rows,2);
-          this->H = arma::randu<MAT>(this->A.n_cols,2);
         }
 
         void compute_sigma() {
@@ -45,7 +50,18 @@ namespace planc {
         }
 
         void compute_score() {
-          this->score = this->sigma - (this->lchild->sigma+this->rchild->sigma);
+          if (this->lvalid && this->rvalid) {
+            this->score = (this->lchild->sigma+this->rchild->sigma) - this->sigma;
+          }
+          else if (this->lvalid) {
+            this->score = this->lchild->sigma - this->sigma;
+          }
+          else if (this->rvalid) {
+            this->score = this->rchild->sigma - this->sigma;
+          }
+          else {
+            this->score = 0;
+          }
         }
 
         Node() {
@@ -55,33 +71,91 @@ namespace planc {
           this->cols = cols;
           this->A0 = A;
           this->parent = parent;
+          this->mpicomm = parent->mpicomm;
+          this->pc = parent->pc;
           this->allocate();
           this->compute_sigma();
         }
 
-        bool split() {
-          this->A.reset();
+        void split() {
+          this->W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
+          this->H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
+
+          DistR2<INPUTMATTYPE> nmf(A, W, H, *mpicomm, 1);;
+          nmf.num_iterations(pc->iterations());
+          nmf.compute_error(pc->compute_error());
+          nmf.algorithm(R2);
+          nmf.regW(pc->regW());
+          nmf.regH(pc->regH());
+          MPI_Barrier(MPI_COMM_WORLD);
+          try {
+            mpitic();
+            nmf.computeNMF();
+            double temp = mpitoc();
+
+            if (this->mpicomm->rank() == 0) printf("NMF took %.3lf secs.\n", temp);
+          } catch (std::exception &e) {
+            printf("Failed rank %d: %s\n", this->mpicomm->rank(), e.what());
+            MPI_Abort(MPI_COMM_WORLD, 1);
+          }
+          this->W = nmf.getLeftLowRankFactor();
+
+          MAT Ho = nmf.getRightLowRankFactor();
+          this->H.zeros(2,A.n_cols);
+          int sendcnt = Ho.n_rows*Ho.n_cols;
+          int * recvcnts = (int *)malloc(this->mpicomm->size()*sizeof(int));
+          int * displs = (int *)malloc(this->mpicomm->size()*sizeof(int));
+          recvcnts[0] = itersplit(A.n_cols,this->mpicomm->size(),0)*2;
+          displs[0] = 0;
+          for (int i = 0; i < this->mpicomm->size(); i++) {
+            recvcnts[i] = itersplit(A.n_cols,this->mpicomm->size(),i)*2;
+            displs[i] = displs[i-1]+recvcnts[i-1];
+          }
+          MPI_Allgatherv(Ho.memptr(),recvcnts[this->mpicomm->rank()],MPI_DOUBLE,H.memptr(),recvcnts,displs,MPI_DOUBLE,MPI_COMM_WORLD);
+          this->H = this->H.t();
+
 
           UVEC left = this->H.col(0) > this->H.col(1);
 
           UVEC lcols = this->cols(find(left == 1));
           UVEC rcols = this->cols(find(left == 0));
+
           
-          this->lchild = new Node(this->A0, lcols, this);
-          this->rchild = new Node(this->A0, rcols, this);
+          this->lvalid = !lcols.is_empty();
+          this->rvalid = !rcols.is_empty();
+          
+          if (lvalid) {
+            this->lchild = new Node(this->A0, lcols, this);
+          }
+          if (rvalid) {
+            this->rchild = new Node(this->A0, rcols, this);
+          }
 
           this->compute_score();
-
-
-          return true;
         }
 
-        bool accept() {
-          return true;
+        void accept() {
+          this->accepted = true;
+          if (this->lvalid) {
+            this->lchild->split();
+          }
+          if (this->rvalid) {
+            this->rchild->split();
+          }
+        }
+        
+        template<class QUEUE>
+        void enqueue(QUEUE & queue) {
+          if (this->lvalid) {
+            queue.push(this->lchild);
+          }
+          if (this->rvalid) {
+            queue.push(this->rchild);
+          }
         }
 
-        bool operator<(const Node & lhs, const Node & rhs) {
-          return lhs.score < rhs.score;
+        bool operator<(const Node & other) {
+          return this->score < other.score;
         }
 
 
@@ -90,22 +164,14 @@ namespace planc {
   template <class INPUTMATTYPE>
     class RootNode : public Node<INPUTMATTYPE> {
       public:  
-        void allocate() {
-          this->A = this->A0;
-          this->W = arma::randu<MAT>(this->A.n_rows,2);
-          this->H = arma::randu<MAT>(this->A.n_cols,2);
-        }
-
-        void compute_sigma() {
-          this->sigma = 0.0;
-        }
-
-        RootNode(INPUTMATTYPE & A, UVEC & cols) : Node<INPUTMATTYPE>() {
+        RootNode(INPUTMATTYPE & A, UVEC & cols, MPICommunicator * mpicomm, ParseCommandLine * pc) : Node<INPUTMATTYPE>() {
           this->cols = cols;
           this->A0 = A;
           this->parent = NULL;
-          this->allocate();
-          this->compute_sigma();
+          this->mpicomm = mpicomm;
+          this->pc = pc;
+          this->A = this->A0;
+          this->sigma = 0.0;
         }
     };
 }
