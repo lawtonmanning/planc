@@ -38,44 +38,6 @@ class HierNMFDriver {
     RootNode<MAT> * root;
 #endif
 
-    template <class INPUTMATTYPE>
-      bool split(Node<INPUTMATTYPE> * node) {
-        MAT W = arma::randu<MAT>(node->A.n_rows/this->m_pc,2);
-        MAT H = arma::randu<MAT>(node->A.n_cols/this->m_pr,2);
-        DistR2<INPUTMATTYPE> nmf(node->A, W, H, *this->mpicomm, 1);
-        printf("Created NMF\n");
-        nmf.num_iterations(this->m_num_it);
-        nmf.compute_error(this->m_compute_error);
-        nmf.regW(this->m_regW);
-        nmf.regH(this->m_regH);
-        MPI_Barrier(MPI_COMM_WORLD);
-        try {
-          mpitic();
-          nmf.computeNMF();
-          double temp = mpitoc();
-
-          if (this->mpicomm->rank() == 0) printf("NMF took %.3lf secs.\n", temp);
-        } catch (std::exception &e) {
-          printf("Failed rank %d: %s\n", this->mpicomm->rank(), e.what());
-          MPI_Abort(MPI_COMM_WORLD, 1);
-        }
-        node->W = nmf.getLeftLowRankFactor();
-        MAT Ho = nmf.getRightLowRankFactor();
-        H.zeros(2,node->A.n_cols);
-        int sendcnt = Ho.n_rows*Ho.n_cols;
-        int * recvcnts = (int *)malloc(this->mpicomm->size()*sizeof(int));
-        int * displs = (int *)malloc(this->mpicomm->size()*sizeof(int));
-        recvcnts[0] = itersplit(node->A.n_cols,this->mpicomm->size(),0)*2;
-        displs[0] = 0;
-        for (int i = 0; i < this->mpicomm->size(); i++) {
-          recvcnts[i] = itersplit(node->A.n_cols,this->mpicomm->size(),i)*2;
-          displs[i] = displs[i-1]+recvcnts[i-1];
-        }
-        MPI_Allgatherv(Ho.memptr(),recvcnts[this->mpicomm->rank()],MPI_DOUBLE,H.memptr(),recvcnts,displs,MPI_DOUBLE,MPI_COMM_WORLD);
-        node->H = H.t();
-        return node->split();
-      }
-
 
     void parseCommandLine() {
       pc = new ParseCommandLine(this->m_argc, this->m_argv);
