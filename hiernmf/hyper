@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd ~/planc/build/
+make || exit
+
+cd ~/planc/build/dense_hiernmf
+mpirun -n 1 ./dense_hiernmf -a 7 -i ~/planc/hiernmf/image -p "1 1" -t 100 -e 1 > ~/planc/hiernmf/image
