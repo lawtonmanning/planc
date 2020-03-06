@@ -1,5 +1,6 @@
 #include <string>
 #include <queue>
+#include <vector>
 #include "common/distutils.hpp"
 #include "common/parsecommandline.hpp"
 #include "common/utils.hpp"
@@ -78,6 +79,18 @@ class HierNMFDriver {
 #else 
       MAT A(dio.A());
 #endif
+
+      if (m_Afile_name.compare(0, rand_prefix.size(), rand_prefix) != 0) {
+        int localm = A.n_rows;
+        int localn = A.n_cols;
+        int m,n;
+        MPI_Allreduce(&localm,&m,1,MPI_INT,MPI_SUM,mpicomm->commSubs()[0]);
+        MPI_Allreduce(&localn,&n,1,MPI_INT,MPI_SUM,mpicomm->commSubs()[1]);
+        this->m_globalm = m;
+        this->m_globaln = n;
+        printf("(%d) globalm:%d globaln:%d\n",mpicomm->rank(),this->m_globalm,this->m_globaln);
+      }
+
       int rank = this->mpicomm->rank();
       arma::uvec cols(this->m_globaln);
       for (unsigned int i = 0; i < this->m_globaln; i++) {
@@ -91,34 +104,46 @@ class HierNMFDriver {
 #endif
 
 #ifdef BUILD_SPARSE
-      std::priority_queue<Node<SP_MAT> *> leaves;
+      std::priority_queue<Node<SP_MAT> *, std::vector<Node<SP_MAT> *>, ScoreCompare> leaves;
       Node<SP_MAT> * leaf;
+      Node<SP_MAT> * node;
 
       std::queue<Node<SP_MAT> *> nodes;
 #else
-      std::priority_queue<Node<MAT> *> leaves;
+      std::priority_queue<Node<MAT> *, std::vector<Node<MAT> *>, ScoreCompare> leaves;
       Node<MAT> * leaf;
+      Node<MAT> * node;
 
       std::queue<Node<MAT> *> nodes;
 #endif
       nodes.push(this->root);
       this->root->split();
-      this->root->accept();
-      this->root->enqueue(leaves);
+      //this->root->accept();
+      //this->root->enqueue(leaves);
       this->root->enqueue(nodes);
-      
 
-      while (leaves.size() < this->m_k) {
+      printf("A(0,1,1):%f\n",mpicomm->rank(),A(1,1));
+
+      int it = 0;
+      while (nodes.size() < 0) {
         leaf = leaves.top();
+        printf("it:%d proc:%d node:%d score:%f\n",it,mpicomm->rank(),leaf->index,leaf->score);
         leaves.pop();
         leaf->accept();
         leaf->enqueue(leaves);
         leaf->enqueue(nodes);
+        it++;
       }
 
       MPI_Barrier(MPI_COMM_WORLD);
       if (this->mpicomm->rank() == 0) {
-        
+        while (nodes.size() > 0) {
+          node = nodes.front();
+          printf("%d (%.5f): ",node->index,node->score);
+          node->cols.t().print();
+          node->W.t().print("W:");
+          nodes.pop();
+        }
       }
       MPI_Barrier(MPI_COMM_WORLD);
 
