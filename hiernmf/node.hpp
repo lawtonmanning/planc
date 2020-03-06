@@ -20,7 +20,8 @@ namespace planc {
         double sigma;
         double score;
         UVEC cols;
-        accepted = false;
+        bool accepted = false;
+        int index;
 
         MPICommunicator * mpicomm;
         ParseCommandLine * pc;
@@ -78,10 +79,17 @@ namespace planc {
         }
 
         void split() {
-          this->W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
-          this->H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
+          MPI_Barrier(MPI_COMM_WORLD);
+          char * title = (char *)malloc(20);
+          sprintf(title, "cols(%d,%d):", this->index, mpicomm->rank());
+          printf("A(%d): %dx%d\n",mpicomm->rank(),A.n_rows,A.n_cols);
+          cols.t().print(title);
+          free(title);
+          MPI_Barrier(MPI_COMM_WORLD);
+          MAT Wo = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
+          MAT Ho = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
 
-          DistR2<INPUTMATTYPE> nmf(A, W, H, *mpicomm, 1);;
+          DistR2<INPUTMATTYPE> nmf(A, Wo, Ho, *mpicomm, 1);;
           nmf.num_iterations(pc->iterations());
           nmf.compute_error(pc->compute_error());
           nmf.algorithm(R2);
@@ -99,8 +107,9 @@ namespace planc {
             MPI_Abort(MPI_COMM_WORLD, 1);
           }
           this->W = nmf.getLeftLowRankFactor();
-
-          MAT Ho = nmf.getRightLowRankFactor();
+          this->H = nmf.getRightLowRankFactor();
+          /*
+          Ho = nmf.getRightLowRankFactor();
           this->H.zeros(2,A.n_cols);
           int sendcnt = Ho.n_rows*Ho.n_cols;
           int * recvcnts = (int *)malloc(this->mpicomm->size()*sizeof(int));
@@ -113,6 +122,16 @@ namespace planc {
           }
           MPI_Allgatherv(Ho.memptr(),recvcnts[this->mpicomm->rank()],MPI_DOUBLE,H.memptr(),recvcnts,displs,MPI_DOUBLE,MPI_COMM_WORLD);
           this->H = this->H.t();
+          */
+
+          /*
+          MPI_Barrier(MPI_COMM_WORLD);
+          title = (char *)malloc(20);
+          sprintf(title, "H(%d): %dx%d", mpicomm->rank(), H.n_rows, H.n_cols);
+          H.print(title);
+          free(title);
+          MPI_Barrier(MPI_COMM_WORLD);
+          */
 
 
           UVEC left = this->H.col(0) > this->H.col(1);
@@ -126,9 +145,13 @@ namespace planc {
           
           if (lvalid) {
             this->lchild = new Node(this->A0, lcols, this);
+            this->lchild->index = 2*this->index+1;
+            printf("node(%d,%d) %f\n",lchild->index,mpicomm->rank(),lchild->sigma);
           }
           if (rvalid) {
             this->rchild = new Node(this->A0, rcols, this);
+            this->rchild->index = 2*this->index+2;
+            printf("node(%d,%d) %f\n",rchild->index,mpicomm->rank(),rchild->sigma);
           }
 
           this->compute_score();
@@ -154,12 +177,23 @@ namespace planc {
           }
         }
 
-        bool operator<(const Node & other) {
-          return this->score < other.score;
+        bool operator > (const Node<INPUTMATTYPE> & rhs) const {
+          return (this->score > rhs.score);
         }
 
-
+        bool operator < (const Node<INPUTMATTYPE> & rhs) const {
+          return (this->score < rhs.score);
+        }
     };
+
+  class ScoreCompare {
+    public:
+    template <typename T>
+    bool operator()(T * a, T * b) {
+      return a->score > b->score;
+    }
+  };
+
 
   template <class INPUTMATTYPE>
     class RootNode : public Node<INPUTMATTYPE> {
@@ -172,6 +206,7 @@ namespace planc {
           this->pc = pc;
           this->A = this->A0;
           this->sigma = 0.0;
+          this->index = 0;
         }
     };
 }
