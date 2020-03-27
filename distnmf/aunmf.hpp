@@ -484,6 +484,26 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
         // ensure both Ht and H are consistent after the update
         // some function find Ht and some H.
         updateH();
+
+        VEC lnorms = arma::vec(this->k,arma::fill::zeros);
+        VEC norms = arma::vec(this->k,arma::fill::zeros);
+        
+        for (int i = 0; i < this->k; i++) {
+          lnorms(i) = pow(arma::norm(this->H.col(i)),2);
+        }
+
+        MPI_Allreduce(lnorms.memptr(),norms.memptr(),this->k,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+
+        norms = sqrt(norms);
+        for (int i = 0; i < this->k; i++) {
+          // this->H.col(i).for_each( [&,i] (MAT::elem_type& val) { val /= norms(i); });
+          if (norms(i) > 0) {
+            this->H.col(i) = this->H.col(i) / norms(i);
+          }
+        }
+        this->Ht = this->H.t();
+        
+
 #ifdef MPI_VERBOSE
         DISTPRINTINFO("::it=" << iter << PRINTMAT(this->H));
 #endif
