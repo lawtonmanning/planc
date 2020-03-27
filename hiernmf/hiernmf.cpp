@@ -43,7 +43,7 @@ class HierNMFDriver {
     void parseCommandLine() {
       pc = new ParseCommandLine(this->m_argc, this->m_argv);
       pc->parseplancopts();
-      this->m_k = pc->lowrankk();
+      this->m_k = 2;
       this->m_Afile_name = pc->input_file_name();
       this->m_pr = pc->pr();
       this->m_pc = 1;
@@ -63,6 +63,9 @@ class HierNMFDriver {
     void buildTree() {
       std::string rand_prefix("rand_");
       this->mpicomm = new MPICommunicator(this->m_argc, this->m_argv, this->m_pr, this->m_pc);
+
+      // setting seed after mpi_init
+      arma::arma_rng::set_seed(0);
 
 #ifdef BUILD_SPARSE    
       DistIO<SP_MAT> dio(*mpicomm, m_distio);
@@ -88,7 +91,6 @@ class HierNMFDriver {
         MPI_Allreduce(&localn,&n,1,MPI_INT,MPI_SUM,mpicomm->commSubs()[1]);
         this->m_globalm = m;
         this->m_globaln = n;
-        printf("(%d) globalm:%d globaln:%d\n",mpicomm->rank(),this->m_globalm,this->m_globaln);
       }
 
       int rank = this->mpicomm->rank();
@@ -103,6 +105,7 @@ class HierNMFDriver {
       this->root = new RootNode<MAT>(A, cols, this->mpicomm, this->pc);
 #endif
 
+      // TODO: rename leaves to frontiers/frontier nodes
 #ifdef BUILD_SPARSE
       std::priority_queue<Node<SP_MAT> *, std::vector<Node<SP_MAT> *>, ScoreCompare> leaves;
       Node<SP_MAT> * leaf;
@@ -118,14 +121,12 @@ class HierNMFDriver {
 #endif
       nodes.push(this->root);
       this->root->split();
-      //this->root->accept();
-      //this->root->enqueue(leaves);
+      this->root->accept();
+      this->root->enqueue(leaves);
       this->root->enqueue(nodes);
 
-      printf("A(0,1,1):%f\n",mpicomm->rank(),A(1,1));
-
       int it = 0;
-      while (nodes.size() < 0) {
+      while (leaves.top()->score > 0.1 && it < 8) {
         leaf = leaves.top();
         printf("it:%d proc:%d node:%d score:%f\n",it,mpicomm->rank(),leaf->index,leaf->score);
         leaves.pop();
@@ -139,14 +140,20 @@ class HierNMFDriver {
       if (this->mpicomm->rank() == 0) {
         while (nodes.size() > 0) {
           node = nodes.front();
-          printf("%d (%.5f): ",node->index,node->score);
+          //printf("%d: sigma:%.2f accepted:%s\n",node->index,node->sigma,node->accepted?"yes":"no");
+          printf("clusters{%d} = [",node->index);
           node->cols.t().print();
-          node->W.t().print("W:");
+          printf("]+1;\n");
           nodes.pop();
+          free(node);
         }
+        printf("clc;\n");
       }
       MPI_Barrier(MPI_COMM_WORLD);
-
+      while (nodes.size() > 0) {
+        free(nodes.front());
+        nodes.pop();
+      }
 
 
       delete this->mpicomm;
