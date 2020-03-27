@@ -44,6 +44,8 @@ namespace planc {
 #else
           this->A = this->A0.cols(this->cols);
 #endif
+          this->W.zeros(this->A.n_rows,2);
+          this->H.zeros(this->A.n_cols,2);
         }
 
         void compute_sigma() {
@@ -79,17 +81,16 @@ namespace planc {
         }
 
         void split() {
-          MPI_Barrier(MPI_COMM_WORLD);
-          char * title = (char *)malloc(20);
-          sprintf(title, "cols(%d,%d):", this->index, mpicomm->rank());
-          printf("A(%d): %dx%d\n",mpicomm->rank(),A.n_rows,A.n_cols);
-          cols.t().print(title);
-          free(title);
-          MPI_Barrier(MPI_COMM_WORLD);
-          MAT Wo = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
-          MAT Ho = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
+          this->accepted = true;
+          
+          arma::arma_rng::set_seed_random();
+          this->W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
 
-          DistR2<INPUTMATTYPE> nmf(A, Wo, Ho, *mpicomm, 1);;
+          arma::arma_rng::set_seed_random();
+          this->H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
+          
+
+          DistR2<INPUTMATTYPE> nmf(A, this->W, this->H, *mpicomm, 1);;
           nmf.num_iterations(pc->iterations());
           nmf.compute_error(pc->compute_error());
           nmf.algorithm(R2);
@@ -108,38 +109,24 @@ namespace planc {
           }
           this->W = nmf.getLeftLowRankFactor();
           this->H = nmf.getRightLowRankFactor();
-          /*
-          Ho = nmf.getRightLowRankFactor();
-          this->H.zeros(2,A.n_cols);
-          int sendcnt = Ho.n_rows*Ho.n_cols;
+          
+          
+          UVEC lleft = this->H.col(0) > this->H.col(1);
+          UVEC left(this->cols.n_elem,arma::fill::zeros);
           int * recvcnts = (int *)malloc(this->mpicomm->size()*sizeof(int));
           int * displs = (int *)malloc(this->mpicomm->size()*sizeof(int));
-          recvcnts[0] = itersplit(A.n_cols,this->mpicomm->size(),0)*2;
+          recvcnts[0] = itersplit(A.n_cols,pc->pr(),0);
           displs[0] = 0;
           for (int i = 0; i < this->mpicomm->size(); i++) {
-            recvcnts[i] = itersplit(A.n_cols,this->mpicomm->size(),i)*2;
+            recvcnts[i] = itersplit(A.n_cols,pc->pr(),i);
             displs[i] = displs[i-1]+recvcnts[i-1];
           }
-          MPI_Allgatherv(Ho.memptr(),recvcnts[this->mpicomm->rank()],MPI_DOUBLE,H.memptr(),recvcnts,displs,MPI_DOUBLE,MPI_COMM_WORLD);
-          this->H = this->H.t();
-          */
+          MPI_Allgatherv(lleft.memptr(),lleft.n_elem,MPI_UNSIGNED_LONG_LONG,left.memptr(),recvcnts,displs,MPI_UNSIGNED_LONG_LONG,MPI_COMM_WORLD);
 
-          /*
-          MPI_Barrier(MPI_COMM_WORLD);
-          title = (char *)malloc(20);
-          sprintf(title, "H(%d): %dx%d", mpicomm->rank(), H.n_rows, H.n_cols);
-          H.print(title);
-          free(title);
-          MPI_Barrier(MPI_COMM_WORLD);
-          */
-
-
-          UVEC left = this->H.col(0) > this->H.col(1);
 
           UVEC lcols = this->cols(find(left == 1));
           UVEC rcols = this->cols(find(left == 0));
 
-          
           this->lvalid = !lcols.is_empty();
           this->rvalid = !rcols.is_empty();
           
@@ -158,7 +145,6 @@ namespace planc {
         }
 
         void accept() {
-          this->accepted = true;
           if (this->lvalid) {
             this->lchild->split();
           }
@@ -168,6 +154,7 @@ namespace planc {
         }
         
         template<class QUEUE>
+        // TODO: change enqueue to enqueue_children
         void enqueue(QUEUE & queue) {
           if (this->lvalid) {
             queue.push(this->lchild);
@@ -190,7 +177,7 @@ namespace planc {
     public:
     template <typename T>
     bool operator()(T * a, T * b) {
-      return a->score > b->score;
+      return a->score < b->score;
     }
   };
 
@@ -205,6 +192,8 @@ namespace planc {
           this->mpicomm = mpicomm;
           this->pc = pc;
           this->A = this->A0;
+          this->W.zeros(this->A.n_rows,2);
+          this->H.zeros(this->A.n_cols,2);
           this->sigma = 0.0;
           this->index = 0;
         }
