@@ -64,9 +64,6 @@ class HierNMFDriver {
       std::string rand_prefix("rand_");
       this->mpicomm = new MPICommunicator(this->m_argc, this->m_argv, this->m_pr, this->m_pc);
 
-      // setting seed after mpi_init
-      arma::arma_rng::set_seed(0);
-
 #ifdef BUILD_SPARSE    
       DistIO<SP_MAT> dio(*mpicomm, m_distio);
 #else 
@@ -140,7 +137,6 @@ class HierNMFDriver {
       if (this->mpicomm->rank() == 0) {
         while (nodes.size() > 0) {
           node = nodes.front();
-          //printf("%d: sigma:%.2f accepted:%s\n",node->index,node->sigma,node->accepted?"yes":"no");
           printf("clusters{%d} = [",node->index);
           node->cols.t().print();
           printf("]+1;\n");
