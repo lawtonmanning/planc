@@ -86,7 +86,7 @@ namespace planc {
           this->W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
           this->H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
 
-          if (rank == 0) {
+          if (mpicomm->rank() == 0) {
             this->W.eye();
             this->H.eye();
           }
@@ -190,7 +190,7 @@ namespace planc {
   template <class INPUTMATTYPE>
     class RootNode : public Node<INPUTMATTYPE> {
       public:
-        RootNode(INPUTMATTYPE & A, UVEC & cols, int global_m, MPICommunicator * mpicomm, ParseCommandLine * pc) : Node<INPUTMATTYPE>() {
+        RootNode(INPUTMATTYPE & A, UVEC & cols, MPICommunicator * mpicomm, ParseCommandLine * pc) : Node<INPUTMATTYPE>() {
           this->cols = cols;
           this->A0 = A;
           this->parent = NULL;
