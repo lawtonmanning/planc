@@ -82,13 +82,18 @@ namespace planc {
 
         void split() {
           this->accepted = true;
-          
-          arma::arma_rng::set_seed_random();
-          this->W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
 
-          arma::arma_rng::set_seed_random();
+          this->W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
           this->H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
-          
+
+          if (rank == 0) {
+            this->W.eye();
+            this->H.eye();
+          }
+          else {
+            this->W.zeros();
+            this->H.zeros();
+          }
 
           DistR2<INPUTMATTYPE> nmf(A, this->W, this->H, *mpicomm, 1);;
           nmf.num_iterations(pc->iterations());
@@ -107,17 +112,17 @@ namespace planc {
             printf("Failed rank %d: %s\n", this->mpicomm->rank(), e.what());
             MPI_Abort(MPI_COMM_WORLD, 1);
           }
+
           this->W = nmf.getLeftLowRankFactor();
           this->H = nmf.getRightLowRankFactor();
           
-          
           UVEC lleft = this->H.col(0) > this->H.col(1);
-          UVEC left(this->cols.n_elem,arma::fill::zeros);
+          UVEC left(A.n_cols,arma::fill::zeros);
           int * recvcnts = (int *)malloc(this->mpicomm->size()*sizeof(int));
           int * displs = (int *)malloc(this->mpicomm->size()*sizeof(int));
           recvcnts[0] = itersplit(A.n_cols,pc->pr(),0);
           displs[0] = 0;
-          for (int i = 0; i < this->mpicomm->size(); i++) {
+          for (int i = 1; i < this->mpicomm->size(); i++) {
             recvcnts[i] = itersplit(A.n_cols,pc->pr(),i);
             displs[i] = displs[i-1]+recvcnts[i-1];
           }
@@ -184,8 +189,8 @@ namespace planc {
 
   template <class INPUTMATTYPE>
     class RootNode : public Node<INPUTMATTYPE> {
-      public:  
-        RootNode(INPUTMATTYPE & A, UVEC & cols, MPICommunicator * mpicomm, ParseCommandLine * pc) : Node<INPUTMATTYPE>() {
+      public:
+        RootNode(INPUTMATTYPE & A, UVEC & cols, int global_m, MPICommunicator * mpicomm, ParseCommandLine * pc) : Node<INPUTMATTYPE>() {
           this->cols = cols;
           this->A0 = A;
           this->parent = NULL;
