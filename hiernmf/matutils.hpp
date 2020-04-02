@@ -40,7 +40,7 @@ namespace planc {
 
     // converge to first sigma value of A
     int iter = 0;
-    while (iter < 10 && epsilon > 0.00001) {
+    while (iter < 100) {
       z = A * globalQ;
       localQ = At * z;		
 
