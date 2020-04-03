@@ -1,0 +1,506 @@
+Determining if the function sgemm_ exists failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_9c6ff/fast && /usr/bin/gmake -f CMakeFiles/cmTC_9c6ff.dir/build.make CMakeFiles/cmTC_9c6ff.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_9c6ff.dir/CheckFunctionExists.cxx.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -DCHECK_FUNCTION_EXISTS=sgemm_   -o CMakeFiles/cmTC_9c6ff.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CheckFunctionExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_9c6ff
+/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-4.8.5/cmake-3.15.2-4xbxfsztfb7z2qemxy2dgrsuabbdgifu/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9c6ff.dir/link.txt --verbose=1
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++   -DCHECK_FUNCTION_EXISTS=sgemm_    CMakeFiles/cmTC_9c6ff.dir/CheckFunctionExists.cxx.o  -o cmTC_9c6ff 
+CMakeFiles/cmTC_9c6ff.dir/CheckFunctionExists.cxx.o: In function `main':
+CheckFunctionExists.cxx:(.text+0x10): undefined reference to `sgemm_'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_9c6ff] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_9c6ff/fast] Error 2
+
+
+
+Performing C++ SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_4c9e3/fast && /usr/bin/gmake -f CMakeFiles/cmTC_4c9e3.dir/build.make CMakeFiles/cmTC_4c9e3.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4c9e3.dir/src.cxx.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_4c9e3.dir/src.cxx.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_4c9e3
+/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-4.8.5/cmake-3.15.2-4xbxfsztfb7z2qemxy2dgrsuabbdgifu/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4c9e3.dir/link.txt --verbose=1
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++   -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_4c9e3.dir/src.cxx.o  -o cmTC_4c9e3 
+CMakeFiles/cmTC_4c9e3.dir/src.cxx.o: In function `main':
+src.cxx:(.text+0x2d): undefined reference to `pthread_create'
+src.cxx:(.text+0x39): undefined reference to `pthread_detach'
+src.cxx:(.text+0x4a): undefined reference to `pthread_join'
+src.cxx:(.text+0x5e): undefined reference to `pthread_atfork'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_4c9e3] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_4c9e3/fast] Error 2
+
+
+Source file was:
+#include <pthread.h>
+
+void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_d12d0/fast && /usr/bin/gmake -f CMakeFiles/cmTC_d12d0.dir/build.make CMakeFiles/cmTC_d12d0.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_d12d0.dir/CheckFunctionExists.cxx.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_d12d0.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_d12d0
+/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-4.8.5/cmake-3.15.2-4xbxfsztfb7z2qemxy2dgrsuabbdgifu/bin/cmake -E cmake_link_script CMakeFiles/cmTC_d12d0.dir/link.txt --verbose=1
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_d12d0.dir/CheckFunctionExists.cxx.o  -o cmTC_d12d0 -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_d12d0] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_d12d0/fast] Error 2
+
+
+
+Determining if the function sgemm_ exists failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_8ab9d/fast && /usr/bin/gmake -f CMakeFiles/cmTC_8ab9d.dir/build.make CMakeFiles/cmTC_8ab9d.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_8ab9d.dir/CheckFunctionExists.cxx.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -DCHECK_FUNCTION_EXISTS=sgemm_   -o CMakeFiles/cmTC_8ab9d.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CheckFunctionExists/CheckFunctionExists.cxx
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_8ab9d.dir/CheckFunctionExists.cxx.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_8ab9d/fast] Error 2
+
+
+
+Determining if the function sgemm_ exists failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_d521f/fast && /usr/bin/gmake -f CMakeFiles/cmTC_d521f.dir/build.make CMakeFiles/cmTC_d521f.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_d521f.dir/CheckFunctionExists.cxx.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -DCHECK_FUNCTION_EXISTS=sgemm_   -o CMakeFiles/cmTC_d521f.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CheckFunctionExists/CheckFunctionExists.cxx
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_d521f.dir/CheckFunctionExists.cxx.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_d521f/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_f894f/fast && /usr/bin/gmake -f CMakeFiles/cmTC_f894f.dir/build.make CMakeFiles/cmTC_f894f.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_f894f.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_f894f.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_f894f.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_f894f/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_90417/fast && /usr/bin/gmake -f CMakeFiles/cmTC_90417.dir/build.make CMakeFiles/cmTC_90417.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_90417.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_90417.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_90417.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_90417/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_4e0ec/fast && /usr/bin/gmake -f CMakeFiles/cmTC_4e0ec.dir/build.make CMakeFiles/cmTC_4e0ec.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4e0ec.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_4e0ec.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_4e0ec.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_4e0ec/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_6d4a1/fast && /usr/bin/gmake -f CMakeFiles/cmTC_6d4a1.dir/build.make CMakeFiles/cmTC_6d4a1.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_6d4a1.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_6d4a1.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_6d4a1.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_6d4a1/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_dd902/fast && /usr/bin/gmake -f CMakeFiles/cmTC_dd902.dir/build.make CMakeFiles/cmTC_dd902.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_dd902.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_dd902.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_dd902.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_dd902/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_e6956/fast && /usr/bin/gmake -f CMakeFiles/cmTC_e6956.dir/build.make CMakeFiles/cmTC_e6956.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_e6956.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_e6956.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_e6956.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_e6956/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_f2d3f/fast && /usr/bin/gmake -f CMakeFiles/cmTC_f2d3f.dir/build.make CMakeFiles/cmTC_f2d3f.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_f2d3f.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_f2d3f.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_f2d3f.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_f2d3f/fast] Error 2
+
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags:  
+
+The output was:
+1
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: -c 
+
+The output was:
+1
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: --c++ 
+
+The output was:
+1
+c++: error: unrecognized command line option ‘--c++’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: --ec++ 
+
+The output was:
+1
+c++: error: unrecognized command line option ‘--ec++’; did you mean ‘-Weffc++’?
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags:  
+
+The output was:
+1
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: -c 
+
+The output was:
+1
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: --c++ 
+
+The output was:
+1
+c++: error: unrecognized command line option ‘--c++’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: --ec++ 
+
+The output was:
+1
+c++: error: unrecognized command line option ‘--ec++’; did you mean ‘-Weffc++’?
+
+
+Checking whether the CXX compiler is IAR using "" did not match "IAR .+ Compiler":
+c++: fatal error: no input files
+compilation terminated.
+Checking whether the CXX compiler is IAR using "" did not match "IAR .+ Compiler":
+c++: fatal error: no input files
+compilation terminated.
+Determining if the CXX compiler works failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_ea30f/fast 
+/usr/bin/gmake -f CMakeFiles/cmTC_ea30f.dir/build.make CMakeFiles/cmTC_ea30f.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_ea30f.dir/testCXXCompiler.cxx.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++     -o CMakeFiles/cmTC_ea30f.dir/testCXXCompiler.cxx.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_ea30f.dir/testCXXCompiler.cxx.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_ea30f/fast] Error 2
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags:  
+
+The output was:
+1
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: -c 
+
+The output was:
+1
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: --c++ 
+
+The output was:
+1
+c++: error: unrecognized command line option ‘--c++’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: --ec++ 
+
+The output was:
+1
+c++: error: unrecognized command line option ‘--ec++’; did you mean ‘-Weffc++’?
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags:  
+
+The output was:
+1
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: -c 
+
+The output was:
+1
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: --c++ 
+
+The output was:
+1
+c++: error: unrecognized command line option ‘--c++’
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++ 
+Build flags: 
+Id flags: --ec++ 
+
+The output was:
+1
+c++: error: unrecognized command line option ‘--ec++’; did you mean ‘-Weffc++’?
+
+
+Checking whether the CXX compiler is IAR using "" did not match "IAR .+ Compiler":
+c++: fatal error: no input files
+compilation terminated.
+Checking whether the CXX compiler is IAR using "" did not match "IAR .+ Compiler":
+c++: fatal error: no input files
+compilation terminated.
+Determining if the CXX compiler works failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_0e9d6/fast 
+/usr/bin/gmake -f CMakeFiles/cmTC_0e9d6.dir/build.make CMakeFiles/cmTC_0e9d6.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_0e9d6.dir/testCXXCompiler.cxx.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++     -o CMakeFiles/cmTC_0e9d6.dir/testCXXCompiler.cxx.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_0e9d6.dir/testCXXCompiler.cxx.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_0e9d6/fast] Error 2
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_d255e/fast && /usr/bin/gmake -f CMakeFiles/cmTC_d255e.dir/build.make CMakeFiles/cmTC_d255e.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_d255e.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_d255e.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_d255e.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_d255e/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_38523/fast && /usr/bin/gmake -f CMakeFiles/cmTC_38523.dir/build.make CMakeFiles/cmTC_38523.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_38523.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_38523.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_38523.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_38523/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_8c88c/fast && /usr/bin/gmake -f CMakeFiles/cmTC_8c88c.dir/build.make CMakeFiles/cmTC_8c88c.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_8c88c.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_8c88c.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_8c88c.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_8c88c/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_e06c8/fast && /usr/bin/gmake -f CMakeFiles/cmTC_e06c8.dir/build.make CMakeFiles/cmTC_e06c8.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_e06c8.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_e06c8.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_e06c8.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_e06c8/fast] Error 2
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_2f78f/fast && gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+/usr/bin/gmake -f CMakeFiles/cmTC_2f78f.dir/build.make CMakeFiles/cmTC_2f78f.dir/build
+gmake[2]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_2f78f.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_2f78f.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[2]: *** [CMakeFiles/cmTC_2f78f.dir/test_mpi.cpp.o] Error 1
+gmake[2]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake[1]: *** [cmTC_2f78f/fast] Error 2
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_32f53/fast && gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+/usr/bin/gmake -f CMakeFiles/cmTC_32f53.dir/build.make CMakeFiles/cmTC_32f53.dir/build
+gmake[2]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_32f53.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_32f53.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[2]: *** [CMakeFiles/cmTC_32f53.dir/test_mpi.cpp.o] Error 1
+gmake[2]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake[1]: *** [cmTC_32f53/fast] Error 2
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+
+
+
+The MPI test test_mpi for CXX in mode normal failed to compile with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake cmTC_40530/fast && /usr/bin/gmake -f CMakeFiles/cmTC_40530.dir/build.make CMakeFiles/cmTC_40530.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_40530.dir/test_mpi.cpp.o
+/ccs/compilers/gcc/rhel7-x86_64/6.2.0/bin/c++    -fopenmp    -fexceptions -pthread -o CMakeFiles/cmTC_40530.dir/test_mpi.cpp.o -c /ccs/home/mannlg15/planc/build-rhea/CMakeFiles/FindMPI/test_mpi.cpp
+/autofs/nccs-svm1_compilers/gcc/rhel7-x86_64/6.2.0/bin/../libexec/gcc/x86_64-redhat-linux/6.2.0/cc1plus: error while loading shared libraries: libisl.so.15: cannot open shared object file: No such file or directory
+gmake[1]: *** [CMakeFiles/cmTC_40530.dir/test_mpi.cpp.o] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-rhea/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_40530/fast] Error 2
+
+
+

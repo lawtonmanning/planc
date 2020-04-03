@@ -1,0 +1,143 @@
+
+Currently Loaded Modules:
+  1) hsi/5.0.2.p5   3) gcc/6.2.0       5) openblas/0.3.9
+  2) DefApps        4) openmpi/3.1.4   6) cmake/3.15.2
+
+ 
+
+STATUS,host name = rhea-gpu4.ccs.ornl.gov
+STATUS,RHEA = 0
+STATUS,EOS = -1
+STATUS,TITAN = -1
+STATUS,SUMMIT = -1
+-- NMF_SOURCE_DIR =  /ccs/home/mannlg15/planc/nmf
+-- NMFLIB_COMMON =  /ccs/home/mannlg15/planc/nmf/../common
+--      ARMA_FOUND = /ccs/home/mannlg15/armadillo/include
+-- CMAKE_MODULE_PATH = /ccs/home/mannlg15/armadillo/include/../cmake_aux/Modules/
+-- A library with LAPACK API found.
+--     BLAS_FOUND = TRUE
+--   LAPACK_FOUND = TRUE
+CUDA_TOOLKIT_ROOT_DIR not found or specified
+-- Could NOT find CUDA (missing: CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS CUDA_CUDART_LIBRARY) 
+--  CUDA_FOUND = FALSE
+-- CMAKE_CXX_FLAGS           =  -fopenmp
+-- CMAKE_SHARED_LINKER_FLAGS =  -Wl,--no-as-needed
+-- CMAKE_REQUIRED_INCLUDES   = 
+-- *** libraries:
+-- *** NMFLIB_LIBS = /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so
+-- DISTNMF_SOURCE_DIR =  /ccs/home/mannlg15/planc/distnmf
+-- NMFLIB_COMMON =  /ccs/home/mannlg15/planc/distnmf/../common
+--      ARMA_FOUND = /ccs/home/mannlg15/armadillo/include
+-- CMAKE_MODULE_PATH = /ccs/home/mannlg15/armadillo/include/../cmake_aux/Modules/
+-- A library with LAPACK API found.
+--     BLAS_FOUND = TRUE
+--   LAPACK_FOUND = TRUE
+CUDA_TOOLKIT_ROOT_DIR not found or specified
+-- Could NOT find CUDA (missing: CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS CUDA_CUDART_LIBRARY) 
+--  CUDA_FOUND = FALSE
+--  MPI_CXX_FOUND = TRUE
+-- CMAKE_CXX_FLAGS           =  -fopenmp
+-- CMAKE_SHARED_LINKER_FLAGS =  -Wl,--no-as-needed
+-- CMAKE_REQUIRED_INCLUDES   = 
+-- 
+-- *** libraries:
+-- *** NMFLIB_LIBS = /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi_cxx.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi.so
+-- 
+-- DISTNTF_SOURCE_DIR =  /ccs/home/mannlg15/planc/distntf
+-- NMFLIB_COMMON =  /ccs/home/mannlg15/planc/distntf/../common
+--      ARMA_FOUND = /ccs/home/mannlg15/armadillo/include
+-- CMAKE_MODULE_PATH = /ccs/home/mannlg15/armadillo/include/../cmake_aux/Modules/
+-- A library with LAPACK API found.
+--     BLAS_FOUND = TRUE
+--   LAPACK_FOUND = TRUE
+CUDA_TOOLKIT_ROOT_DIR not found or specified
+-- Could NOT find CUDA (missing: CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS CUDA_CUDART_LIBRARY) 
+--  CUDA_FOUND = FALSE
+--    Boost_FOUND = 
+--  MPI_CXX_FOUND = TRUE
+-- CMAKE_CXX_FLAGS           =  -fopenmp
+-- CMAKE_SHARED_LINKER_FLAGS =  -Wl,--no-as-needed
+-- CMAKE_REQUIRED_INCLUDES   = 
+-- 
+-- *** libraries:
+-- *** NMFLIB_LIBS = /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi_cxx.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi.so
+-- 
+-- HIERNMF_SOURCE_DIR =  /ccs/home/mannlg15/planc/hiernmf
+-- NMFLIB_COMMON =  /ccs/home/mannlg15/planc/hiernmf/../common
+--      ARMA_FOUND = /ccs/home/mannlg15/armadillo/include
+-- CMAKE_MODULE_PATH = /ccs/home/mannlg15/armadillo/include/../cmake_aux/Modules/
+-- A library with LAPACK API found.
+--     BLAS_FOUND = TRUE
+--   LAPACK_FOUND = TRUE
+CUDA_TOOLKIT_ROOT_DIR not found or specified
+-- Could NOT find CUDA (missing: CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS CUDA_CUDART_LIBRARY) 
+--  CUDA_FOUND = FALSE
+--  MPI_CXX_FOUND = TRUE
+-- CMAKE_CXX_FLAGS           =  -fopenmp
+-- CMAKE_SHARED_LINKER_FLAGS =  -Wl,--no-as-needed
+-- CMAKE_REQUIRED_INCLUDES   = 
+-- 
+-- *** libraries:
+-- *** NMFLIB_LIBS = /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi_cxx.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi.so
+-- 
+-- NMF_SOURCE_DIR =  /ccs/home/mannlg15/planc/nmf
+-- NMFLIB_COMMON =  /ccs/home/mannlg15/planc/nmf/../common
+--      ARMA_FOUND = /ccs/home/mannlg15/armadillo/include
+-- CMAKE_MODULE_PATH = /ccs/home/mannlg15/armadillo/include/../cmake_aux/Modules/
+-- A library with LAPACK API found.
+--     BLAS_FOUND = TRUE
+--   LAPACK_FOUND = TRUE
+CUDA_TOOLKIT_ROOT_DIR not found or specified
+-- Could NOT find CUDA (missing: CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS CUDA_CUDART_LIBRARY) 
+--  CUDA_FOUND = FALSE
+-- CMAKE_CXX_FLAGS           =  -fopenmp
+-- CMAKE_SHARED_LINKER_FLAGS =  -Wl,--no-as-needed
+-- CMAKE_REQUIRED_INCLUDES   = 
+-- *** libraries:
+-- *** NMFLIB_LIBS = /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so
+-- DISTNMF_SOURCE_DIR =  /ccs/home/mannlg15/planc/distnmf
+-- NMFLIB_COMMON =  /ccs/home/mannlg15/planc/distnmf/../common
+--      ARMA_FOUND = /ccs/home/mannlg15/armadillo/include
+-- CMAKE_MODULE_PATH = /ccs/home/mannlg15/armadillo/include/../cmake_aux/Modules/
+-- A library with LAPACK API found.
+--     BLAS_FOUND = TRUE
+--   LAPACK_FOUND = TRUE
+CUDA_TOOLKIT_ROOT_DIR not found or specified
+-- Could NOT find CUDA (missing: CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS CUDA_CUDART_LIBRARY) 
+--  CUDA_FOUND = FALSE
+--  MPI_CXX_FOUND = TRUE
+-- CMAKE_CXX_FLAGS           =  -fopenmp
+-- CMAKE_SHARED_LINKER_FLAGS =  -Wl,--no-as-needed
+-- CMAKE_REQUIRED_INCLUDES   = 
+-- 
+-- *** libraries:
+-- *** NMFLIB_LIBS = /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi_cxx.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi.so
+-- 
+-- HIERNMF_SOURCE_DIR =  /ccs/home/mannlg15/planc/hiernmf
+-- NMFLIB_COMMON =  /ccs/home/mannlg15/planc/hiernmf/../common
+--      ARMA_FOUND = /ccs/home/mannlg15/armadillo/include
+-- CMAKE_MODULE_PATH = /ccs/home/mannlg15/armadillo/include/../cmake_aux/Modules/
+-- A library with LAPACK API found.
+--     BLAS_FOUND = TRUE
+--   LAPACK_FOUND = TRUE
+CUDA_TOOLKIT_ROOT_DIR not found or specified
+-- Could NOT find CUDA (missing: CUDA_TOOLKIT_ROOT_DIR CUDA_NVCC_EXECUTABLE CUDA_INCLUDE_DIRS CUDA_CUDART_LIBRARY) 
+--  CUDA_FOUND = FALSE
+--  MPI_CXX_FOUND = TRUE
+-- CMAKE_CXX_FLAGS           =  -fopenmp
+-- CMAKE_SHARED_LINKER_FLAGS =  -Wl,--no-as-needed
+-- CMAKE_REQUIRED_INCLUDES   = 
+-- 
+-- *** libraries:
+-- *** NMFLIB_LIBS = /autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openblas-0.3.5-pqhmw4pblzsh76ejrzz5hz2o37kl3esm/lib/libopenblas.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi_cxx.so;/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/lib/libmpi.so
+-- 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /ccs/home/mannlg15/planc/build-rhea
+[ 14%] Built target dense_nmf
+[ 28%] Built target dense_distnmf
+[ 42%] Built target dense_distntf
+[ 57%] Built target dense_hiernmf
+[ 71%] Built target sparse_nmf
+[ 85%] Built target sparse_distnmf
+[100%] Built target sparse_hiernmf
