@@ -22,7 +22,7 @@ do
   do
     p=$(($i * $j))
     if [ "$p" -le 56 ]; then
-      srun -n $p ./dense_distnmf/dense_distnmf -a 3 -i rand_lowrank -d "4096 4096" -p "$i $j" -k 2 -t 2000 -e 0 >> ~/planc/build-rhea/proc$p
+      srun -n $p ./dense_distnmf/dense_distnmf -a 3 -i rand_lowrank -d "4096 4096" -p "$i $j" -k 2 -t 2000 -e 0
     fi
   done
 done
