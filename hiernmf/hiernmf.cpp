@@ -97,13 +97,6 @@ class HierNMFDriver {
       }
 
 #ifdef BUILD_SPARSE
-      this->root = new RootNode<SP_MAT>(A, cols, this->mpicomm, this->pc);
-#else
-      this->root = new RootNode<MAT>(A, cols, this->mpicomm, this->pc);
-#endif
-
-      // TODO: rename frontiers to frontiers/frontier nodes
-#ifdef BUILD_SPARSE
       std::priority_queue<Node<SP_MAT> *, std::vector<Node<SP_MAT> *>, ScoreCompare> frontiers;
       Node<SP_MAT> * frontier;
       Node<SP_MAT> * node;
@@ -116,6 +109,15 @@ class HierNMFDriver {
 
       std::queue<Node<MAT> *> nodes;
 #endif
+
+      mpitic();
+
+#ifdef BUILD_SPARSE
+      this->root = new RootNode<SP_MAT>(A, cols, this->mpicomm, this->pc);
+#else
+      this->root = new RootNode<MAT>(A, cols, this->mpicomm, this->pc);
+#endif
+
       nodes.push(this->root);
       this->root->split();
       this->root->accept();
@@ -131,6 +133,11 @@ class HierNMFDriver {
         frontier->enqueue(frontiers);
         frontier->enqueue(nodes);
         it++;
+      }
+
+      double temp = mpitoc();
+      if (this->mpicomm->rank() == 0) {
+        printf("H2NMF took %.3lf secs.\n", temp);
       }
 
       MPI_Barrier(MPI_COMM_WORLD);
