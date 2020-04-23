@@ -15,6 +15,7 @@ namespace planc {
         Node * parent = NULL;
         INPUTMATTYPE A0;
         INPUTMATTYPE A;
+        VEC W;
         double sigma;
         double score;
         UVEC cols;
@@ -134,11 +135,13 @@ namespace planc {
           if (lvalid) {
             this->lchild = new Node(this->A0, lcols, this);
             this->lchild->index = 2*this->index+1;
+            this->lchild->W = W.col(0);
             printf("node(%d,%d) %f\n",lchild->index,mpicomm->rank(),lchild->sigma);
           }
           if (rvalid) {
             this->rchild = new Node(this->A0, rcols, this);
             this->rchild->index = 2*this->index+2;
+            this->rchild->W = W.col(1);
             printf("node(%d,%d) %f\n",rchild->index,mpicomm->rank(),rchild->sigma);
           }
 
