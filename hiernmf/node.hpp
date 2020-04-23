@@ -15,8 +15,6 @@ namespace planc {
         Node * parent = NULL;
         INPUTMATTYPE A0;
         INPUTMATTYPE A;
-        MAT W;
-        MAT H;
         double sigma;
         double score;
         UVEC cols;
@@ -44,8 +42,6 @@ namespace planc {
 #else
           this->A = this->A0.cols(this->cols);
 #endif
-          this->W.zeros(this->A.n_rows,2);
-          this->H.zeros(this->A.n_cols,2);
         }
 
         void compute_sigma() {
@@ -83,19 +79,19 @@ namespace planc {
         void split() {
           this->accepted = true;
 
-          this->W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
-          this->H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
+          MAT W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
+          MAT H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
 
           if (mpicomm->rank() == 0) {
-            this->W.eye();
-            this->H.eye();
+            W.eye();
+            H.eye();
           }
           else {
-            this->W.zeros();
-            this->H.zeros();
+            W.zeros();
+            H.zeros();
           }
 
-          DistR2<INPUTMATTYPE> nmf(A, this->W, this->H, *mpicomm, 1);;
+          DistR2<INPUTMATTYPE> nmf(A, W, H, *mpicomm, 1);;
           nmf.num_iterations(pc->iterations());
           nmf.compute_error(pc->compute_error());
           nmf.algorithm(R2);
@@ -113,10 +109,10 @@ namespace planc {
             MPI_Abort(MPI_COMM_WORLD, 1);
           }
 
-          this->W = nmf.getLeftLowRankFactor();
-          this->H = nmf.getRightLowRankFactor();
+          W = nmf.getLeftLowRankFactor();
+          H = nmf.getRightLowRankFactor();
           
-          UVEC lleft = this->H.col(0) > this->H.col(1);
+          UVEC lleft = H.col(0) > H.col(1);
           UVEC left(A.n_cols,arma::fill::zeros);
           int * recvcnts = (int *)malloc(this->mpicomm->size()*sizeof(int));
           int * displs = (int *)malloc(this->mpicomm->size()*sizeof(int));
@@ -197,8 +193,6 @@ namespace planc {
           this->mpicomm = mpicomm;
           this->pc = pc;
           this->A = this->A0;
-          this->W.zeros(this->A.n_rows,2);
-          this->H.zeros(this->A.n_cols,2);
           this->sigma = 0.0;
           this->index = 0;
         }
