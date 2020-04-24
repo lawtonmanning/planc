@@ -67,10 +67,12 @@ namespace planc {
         Node() {
         }
 
-        Node(INPUTMATTYPE & A, UVEC & cols, Node * parent) {
+        Node(INPUTMATTYPE & A, VEC W, UVEC & cols, Node * parent, int index) {
           this->cols = cols;
           this->A0 = A;
+          this->W = W;
           this->parent = parent;
+          this->index = index;
           this->mpicomm = parent->mpicomm;
           this->pc = parent->pc;
           this->allocate();
@@ -133,15 +135,11 @@ namespace planc {
           this->rvalid = !rcols.is_empty();
           
           if (lvalid) {
-            this->lchild = new Node(this->A0, lcols, this);
-            this->lchild->index = 2*this->index+1;
-            this->lchild->W = W.col(0);
+            this->lchild = new Node(this->A0, W.col(0), lcols, this, 2*this->index+1);
             printf("node(%d,%d) %f\n",lchild->index,mpicomm->rank(),lchild->sigma);
           }
           if (rvalid) {
-            this->rchild = new Node(this->A0, rcols, this);
-            this->rchild->index = 2*this->index+2;
-            this->rchild->W = W.col(1);
+            this->rchild = new Node(this->A0, W.col(1), rcols, this, 2*this->index+2);
             printf("node(%d,%d) %f\n",rchild->index,mpicomm->rank(),rchild->sigma);
           }
 
