@@ -68,7 +68,7 @@ namespace planc {
     return Xs.head(k);
   }
 
-  UVEC maxkidx(VEC X, int k) {
+  UVEC maxk_idx(VEC X, int k) {
       UVEC Xi = arma::sort_index(X, "descend");
       if (X.n_elem <= k) {
         return Xi;
