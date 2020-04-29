@@ -64,6 +64,39 @@ namespace planc {
           }
         }
 
+        void top_words() {
+          int k = this->pc->words();
+          int p = this->mpicomm->size();
+          VEC locWm = maxk(W, k);
+          UVEC locWi = maxk_idx(W, k) + startidx(this->pc->globalm(), p, this->mpicomm->rank());
+
+          int * kcounts = (int *)malloc(p*sizeof(int));
+          MPI_Allgather(locWm.n_elem, 1, MPI_INT, kcounts, 1, MPI_INT, MPI_COMM_WORLD);
+          int ktotal = 0;
+          for (int i = 0; i < p; i++) {
+            ktotal += kcounts[i];
+          }
+
+          int * kdispls = (int *)malloc(p*sizeof(int));
+          kdispls[0] = 0;
+          for (int i = 1; i < p; i++)
+          {
+            kdispls[i] = kdispls[i - 1] + kcounts[i - 1];
+          }
+
+          VEC gloWm = arma::zeros(ktotal);
+          MPI_Allgatherv(locWm.memptr(), locWm.n_elem, MPI_DOUBLE, gloWm.memptr(), kcounts, kdispls, MPI_DOUBLE, MPI_COMM_WORLD);
+
+          UVEC gloWi = arma::zeros(ktotal);
+          MPI_Allgatherv(locWi.memptr(), locWi.n_elem, MPI_UNSIGNED_LONG_LONG, gloWi.memptr(), kcounts, kdispls, MPI_UNSIGNED_LONG_LONG, MPI_COMM_WORLD);
+
+          //VEC Wm = maxk(gloWm,k);
+          UVEC Wmi = maxk_idx(gloWm, k);
+          UVEC Wi = gloWi.elem(Wmi);
+
+          this->top_words = Wi;
+        }
+
         Node() {
         }
 
