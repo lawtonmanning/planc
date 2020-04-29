@@ -64,7 +64,7 @@ namespace planc {
           }
         }
 
-        void top_words() {
+        void compute_top_words() {
           int k = this->pc->words();
           int p = this->mpicomm->size();
           VEC locWm = maxk(W, k);
@@ -110,6 +110,7 @@ namespace planc {
           this->pc = parent->pc;
           this->allocate();
           this->compute_sigma();
+          this->compute_top_words();
         }
 
         void split() {
