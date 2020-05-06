@@ -1,3 +1,5 @@
+#include "common/utils.hpp"
+
 namespace planc {
   template <class INPUTMATTYPE>
     void print(INPUTMATTYPE M, const char * name) {
@@ -56,5 +58,21 @@ namespace planc {
     }
 
     return sigma;
+  }
+
+  VEC maxk(VEC X, int k) {
+    VEC Xs = arma::sort(X, "descend");
+    if (X.n_elem <= k) {
+      return Xs;
+    }
+    return Xs.head(k);
+  }
+
+  UVEC maxk_idx(VEC X, int k) {
+      UVEC Xi = arma::sort_index(X, "descend");
+      if (X.n_elem <= k) {
+        return Xi;
+      }
+      return Xi.head(k);
   }
 }

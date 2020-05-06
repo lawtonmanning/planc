@@ -15,8 +15,7 @@ namespace planc {
         Node * parent = NULL;
         INPUTMATTYPE A0;
         INPUTMATTYPE A;
-        MAT W;
-        MAT H;
+        VEC W;
         double sigma;
         double score;
         UVEC cols;
@@ -44,8 +43,6 @@ namespace planc {
 #else
           this->A = this->A0.cols(this->cols);
 #endif
-          this->W.zeros(this->A.n_rows,2);
-          this->H.zeros(this->A.n_cols,2);
         }
 
         void compute_sigma() {
@@ -67,35 +64,71 @@ namespace planc {
           }
         }
 
+        void compute_top_words() {
+          int k = this->pc->words();
+          int p = this->mpicomm->size();
+          VEC locWm = maxk(W, k);
+          UVEC locWi = maxk_idx(W, k) + startidx(this->pc->globalm(), p, this->mpicomm->rank());
+
+          int * kcounts = (int *)malloc(p*sizeof(int));
+          MPI_Allgather(locWm.n_elem, 1, MPI_INT, kcounts, 1, MPI_INT, MPI_COMM_WORLD);
+          int ktotal = 0;
+          for (int i = 0; i < p; i++) {
+            ktotal += kcounts[i];
+          }
+
+          int * kdispls = (int *)malloc(p*sizeof(int));
+          kdispls[0] = 0;
+          for (int i = 1; i < p; i++)
+          {
+            kdispls[i] = kdispls[i - 1] + kcounts[i - 1];
+          }
+
+          VEC gloWm = arma::zeros(ktotal);
+          MPI_Allgatherv(locWm.memptr(), locWm.n_elem, MPI_DOUBLE, gloWm.memptr(), kcounts, kdispls, MPI_DOUBLE, MPI_COMM_WORLD);
+
+          UVEC gloWi = arma::zeros(ktotal);
+          MPI_Allgatherv(locWi.memptr(), locWi.n_elem, MPI_UNSIGNED_LONG_LONG, gloWi.memptr(), kcounts, kdispls, MPI_UNSIGNED_LONG_LONG, MPI_COMM_WORLD);
+
+          //VEC Wm = maxk(gloWm,k);
+          UVEC Wmi = maxk_idx(gloWm, k);
+          UVEC Wi = gloWi.elem(Wmi);
+
+          this->top_words = Wi;
+        }
+
         Node() {
         }
 
-        Node(INPUTMATTYPE & A, UVEC & cols, Node * parent) {
+        Node(INPUTMATTYPE & A, VEC W, UVEC & cols, Node * parent, int index) {
           this->cols = cols;
           this->A0 = A;
+          this->W = W;
           this->parent = parent;
+          this->index = index;
           this->mpicomm = parent->mpicomm;
           this->pc = parent->pc;
           this->allocate();
           this->compute_sigma();
+          this->compute_top_words();
         }
 
         void split() {
           this->accepted = true;
 
-          this->W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
-          this->H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
+          MAT W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
+          MAT H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
 
           if (mpicomm->rank() == 0) {
-            this->W.eye();
-            this->H.eye();
+            W.eye();
+            H.eye();
           }
           else {
-            this->W.zeros();
-            this->H.zeros();
+            W.zeros();
+            H.zeros();
           }
 
-          DistR2<INPUTMATTYPE> nmf(A, this->W, this->H, *mpicomm, 1);;
+          DistR2<INPUTMATTYPE> nmf(A, W, H, *mpicomm, 1);;
           nmf.num_iterations(pc->iterations());
           nmf.compute_error(pc->compute_error());
           nmf.algorithm(R2);
@@ -113,10 +146,10 @@ namespace planc {
             MPI_Abort(MPI_COMM_WORLD, 1);
           }
 
-          this->W = nmf.getLeftLowRankFactor();
-          this->H = nmf.getRightLowRankFactor();
+          W = nmf.getLeftLowRankFactor();
+          H = nmf.getRightLowRankFactor();
           
-          UVEC lleft = this->H.col(0) > this->H.col(1);
+          UVEC lleft = H.col(0) > H.col(1);
           UVEC left(A.n_cols,arma::fill::zeros);
           int * recvcnts = (int *)malloc(this->mpicomm->size()*sizeof(int));
           int * displs = (int *)malloc(this->mpicomm->size()*sizeof(int));
@@ -136,13 +169,11 @@ namespace planc {
           this->rvalid = !rcols.is_empty();
           
           if (lvalid) {
-            this->lchild = new Node(this->A0, lcols, this);
-            this->lchild->index = 2*this->index+1;
+            this->lchild = new Node(this->A0, W.col(0), lcols, this, 2*this->index+1);
             printf("node(%d,%d) %f\n",lchild->index,mpicomm->rank(),lchild->sigma);
           }
           if (rvalid) {
-            this->rchild = new Node(this->A0, rcols, this);
-            this->rchild->index = 2*this->index+2;
+            this->rchild = new Node(this->A0, W.col(1), rcols, this, 2*this->index+2);
             printf("node(%d,%d) %f\n",rchild->index,mpicomm->rank(),rchild->sigma);
           }
 
@@ -197,8 +228,6 @@ namespace planc {
           this->mpicomm = mpicomm;
           this->pc = pc;
           this->A = this->A0;
-          this->W.zeros(this->A.n_rows,2);
-          this->H.zeros(this->A.n_cols,2);
           this->sigma = 0.0;
           this->index = 0;
         }
