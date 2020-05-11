@@ -22,6 +22,8 @@ namespace planc {
         bool accepted = false;
         int index;
 
+        UVEC top_words;
+
         MPICommunicator * mpicomm;
         ParseCommandLine * pc;
 
@@ -65,13 +67,20 @@ namespace planc {
         }
 
         void compute_top_words() {
+#ifdef BUILD_SPARSE
           int k = this->pc->words();
+#else
+          int k = this->pc->globalm();
+#endif
+          if (k == 0) {
+            return;
+          }
           int p = this->mpicomm->size();
           VEC locWm = maxk(W, k);
           UVEC locWi = maxk_idx(W, k) + startidx(this->pc->globalm(), p, this->mpicomm->rank());
 
           int * kcounts = (int *)malloc(p*sizeof(int));
-          MPI_Allgather(locWm.n_elem, 1, MPI_INT, kcounts, 1, MPI_INT, MPI_COMM_WORLD);
+          MPI_Allgather((int *)locWm.n_elem, 1, MPI_INT, kcounts, 1, MPI_INT, MPI_COMM_WORLD);
           int ktotal = 0;
           for (int i = 0; i < p; i++) {
             ktotal += kcounts[i];
@@ -84,10 +93,10 @@ namespace planc {
             kdispls[i] = kdispls[i - 1] + kcounts[i - 1];
           }
 
-          VEC gloWm = arma::zeros(ktotal);
+          VEC gloWm = arma::zeros<VEC>(ktotal);
           MPI_Allgatherv(locWm.memptr(), locWm.n_elem, MPI_DOUBLE, gloWm.memptr(), kcounts, kdispls, MPI_DOUBLE, MPI_COMM_WORLD);
 
-          UVEC gloWi = arma::zeros(ktotal);
+          UVEC gloWi = arma::zeros<UVEC>(ktotal);
           MPI_Allgatherv(locWi.memptr(), locWi.n_elem, MPI_UNSIGNED_LONG_LONG, gloWi.memptr(), kcounts, kdispls, MPI_UNSIGNED_LONG_LONG, MPI_COMM_WORLD);
 
           //VEC Wm = maxk(gloWm,k);
@@ -111,6 +120,8 @@ namespace planc {
           this->allocate();
           this->compute_sigma();
           this->compute_top_words();
+          this->lvalid = false;
+          this->rvalid = false;
         }
 
         void split() {
@@ -148,7 +159,7 @@ namespace planc {
 
           W = nmf.getLeftLowRankFactor();
           H = nmf.getRightLowRankFactor();
-          
+
           UVEC lleft = H.col(0) > H.col(1);
           UVEC left(A.n_cols,arma::fill::zeros);
           int * recvcnts = (int *)malloc(this->mpicomm->size()*sizeof(int));
@@ -168,11 +179,11 @@ namespace planc {
           this->lvalid = !lcols.is_empty();
           this->rvalid = !rcols.is_empty();
           
-          if (lvalid) {
+          if (this->lvalid) {
             this->lchild = new Node(this->A0, W.col(0), lcols, this, 2*this->index+1);
             printf("node(%d,%d) %f\n",lchild->index,mpicomm->rank(),lchild->sigma);
           }
-          if (rvalid) {
+          if (this->rvalid) {
             this->rchild = new Node(this->A0, W.col(1), rcols, this, 2*this->index+2);
             printf("node(%d,%d) %f\n",rchild->index,mpicomm->rank(),rchild->sigma);
           }
@@ -192,11 +203,14 @@ namespace planc {
         template<class QUEUE>
         // TODO: change enqueue to enqueue_children
         void enqueue(QUEUE & queue) {
+          printf("size %d\n",queue.size());
           if (this->lvalid) {
             queue.push(this->lchild);
+            printf("size %d\n",queue.size());
           }
           if (this->rvalid) {
             queue.push(this->rchild);
+            printf("size %d\n",queue.size());
           }
         }
 
@@ -230,6 +244,8 @@ namespace planc {
           this->A = this->A0;
           this->sigma = 0.0;
           this->index = 0;
+          this->lvalid = false;
+          this->rvalid = false;
         }
     };
 }
