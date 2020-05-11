@@ -1,0 +1,12 @@
+#!/bin/bash
+#BSUB -P CSC345
+#BSUB -W 1:00
+#BSUB -nnodes 1
+#BSUB -J R2NMF
+#BSUB -o R2NMF.%J.o
+#BSUB -e R2NMF.%J.e
+#BSUB -N
+
+cd ~/planc/build-summit
+
+jsrun -n 6 -a 7 -c 7 -g 0 ./dense_distnmf/dense_distnmf -a 7 -i rand_lowrank -d "65536 65536" -p "7 6" -k 2 -t 100 -e 1
