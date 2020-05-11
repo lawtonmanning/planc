@@ -49,6 +49,9 @@ class ParseCommandLine {
   UVEC m_proc_grids;
   FVEC m_regularizers;
 
+  // hiernmf related values
+  int m_num_words;
+
   void parseArrayofString(const char opt, const char *input) {
     std::stringstream ss(input);
     std::string s;
@@ -139,6 +142,9 @@ class ParseCommandLine {
           break;
         case 't':
           this->m_num_it = atoi(optarg);
+          break;
+        case 'w':
+          this->m_num_words = atoi(optarg);
           break;
         case NUMKBLOCKS:
           this->m_num_k_blocks = atoi(optarg);
@@ -265,6 +271,8 @@ class ParseCommandLine {
   int num_k_blocks() { return m_num_k_blocks; }
   /// Returns number of iterations. passed as -t or --iter
   int iterations() { return m_num_it; }
+  /// Returns number of top words to output. Passed as -w or --words
+  int words() { return m_num_words; }
   /// Input parameter for generating sparse matrix. Passed as -s or --sparsity
   float sparsity() { return m_sparsity; }
   /// Returns input file name. Passed as -i or --input
