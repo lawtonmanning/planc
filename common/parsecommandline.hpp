@@ -110,7 +110,7 @@ class ParseCommandLine {
   void parseplancopts() {
     int opt, long_index;
     while ((opt = getopt_long(this->m_argc, this->m_argv,
-                              "a:d:e:i:k:o:p:r:s:t:", plancopts,
+                              "a:d:e:i:k:o:p:r:s:t:w", plancopts,
                               &long_index)) != -1) {
       switch (opt) {
         case 'a':
