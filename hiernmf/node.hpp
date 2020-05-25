@@ -72,19 +72,26 @@ namespace planc {
 #else
           int k = this->pc->globalm();
 #endif
+          printf("words %d\n", k);
           if (k == 0) {
             return;
           }
           int p = this->mpicomm->size();
           VEC locWm = maxk(W, k);
-          UVEC locWi = maxk_idx(W, k) + startidx(this->pc->globalm(), p, this->mpicomm->rank());
+          UVEC locWi = maxk_idx(W, k) + startidx(this->pc->globalm(), p, this->mpicomm->rank()) - 1;
+          locWi.t().print("indices");
+          printf("1\n");
 
           int * kcounts = (int *)malloc(p*sizeof(int));
-          MPI_Allgather((int *)locWm.n_elem, 1, MPI_INT, kcounts, 1, MPI_INT, MPI_COMM_WORLD);
+          printf("1.1\n");
+          int n = (int)(locWm.n_elem);
+          MPI_Allgather(&n, 1, MPI_INT, kcounts, p, MPI_INT, MPI_COMM_WORLD);
+          printf("1.2\n");
           int ktotal = 0;
           for (int i = 0; i < p; i++) {
             ktotal += kcounts[i];
           }
+          printf("2\n");
 
           int * kdispls = (int *)malloc(p*sizeof(int));
           kdispls[0] = 0;
@@ -92,18 +99,21 @@ namespace planc {
           {
             kdispls[i] = kdispls[i - 1] + kcounts[i - 1];
           }
+          printf("3\n");
 
           VEC gloWm = arma::zeros<VEC>(ktotal);
           MPI_Allgatherv(locWm.memptr(), locWm.n_elem, MPI_DOUBLE, gloWm.memptr(), kcounts, kdispls, MPI_DOUBLE, MPI_COMM_WORLD);
 
           UVEC gloWi = arma::zeros<UVEC>(ktotal);
           MPI_Allgatherv(locWi.memptr(), locWi.n_elem, MPI_UNSIGNED_LONG_LONG, gloWi.memptr(), kcounts, kdispls, MPI_UNSIGNED_LONG_LONG, MPI_COMM_WORLD);
-
+          printf("4\n");
           //VEC Wm = maxk(gloWm,k);
           UVEC Wmi = maxk_idx(gloWm, k);
           UVEC Wi = gloWi.elem(Wmi);
+          printf("5\n");
 
           this->top_words = Wi;
+          printf("done computing words\n");
         }
 
         Node() {
@@ -129,7 +139,7 @@ namespace planc {
 
           MAT W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
           MAT H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
-
+          /*
           if (mpicomm->rank() == 0) {
             W.eye();
             H.eye();
@@ -137,7 +147,7 @@ namespace planc {
           else {
             W.zeros();
             H.zeros();
-          }
+          }*/
 
           DistR2<INPUTMATTYPE> nmf(A, W, H, *mpicomm, 1);;
           nmf.num_iterations(pc->iterations());
@@ -175,6 +185,8 @@ namespace planc {
 
           UVEC lcols = this->cols(find(left == 1));
           UVEC rcols = this->cols(find(left == 0));
+
+          printf("node %d cols -- total:%d  left:%d  right:%d\n",this->index,this->cols.n_elem,arma::sum(lleft == 1),arma::sum(lleft == 0));
 
           this->lvalid = !lcols.is_empty();
           this->rvalid = !rcols.is_empty();
