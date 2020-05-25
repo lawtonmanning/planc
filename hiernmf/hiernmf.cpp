@@ -1,6 +1,7 @@
 #include <string>
 #include <queue>
 #include <vector>
+#include <fstream>
 #include "common/distutils.hpp"
 #include "common/parsecommandline.hpp"
 #include "common/utils.hpp"
@@ -100,14 +101,10 @@ class HierNMFDriver {
       std::priority_queue<Node<SP_MAT> *, std::vector<Node<SP_MAT> *>, ScoreCompare> frontiers;
       Node<SP_MAT> * frontier;
       Node<SP_MAT> * node;
-
-      std::queue<Node<SP_MAT> *> nodes;
 #else
       std::priority_queue<Node<MAT> *, std::vector<Node<MAT> *>, ScoreCompare> frontiers;
       Node<MAT> * frontier;
       Node<MAT> * node;
-
-      std::queue<Node<MAT> *> nodes;
 #endif
 
       mpitic();
@@ -118,22 +115,24 @@ class HierNMFDriver {
       this->root = new RootNode<MAT>(A, cols, this->mpicomm, this->pc);
 #endif
 
-      nodes.push(this->root);
       this->root->split();
+      printf("split\n");
       this->root->accept();
+      printf("accept\n");
       this->root->enqueue(frontiers);
-      this->root->enqueue(nodes);
+
+      printf("enqueue\n");
 
       int it = 0;
-      while (frontiers.top()->score > 0.1 && it < 8) {
+      while (!frontiers.empty() && it < 8) {
         frontier = frontiers.top();
         printf("it:%d proc:%d node:%d score:%f\n",it,mpicomm->rank(),frontier->index,frontier->score);
         frontiers.pop();
         frontier->accept();
         frontier->enqueue(frontiers);
-        frontier->enqueue(nodes);
         it++;
       }
+      printf("final size %d\n",frontiers.size());
 
       double temp = mpitoc();
       if (this->mpicomm->rank() == 0) {
@@ -142,21 +141,37 @@ class HierNMFDriver {
 
       MPI_Barrier(MPI_COMM_WORLD);
       if (this->mpicomm->rank() == 0) {
-        while (nodes.size() > 0) {
+        std::ofstream ofs("tree", std::ofstream::out);
+        printf("input %s\n",std::string(this->pc->input_file_name()));
+        printf("output %s\n",std::string(this->pc->output_file_name()));
+#ifdef BUILD_SPARSE
+        std::queue<Node<SP_MAT> *> nodes;
+#else
+        std::queue<Node<MAT> *> nodes;
+#endif
+
+        this->root->enqueue(nodes);
+        while (!nodes.empty()) {
+          printf("nodes size %d\n",nodes.size());
           node = nodes.front();
-          printf("clusters{%d} = [",node->index);
-          node->cols.t().print();
-          printf("]+1;\n");
+          printf("node %d\n",node->index);
+          ofs << node->index << " ";
+#ifdef BUILD_SPARSE
+          printf("top words\n");
+          printf("%d\n",node->top_words.n_elem);
+          ofs << node->top_words.t();
+#else
+          printf("cols\n");
+          ofs << node->cols.t();
+#endif
+          node->enqueue(nodes);
           nodes.pop();
-          free(node);
         }
-        printf("clc;\n");
+        printf("final nodes %d\n",nodes.size());
+
+        ofs.close();
       }
       MPI_Barrier(MPI_COMM_WORLD);
-      while (nodes.size() > 0) {
-        free(nodes.front());
-        nodes.pop();
-      }
 
 
       delete this->mpicomm;
