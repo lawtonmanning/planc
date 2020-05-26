@@ -46,6 +46,7 @@ class HierNMFDriver {
       pc->parseplancopts();
       this->m_k = 2;
       this->m_Afile_name = pc->input_file_name();
+      this->m_outputfile_name = pc->output_file_name();
       this->m_pr = pc->pr();
       this->m_pc = 1;
       this->m_sparsity = pc->sparsity();
@@ -110,9 +111,9 @@ class HierNMFDriver {
       mpitic();
 
 #ifdef BUILD_SPARSE
-      this->root = new RootNode<SP_MAT>(A, cols, this->mpicomm, this->pc);
+      this->root = new RootNode<SP_MAT>(A, this->m_globalm, this->m_globaln, cols, this->mpicomm, this->pc);
 #else
-      this->root = new RootNode<MAT>(A, cols, this->mpicomm, this->pc);
+      this->root = new RootNode<MAT>(A, this->m_globalm, this->m_globaln, cols, this->mpicomm, this->pc);
 #endif
 
       this->root->split();
@@ -141,7 +142,7 @@ class HierNMFDriver {
 
       MPI_Barrier(MPI_COMM_WORLD);
       if (this->mpicomm->rank() == 0) {
-        std::ofstream ofs("tree", std::ofstream::out);
+        std::ofstream ofs(this->m_outputfile_name, std::ofstream::out);
         printf("input %s\n",std::string(this->pc->input_file_name()));
         printf("output %s\n",std::string(this->pc->output_file_name()));
 #ifdef BUILD_SPARSE
