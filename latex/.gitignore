@@ -1,0 +1,8 @@
+paper.pdf
+conference_101719.pdf
+*.out
+*.blg
+*.log
+*.bbl
+*.aux
+*.synctex.gz
