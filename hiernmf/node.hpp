@@ -6,6 +6,11 @@
 #include "hiernmf/matutils.hpp"
 
 namespace planc {
+  struct NodeTimings {
+    double NMF;
+    double sigma;
+    double top_words;
+  };
   template <class INPUTMATTYPE>
     class Node {
       public:  
@@ -28,6 +33,8 @@ namespace planc {
 
         MPICommunicator * mpicomm;
         ParseCommandLine * pc;
+
+        NodeTimings timings;
 
         void allocate() {
 #ifdef BUILD_SPARSE
@@ -123,8 +130,12 @@ namespace planc {
           this->mpicomm = parent->mpicomm;
           this->pc = parent->pc;
           this->allocate();
+          mpitic();
           this->compute_sigma();
+          this->timings.sigma = mpitoc();
+          mpitic();
           this->compute_top_words();
+          this->timings.top_words = mpitoc();
           this->lvalid = false;
           this->rvalid = false;
         }
@@ -135,35 +146,16 @@ namespace planc {
           MAT W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
           MAT H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
 
-          printf("original W %dx%d\n",W.n_rows,W.n_cols);
-          printf("original H %dx%d\n",H.n_rows,H.n_cols);
-          /*
-          if (mpicomm->rank() == 0) {
-            W.eye();
-            H.eye();
-          }
-          else {
-            W.zeros();
-            H.zeros();
-          }*/
-
           DistR2<INPUTMATTYPE> nmf(A, W, H, *mpicomm, 1);;
           nmf.num_iterations(pc->iterations());
           nmf.compute_error(pc->compute_error());
           nmf.algorithm(R2);
           nmf.regW(pc->regW());
           nmf.regH(pc->regH());
-          MPI_Barrier(MPI_COMM_WORLD);
-          try {
-            mpitic();
-            nmf.computeNMF();
-            double temp = mpitoc();
 
-            if (this->mpicomm->rank() == 0) printf("NMF took %.3lf secs.\n", temp);
-          } catch (std::exception &e) {
-            printf("Failed rank %d: %s\n", this->mpicomm->rank(), e.what());
-            MPI_Abort(MPI_COMM_WORLD, 1);
-          }
+          mpitic();
+          nmf.computeNMF();
+          this->timings.NMF = mpitoc();
 
           W = nmf.getLeftLowRankFactor();
           H = nmf.getRightLowRankFactor();
@@ -184,19 +176,14 @@ namespace planc {
           UVEC lcols = this->cols(find(left == 1));
           UVEC rcols = this->cols(find(left == 0));
 
-          printf("node %d cols -- total:%d  left:%d  right:%d\n",this->index,this->cols.n_elem,arma::sum(left == 1),arma::sum(left == 0));
-
           this->lvalid = !lcols.is_empty();
           this->rvalid = !rcols.is_empty();
           
-          printf("W %dx%d\n",W.n_rows,W.n_cols);
           if (this->lvalid) {
             this->lchild = new Node(this->A0, W.col(0), lcols, this, 2*this->index+1);
-            printf("node(%d,%d) %f\n",lchild->index,mpicomm->rank(),lchild->sigma);
           }
           if (this->rvalid) {
             this->rchild = new Node(this->A0, W.col(1), rcols, this, 2*this->index+2);
-            printf("node(%d,%d) %f\n",rchild->index,mpicomm->rank(),rchild->sigma);
           }
 
           this->compute_score();
@@ -214,14 +201,11 @@ namespace planc {
         template<class QUEUE>
         // TODO: change enqueue to enqueue_children
         void enqueue(QUEUE & queue) {
-          printf("size %d\n",queue.size());
           if (this->lvalid) {
             queue.push(this->lchild);
-            printf("size %d\n",queue.size());
           }
           if (this->rvalid) {
             queue.push(this->rchild);
-            printf("size %d\n",queue.size());
           }
         }
 
