@@ -42,7 +42,7 @@ namespace planc {
     int iter = 0;
     while (iter < max_iter && epsilon > tol) {
       z = A * globalQ;
-      localQ = z * A;		
+      localQ = A.t() * z;	
 
       // sum localQ into globalQ
       MPI_Allreduce(localQ.begin(), globalQ.begin(), N, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
