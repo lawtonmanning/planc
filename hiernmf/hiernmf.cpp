@@ -144,9 +144,11 @@ class HierNMFDriver {
       MPI_Barrier(MPI_COMM_WORLD);
       if (this->mpicomm->rank() == 0) {
         std::ofstream ofs(this->m_outputfile_name, std::ofstream::out);
-
+        
+        printf("idx\tNMF\tsigma\ttop_words\n");
         while (!nodes.empty()) {
           node = nodes.front();
+          printf("%d\t%f\t%f\t%f\n",node->index,node->timings.NMF,node->timings.sigma,node->timings.top_words);
           ofs << node->index << " ";
 #ifdef BUILD_SPARSE
           ofs << node->top_words.t();
