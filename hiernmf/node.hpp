@@ -74,31 +74,20 @@ namespace planc {
 #else
           int k = this->pc->globalm();
 #endif
-          printf("words %d\n", k);
           if (k == 0) {
             return;
           }
           int p = this->mpicomm->size();
           VEC locWm = maxk(W, k);
-          printf("start(%d): %d\n",this->mpicomm->rank(),startidx(this->pc->globalm(), p, this->mpicomm->rank()));
           UVEC locWi = maxk_idx(W, k) + startidx(this->global_m, p, this->mpicomm->rank());
-          locWm.t().print("values");
-          locWi.t().print("indices");
-          printf("1\n");
 
           int * kcounts = (int *)malloc(p*sizeof(int));
-          printf("1.1\n");
           int n = (int)(locWm.n_elem);
-          printf("%d\n",n);
           MPI_Allgather(&n, 1, MPI_INT, kcounts, 1, MPI_INT, MPI_COMM_WORLD);
-          printf("1.2\n");
           int ktotal = 0;
           for (int i = 0; i < p; i++) {
             ktotal += kcounts[i];
-            printf("kcounts[%d] = %d\n",i,kcounts[i]);
           }
-          printf("%d\n",ktotal);
-          printf("2\n");
 
           int * kdispls = (int *)malloc(p*sizeof(int));
           kdispls[0] = 0;
@@ -106,23 +95,18 @@ namespace planc {
           {
             kdispls[i] = kdispls[i - 1] + kcounts[i - 1];
           }
-          printf("3\n");
 
           VEC gloWm = arma::zeros<VEC>(ktotal);
           MPI_Allgatherv(locWm.memptr(), locWm.n_elem, MPI_DOUBLE, gloWm.memptr(), kcounts, kdispls, MPI_DOUBLE, MPI_COMM_WORLD);
 
-          printf("3.5\n");
 
           UVEC gloWi = arma::zeros<UVEC>(ktotal);
           MPI_Allgatherv(locWi.memptr(), locWi.n_elem, MPI_UNSIGNED_LONG_LONG, gloWi.memptr(), kcounts, kdispls, MPI_UNSIGNED_LONG_LONG, MPI_COMM_WORLD);
-          printf("4\n");
-          //VEC Wm = maxk(gloWm,k);
+
           UVEC Wmi = maxk_idx(gloWm, k);
           UVEC Wi = gloWi.elem(Wmi);
-          printf("5\n");
 
           this->top_words = Wi;
-          printf("done computing words\n");
         }
 
         Node() {
