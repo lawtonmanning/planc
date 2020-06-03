@@ -42,6 +42,7 @@ class ParseCommandLine {
   // distnmf related values
   int m_pr;
   int m_pc;
+  double m_tolerance;
 
   // dist ntf
   int m_num_modes;
@@ -119,6 +120,9 @@ class ParseCommandLine {
           break;
         case 'e':
           this->m_compute_error = atoi(optarg);
+          break;
+        case 'l':
+          this->m_tolerance = atof(optarg);
           break;
         case 'i': {
           std::string temp = std::string(optarg);
@@ -277,6 +281,8 @@ class ParseCommandLine {
   int iterations() { return m_num_it; }
   /// Returns number of top words to output. Passed as -w or --words
   int words() { return m_num_words; }
+  /// Returns error tolerance for stopping NMF iterations. Passed as -l or --tolerance
+  double tolerance() { return m_tolerance; }
   /// Returns number of nodes to compute in a H2NMF tree. Passed as -n or --nodes
   int nodes() { return m_num_nodes; }
   /// Input parameter for generating sparse matrix. Passed as -s or --sparsity

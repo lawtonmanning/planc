@@ -73,6 +73,7 @@ struct option plancopts[] = {
     {"algo", optional_argument, 0, 'a'},
     {"dimensions", required_argument, 0, 'd'},
     {"error", optional_argument, 0, 'e'},
+    {"tolerance", optional_argument, 0, 'l'},
     {"input", required_argument, 0, 'i'},
     {"lowrank", required_argument, 0, 'k'},
     {"output", optional_argument, 0, 'o'},
