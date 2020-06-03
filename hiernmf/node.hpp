@@ -57,7 +57,7 @@ namespace planc {
         }
 
         void compute_sigma() {
-          this->sigma = powIter(this->A);
+          this->sigma = powIter(this->A,this->pc->iterations(),0.00001);
         }
 
         void compute_score() {

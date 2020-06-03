@@ -21,12 +21,10 @@ namespace planc {
     }
   
   template <class INPUTMATTYPE>
-  auto powIter (INPUTMATTYPE &A) -> double {
+  auto powIter (INPUTMATTYPE &A, int max_iter, double tol) -> double {
 
     int M = size(A,0);
     int N = size(A,1);
-
-    INPUTMATTYPE At = A.t();
 
     // generate random localQ VECtor for each processor's submatrix operations
     // and a globalQ denoted for the original A matrix
@@ -38,13 +36,13 @@ namespace planc {
     VEC z;
     auto sigma = norm(globalQ,2);
     auto s2 = sigma;
-    double epsilon = 1.0;
+    double epsilon = tol+1;
 
     // converge to first sigma value of A
     int iter = 0;
-    while (iter < 100) {
+    while (iter < max_iter && epsilon > tol) {
       z = A * globalQ;
-      localQ = At * z;		
+      localQ = z * A;		
 
       // sum localQ into globalQ
       MPI_Allreduce(localQ.begin(), globalQ.begin(), N, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
