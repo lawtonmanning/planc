@@ -51,6 +51,7 @@ class ParseCommandLine {
 
   // hiernmf related values
   int m_num_words;
+  int m_num_nodes;
 
   void parseArrayofString(const char opt, const char *input) {
     std::stringstream ss(input);
@@ -145,6 +146,9 @@ class ParseCommandLine {
           break;
         case 'w':
           this->m_num_words = atoi(optarg);
+          break;
+        case 'n':
+          this->m_num_nodes = atoi(optarg);
           break;
         case NUMKBLOCKS:
           this->m_num_k_blocks = atoi(optarg);
@@ -273,6 +277,8 @@ class ParseCommandLine {
   int iterations() { return m_num_it; }
   /// Returns number of top words to output. Passed as -w or --words
   int words() { return m_num_words; }
+  /// Returns number of nodes to compute in a H2NMF tree. Passed as -n or --nodes
+  int nodes() { return m_num_nodes; }
   /// Input parameter for generating sparse matrix. Passed as -s or --sparsity
   float sparsity() { return m_sparsity; }
   /// Returns input file name. Passed as -i or --input

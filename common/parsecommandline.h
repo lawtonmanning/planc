@@ -81,6 +81,7 @@ struct option plancopts[] = {
     {"sparsity", optional_argument, 0, 's'},
     {"iter", optional_argument, 0, 't'},
     {"words", optional_argument, 0, 'w'},
+    {"nodes", optional_argument, 0, 'n'},
     {"numkblocks", optional_argument, 0, NUMKBLOCKS},
     {"normalization", optional_argument, 0, NORMALIZATION},
     {"dimtree", optional_argument, 0, DIMTREE},
