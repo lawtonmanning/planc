@@ -126,14 +126,12 @@ class HierNMFDriver {
       this->root->enqueue(nodes);
 
 
-      int it = 0;
-      while (!frontiers.empty() && it < 8) {
+      while (!frontiers.empty() && nodes.size() <= pc->nodes()) {
         frontier = frontiers.top();
         frontiers.pop();
         frontier->accept();
         frontier->enqueue(frontiers);
         frontier->enqueue(nodes);
-        it++;
       }
 
       double temp = mpitoc();
@@ -145,10 +143,10 @@ class HierNMFDriver {
       if (this->mpicomm->rank() == 0) {
         std::ofstream ofs(this->m_outputfile_name, std::ofstream::out);
         
-        printf("idx\tNMF\tsigma\ttop_words\n");
+        printf("idx NMF sigma top_words\n");
         while (!nodes.empty()) {
           node = nodes.front();
-          printf("%d\t%f\t%f\t%f\n",node->index,node->timings.NMF,node->timings.sigma,node->timings.top_words);
+          printf("%d %f %f %f\n",node->index,node->timings.NMF,node->timings.sigma,node->timings.top_words);
           ofs << node->index << " ";
 #ifdef BUILD_SPARSE
           ofs << node->top_words.t();
