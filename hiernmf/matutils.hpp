@@ -36,11 +36,10 @@ namespace planc {
     VEC z;
     auto sigma = norm(globalQ,2);
     auto s2 = sigma;
-    double epsilon = tol+1;
+    double epsilon;
 
     // converge to first sigma value of A
-    int iter = 0;
-    while (iter < max_iter && epsilon > tol) {
+    for (int i = 0; i < max_iter; i++) {
       z = A * globalQ;
       localQ = A.t() * z;	
 
@@ -52,7 +51,10 @@ namespace planc {
 
       epsilon = abs(sigma - s2)/(sigma);
       s2 = sigma;
-      iter++;
+
+      if (epsilon < tol) {
+        break;
+      }
     }
 
     return sigma;
