@@ -38,6 +38,7 @@ class NMF {
   double densityW, densityH;
   bool cleared;
   unsigned int m_num_iterations;  /// number of iterations
+  double m_tolerance; // error tolerance
   std::string input_file_name;
   MAT errMtx;       // used for error computation.
   T A_err_sub_mtx;  // used for error computation.
@@ -338,6 +339,8 @@ class NMF {
   }
   /// Sets number of iterations for the NMF algorithms
   void num_iterations(const int it) { this->m_num_iterations = it; }
+  /// Sets the relative error tolerance for NMF algorithms
+  void tolerance(const double tol) { this->m_tolerance = tol; }
   /// Sets the regularization on left low rank factor W
   void regW(const FVEC &iregW) { this->m_regW = iregW; }
   /// Sets the regularization on right low rank H

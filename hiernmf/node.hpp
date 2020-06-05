@@ -57,7 +57,7 @@ namespace planc {
         }
 
         void compute_sigma() {
-          this->sigma = powIter(this->A,this->pc->iterations(),0.00001);
+          this->sigma = powIter(this->A,this->pc->iterations(),this->pc->tolerance());
         }
 
         void compute_score() {
@@ -149,6 +149,7 @@ namespace planc {
           DistR2<INPUTMATTYPE> nmf(A, W, H, *mpicomm, 1);;
           nmf.num_iterations(pc->iterations());
           nmf.compute_error(pc->compute_error());
+          nmf.tolerance(pc->tolerance());
           nmf.algorithm(R2);
           nmf.regW(pc->regW());
           nmf.regH(pc->regH());

@@ -458,6 +458,7 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
 #ifdef __WITH__BARRIER__TIMING__
     MPI_Barrier(MPI_COMM_WORLD);
 #endif
+    double relerr, old_relerr;
     for (unsigned int iter = 0; iter < this->num_iterations(); iter++) {
       // saving current instance for error computation.
       if (iter > 0 && this->is_compute_error()) {
@@ -547,11 +548,16 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
 #else
         this->computeError2(iter);
 #endif
+        old_relerr = relerr;
+        relerr = sqrt(this->objective_err / this->m_globalsqnormA);
 
         PRINTROOT("it=" << iter << "::algo::" << this->m_algorithm << "::k::"
                         << this->k << "::err::" << sqrt(this->objective_err)
                         << "::relerr::"
-                        << sqrt(this->objective_err / this->m_globalsqnormA));
+                        << relerr);
+        if (abs(relerr-old_relerr) < this->m_tolerance) {
+          break;
+        }
       }
       PRINTROOT("completed it=" << iter
                                 << "::taken::" << this->time_stats.duration());
