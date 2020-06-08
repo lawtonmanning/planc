@@ -11,16 +11,25 @@
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
+\newcommand{\LM}[1]{\textcolor{blue}{\textbf{Lawton}: #1}}    
+\newcommand{\GB}[1]{\textcolor{red}{\textbf{Grey}: #1}}
+\newcommand{\RK}[1]{\textcolor{blue}{\textbf{Ramki}: #1}}
+
+
 \begin{document}
 
 \title{Parallel Hierarchical Clustering using \\ Rank-Two Nonnegative Matrix Factorization
-\thanks{Identify applicable funding agency here. If none, delete this.}
+\thanks{This material is based upon work supported by the National Science Foundation under Grant No. OAC-1642385 and OAC-1642410.
+This manuscript has been co-authored by UT-Battelle, LLC under Contract No. DE-AC05-00OR22725 with the U.S. Department of
+Energy. This project was partially funded by the Laboratory Director's Research and Development fund. This research used resources
+of the Oak Ridge Leadership Computing Facility at the Oak Ridge National Laboratory, which is supported by the Office of Science of
+the U.S. Department of Energy.}
 }
 
-\author{\IEEEauthorblockN{Lawton Manning, John Farrell, Grey Ballard}
+\author{\IEEEauthorblockN{Lawton Manning and Grey Ballard}
 \IEEEauthorblockA{Wake Forest University \\
 Winston-Salem, NC, USA \\
-\{mannlg15,farrjt17,ballard\}@wfu.edu}
+\{mannlg15,ballard\}@wfu.edu}
 \and
 \IEEEauthorblockN{Ramakrishnan Kannan}
 \IEEEauthorblockA{Oak Ridge National Laboratory \\
@@ -36,7 +45,7 @@ hpark@cc.gatech.edu}
 \maketitle
 
 \begin{abstract}
-
+\GB{to be done...}
 \end{abstract}
 
 %\begin{IEEEkeywords}
@@ -47,7 +56,45 @@ hpark@cc.gatech.edu}
 
 test reference: \cite{GKP15}
 
-%\section*{Acknowledgment}
+\section{Preliminaries}
+
+\section{Algorithm}
+
+\subsection{Sequential Algorithm}
+
+\subsubsection{Rank-2 NMF}
+
+\subsubsection{Hierarchical Clustering}
+
+\subsection{Parallelization}
+
+\subsubsection{Algorithm}
+
+\subsubsection{Analysis}
+
+\section{Experimental Results}
+
+\subsection{Experimental Platform}
+
+\subsection{Datasets}
+
+\subsection{Performance}
+
+\subsubsection{Weak Scaling}
+
+\subsubsection{Strong Scaling}
+
+\subsection{Clustering}
+
+\subsubsection{Hyperspectral Imaging}
+
+\subsubsection{Document Corpus}
+
+\section{Conclusion}
+
+\section*{Acknowledgment}
+
+The authors would like to thank Simin Ma for contributions to the algorithmic analysis and John Farrell for his contributions to the implementation of the parallel algorithm.
 
 \bibliography{paper}
 \bibliographystyle{plainurl}
