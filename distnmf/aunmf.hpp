@@ -7,6 +7,7 @@
 #include <armadillo>
 #include <string>
 #include <vector>
+#include <cmath>
 #include "distnmf/distnmf.hpp"
 #include "distnmf/mpicomm.hpp"
 
@@ -458,7 +459,8 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
 #ifdef __WITH__BARRIER__TIMING__
     MPI_Barrier(MPI_COMM_WORLD);
 #endif
-    double relerr, old_relerr;
+    double relerr;
+    double old_relerr = 0.0;
     for (unsigned int iter = 0; iter < this->num_iterations(); iter++) {
       // saving current instance for error computation.
       if (iter > 0 && this->is_compute_error()) {
@@ -555,7 +557,9 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
                         << this->k << "::err::" << sqrt(this->objective_err)
                         << "::relerr::"
                         << relerr);
-        if (abs(relerr-old_relerr) < this->m_tolerance) {
+        printf("tolerance:%f  actual:%f\n",this->m_tolerance,std::abs(relerr-old_relerr));
+        if (std::abs(relerr-old_relerr) < this->m_tolerance) {
+          printf("breaking\n");
           break;
         }
       }
