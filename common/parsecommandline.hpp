@@ -196,7 +196,8 @@ class ParseCommandLine {
               << "::k::" << this->m_k << "::m::" << this->m_globalm
               << "::n::" << this->m_globaln << "::t::" << this->m_num_it
               << "::pr::" << this->m_pr << "::pc::" << this->m_pc
-              << "::error::" << this->m_compute_error << "::regW::"
+              << "::error::" << this->m_compute_error  << "::tol::" << this->m_tolerance
+              << "::regW::"
               << "l2::" << this->m_regW(0) << "::l1::" << this->m_regW(1)
               << "::regH::"
               << "l2::" << this->m_regH(0) << "::l1::" << this->m_regH(1)
