@@ -143,6 +143,7 @@ namespace planc {
         void split() {
           this->accepted = true;
 
+          arma::arma_rng::set_seed_random();
           MAT W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
           MAT H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
 
