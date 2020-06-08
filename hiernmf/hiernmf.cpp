@@ -126,7 +126,10 @@ class HierNMFDriver {
       this->root->enqueue(nodes);
 
 
-      while (!frontiers.empty() && nodes.size() <= pc->nodes()) {
+      for (int i = 2; i < pc->nodes(); i++) {
+        if (frontiers.empty()) {
+          break;
+        }
         frontier = frontiers.top();
         frontiers.pop();
         frontier->accept();
