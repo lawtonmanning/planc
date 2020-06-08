@@ -558,7 +558,6 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
                         << "::relerr::"
                         << relerr);
         if (std::abs(relerr-old_relerr) < this->m_tolerance) {
-          printf("breaking\n");
           break;
         }
       }
