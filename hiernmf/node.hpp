@@ -181,6 +181,8 @@ namespace planc {
           this->lvalid = !lcols.is_empty();
           this->rvalid = !rcols.is_empty();
           
+          A.clear();
+          
           if (this->lvalid) {
             this->lchild = new Node(this->A0, W.col(0), lcols, this, 2*this->index+1);
           }
@@ -240,7 +242,7 @@ namespace planc {
           this->parent = NULL;
           this->mpicomm = mpicomm;
           this->pc = pc;
-          this->A = this->A0;
+          this->A = INPUTMATTYPE(A);
           this->sigma = 0.0;
           this->index = 0;
           this->lvalid = false;
