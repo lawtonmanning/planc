@@ -120,6 +120,8 @@ class HierNMFDriver {
       this->root = new RootNode<MAT>(A, this->m_globalm, this->m_globaln, cols, this->mpicomm, this->pc);
 #endif
 
+      nodes.push(root);
+
       this->root->split();
       this->root->accept();
       this->root->enqueue(frontiers);
@@ -149,14 +151,19 @@ class HierNMFDriver {
         printf("idx NMF sigma top_words\n");
         while (!nodes.empty()) {
           node = nodes.front();
+          nodes.pop();
+          
           printf("%d %f %f %f\n",node->index,node->timings.NMF,node->timings.sigma,node->timings.top_words);
+          
+          if (node->index == 0) {
+            continue;
+          }
           ofs << node->index << " ";
 #ifdef BUILD_SPARSE
           ofs << node->top_words.t();
 #else
           ofs << node->cols.t();
 #endif
-          nodes.pop();
         }
 
         ofs.close();
