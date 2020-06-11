@@ -182,6 +182,7 @@ namespace planc {
           this->rvalid = !rcols.is_empty();
           
           A.clear();
+          A.reset();
           
           if (this->lvalid) {
             this->lchild = new Node(this->A0, W.col(0), lcols, this, 2*this->index+1);
