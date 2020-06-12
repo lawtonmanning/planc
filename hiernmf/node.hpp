@@ -18,7 +18,7 @@ namespace planc {
         Node * rchild = NULL;
         bool lvalid,rvalid;
         Node * parent = NULL;
-        INPUTMATTYPE A0;
+        INPUTMATTYPE * A0;
         INPUTMATTYPE A;
         VEC W;
         double sigma;
@@ -48,11 +48,11 @@ namespace planc {
           VEC vals(n_cols);
           vals.fill(1);
 
-          SP_MAT S(locs,vals,this->A0.n_cols,n_cols);
+          SP_MAT S(locs,vals,this->A0->n_cols,n_cols);
 
-          this->A = this->A0*S;
+          this->A = *this->A0*S;
 #else
-          this->A = this->A0.cols(this->cols);
+          this->A = this->A0->cols(this->cols);
 #endif
         }
 
@@ -119,7 +119,7 @@ namespace planc {
         Node() {
         }
 
-        Node(INPUTMATTYPE & A, VEC W, UVEC & cols, Node * parent, int index) {
+        Node(INPUTMATTYPE * A, VEC W, UVEC & cols, Node * parent, int index) {
           this->cols = cols;
           this->A0 = A;
           this->global_m = parent->global_m;
@@ -182,7 +182,6 @@ namespace planc {
           this->rvalid = !rcols.is_empty();
           
           A.clear();
-          A.reset();
           
           if (this->lvalid) {
             this->lchild = new Node(this->A0, W.col(0), lcols, this, 2*this->index+1);
@@ -235,7 +234,7 @@ namespace planc {
   template <class INPUTMATTYPE>
     class RootNode : public Node<INPUTMATTYPE> {
       public:
-        RootNode(INPUTMATTYPE & A, int global_m, int global_n, UVEC & cols, MPICommunicator * mpicomm, ParseCommandLine * pc) : Node<INPUTMATTYPE>() {
+        RootNode(INPUTMATTYPE * A, int global_m, int global_n, UVEC & cols, MPICommunicator * mpicomm, ParseCommandLine * pc) : Node<INPUTMATTYPE>() {
           this->cols = cols;
           this->A0 = A;
           this->global_m = global_m;
@@ -243,7 +242,7 @@ namespace planc {
           this->parent = NULL;
           this->mpicomm = mpicomm;
           this->pc = pc;
-          this->A = INPUTMATTYPE(A);
+          this->A = INPUTMATTYPE(*A);
           this->sigma = 0.0;
           this->index = 0;
           this->lvalid = false;

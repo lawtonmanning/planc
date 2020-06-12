@@ -114,11 +114,17 @@ class HierNMFDriver {
 
       mpitic();
 
+      MPI_Barrier(MPI_COMM_WORLD);
+      memusage(mpicomm->rank(),"before root initialization");      
+
 #ifdef BUILD_SPARSE
-      this->root = new RootNode<SP_MAT>(A, this->m_globalm, this->m_globaln, cols, this->mpicomm, this->pc);
+      this->root = new RootNode<SP_MAT>(&A, this->m_globalm, this->m_globaln, cols, this->mpicomm, this->pc);
 #else
-      this->root = new RootNode<MAT>(A, this->m_globalm, this->m_globaln, cols, this->mpicomm, this->pc);
+      this->root = new RootNode<MAT>(&A, this->m_globalm, this->m_globaln, cols, this->mpicomm, this->pc);
 #endif
+
+      MPI_Barrier(MPI_COMM_WORLD);
+      memusage(mpicomm->rank(),"after root initialization");      
 
       nodes.push(root);
 
@@ -129,6 +135,10 @@ class HierNMFDriver {
 
 
       for (int i = 2; i < pc->nodes(); i++) {
+        MPI_Barrier(MPI_COMM_WORLD);
+        std::string text = "Iteration ";
+        text += std::to_string(i);
+        memusage(mpicomm->rank(),text); 
         if (frontiers.empty()) {
           break;
         }
