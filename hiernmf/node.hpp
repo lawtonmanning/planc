@@ -8,8 +8,7 @@
 namespace planc {
   struct NodeTimings {
     double NMF;
-    double sigma;
-    double top_words;
+    struct PowerTimings sigma;
   };
   template <class INPUTMATTYPE>
     class Node {
@@ -57,7 +56,7 @@ namespace planc {
         }
 
         void compute_sigma() {
-          this->sigma = powIter(this->A,this->pc->iterations(),this->pc->tolerance());
+          this->sigma = powIter(this->A,this->pc->iterations(),this->pc->tolerance(),this->timings.sigma);
         }
 
         void compute_score() {
@@ -130,12 +129,8 @@ namespace planc {
           this->mpicomm = parent->mpicomm;
           this->pc = parent->pc;
           this->allocate();
-          mpitic();
           this->compute_sigma();
-          this->timings.sigma = mpitoc();
-          mpitic();
           this->compute_top_words();
-          this->timings.top_words = mpitoc();
           this->lvalid = false;
           this->rvalid = false;
         }

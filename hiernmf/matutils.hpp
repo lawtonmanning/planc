@@ -1,4 +1,5 @@
 #include "common/utils.hpp"
+#include "common/distutils.hpp"
 
 namespace planc {
   template <class INPUTMATTYPE>
@@ -20,8 +21,14 @@ namespace planc {
       }
     }
   
+  struct PowerTimings {
+    double communication = 0;
+    double matvec = 0;
+    double normalisation = 0;
+  };
+  
   template <class INPUTMATTYPE>
-  auto powIter (INPUTMATTYPE &A, int max_iter, double tol) -> double {
+  auto powIter (INPUTMATTYPE & A, int max_iter, double tol, PowerTimings & timings ) -> double {
 
     int M = size(A,0);
     int N = size(A,1);
@@ -40,17 +47,24 @@ namespace planc {
 
     // converge to first sigma value of A
     for (int i = 0; i < max_iter; i++) {
+      MPITIC;
       z = A * globalQ;
       localQ = A.t() * z;	
+      timings.matvec += MPITOC;
+
 
       // sum localQ into globalQ
+      MPITIC;
       MPI_Allreduce(localQ.begin(), globalQ.begin(), N, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+      timings.communication += MPITOC;
 
+      MPITIC;
       sigma = norm(globalQ,2);
       globalQ = globalQ / sigma;
 
       epsilon = abs(sigma - s2)/(sigma);
       s2 = sigma;
+      timings.normalisation += MPITOC;
 
       if (epsilon < tol) {
         break;
