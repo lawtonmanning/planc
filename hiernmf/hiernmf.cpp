@@ -158,12 +158,12 @@ class HierNMFDriver {
       if (this->mpicomm->rank() == 0) {
         std::ofstream ofs(this->m_outputfile_name, std::ofstream::out);
         
-        printf("idx NMF MATVEC(SIGMA) COMM(SIGMA) NORM(SIGMA)\n");
+        printf("idx NMF MATVEC(SIGMA) VECMAT(SIGMA) COMM(SIGMA) NORM(SIGMA)\n");
         while (!nodes.empty()) {
           node = nodes.front();
           nodes.pop();
           
-          printf("%d %f %f %f %f\n",node->index,node->timings.NMF,node->timings.sigma.matvec,node->timings.sigma.communication,node->timings.sigma.normalisation);
+          printf("%d %f %f %f %f %f\n",node->index,node->timings.NMF,node->timings.sigma.matvec,node->timings.sigma.vecmat,node->timings.sigma.communication,node->timings.sigma.normalisation);
           
           if (node->index == 0) {
             continue;

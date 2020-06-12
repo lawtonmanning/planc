@@ -24,6 +24,7 @@ namespace planc {
   struct PowerTimings {
     double communication = 0;
     double matvec = 0;
+    double vecmat = 0;
     double normalisation = 0;
   };
   
@@ -49,8 +50,11 @@ namespace planc {
     for (int i = 0; i < max_iter; i++) {
       MPITIC;
       z = A * globalQ;
-      localQ = A.t() * z;	
       timings.matvec += MPITOC;
+      MPITIC;
+      localQ = A.t() * z;	
+      timings.vecmat += MPITOC;
+      
 
 
       // sum localQ into globalQ
