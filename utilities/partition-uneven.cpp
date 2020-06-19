@@ -95,29 +95,6 @@ int main(int argc, char **argv) {
     procColIdxs[procIdx].push_back(localColIdx);
     procVals[procIdx].push_back(val);
   }
-  /*
-  uint64_t rowsPerProc = rowCount / rowProcCount;
-  uint64_t colsPerProc = colCount / colProcCount;
-  printf("Assigning %ju rows and %ju columns per part.\n", rowsPerProc, colsPerProc);
-  for (uint64_t i = 0; i < nnz; i++) {
-    //if (i % 100000 == 0 && i > 0) { printf("Processing %ju.th nonzero...\n", i); }
-    uint64_t rowIdx, colIdx;
-    double val;
-    fscanf(file, "%" SCNu64, &rowIdx);
-    fscanf(file, "%" SCNu64, &colIdx);
-    fscanf(file, "%lf", &val);
-    rowIdx--; colIdx--;
-    uint64_t procRowIdx = rowIdx / rowsPerProc;
-    uint64_t procColIdx = colIdx / colsPerProc;
-    if (procRowIdx >= rowProcCount || procColIdx >= colProcCount) { continue; } // Prune matrix
-    uint64_t procIdx = procRowIdx * colProcCount + procColIdx;
-    uint64_t localRowIdx = rowIdx % rowsPerProc;
-    uint64_t localColIdx = colIdx % colsPerProc;
-    procRowIdxs[procIdx].push_back(localRowIdx);
-    procColIdxs[procIdx].push_back(localColIdx);
-    procVals[procIdx].push_back(val);
-  }
-  */
   fclose(file);
 
   for (int i = 0; i < procCount; i++) {
@@ -131,8 +108,6 @@ int main(int argc, char **argv) {
     }
     uint64_t m = itersplit(rowCount,rowProcCount,i/colProcCount);
     uint64_t n = itersplit(colCount,colProcCount,i%colProcCount);
-    //printf("%" PRIu64 " %" PRIu64 " %" PRIu64 "\n", m, n, procVals[i].size());
-    //fprintf(file, "%" PRIu64 " %" PRIu64 " %" PRIu64 "\n", m, n, procVals[i].size());
     auto &curRowIdxs = procRowIdxs[i];
     auto &curColIdxs = procColIdxs[i];
     auto &curVals = procVals[i];
