@@ -495,7 +495,6 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
         this->time_stats.compute_duration(temp);
         this->time_stats.nnls_duration(temp);
         this->reportTime(temp, "NNLS::H::");
-      }
 
         VEC lnorms = arma::vec(this->k,arma::fill::zeros);
         VEC norms = arma::vec(this->k,arma::fill::zeros);
@@ -520,7 +519,7 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
         this->Ht = this->H.t();
         
 
-
+      }
       // Update W given HtH and AH step 3 of the algorithm.
       {
         // compute HtH
