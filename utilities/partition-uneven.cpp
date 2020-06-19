@@ -50,15 +50,15 @@ inline int idxproc(int n, int p, int i) {
 
 
 int main(int argc, char **argv) {
-  printf("partition-uniform began.\n");
+  printf("partition-uneven began.\n");
   if (argc < 4) {
-    printf("Usage: partition-uniform [matrix-file-name] [row-proc-count] [col-proc-count]\n");
+    printf("Usage: partition-uneven [matrix-file-name] [row-proc-count] [col-proc-count]\n");
     return 0;
   }
   int rowProcCount = atoi(argv[2]);
   int colProcCount = atoi(argv[3]);
   int procCount = rowProcCount * colProcCount;
-  printf("Creating a %d x %d uniform partition.\n", rowProcCount, colProcCount);
+  printf("Creating a %d x %d uneven partition.\n", rowProcCount, colProcCount);
 
   printf("Opening input and output files...\n");
   FILE *file = fopen(argv[1], "r");
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
     fclose(file);
   }
 
-  printf("partition-uniform finished.\n");
+  printf("partition-uneven finished.\n");
   return 0;
 }
 
