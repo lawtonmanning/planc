@@ -488,14 +488,27 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
         // some function find Ht and some H.
         updateH();
 
+#ifdef MPI_VERBOSE
+        DISTPRINTINFO("::it=" << iter << PRINTMAT(this->H));
+#endif
+        double temp = MPITOC;  // nnls H
+        this->time_stats.compute_duration(temp);
+        this->time_stats.nnls_duration(temp);
+        this->reportTime(temp, "NNLS::H::");
+      }
+
         VEC lnorms = arma::vec(this->k,arma::fill::zeros);
         VEC norms = arma::vec(this->k,arma::fill::zeros);
         
         for (int i = 0; i < this->k; i++) {
           lnorms(i) = pow(arma::norm(this->H.col(i)),2);
         }
-
+        
+        MPITIC;
         MPI_Allreduce(lnorms.memptr(),norms.memptr(),this->k,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+        temp = MPITOC;
+        this->time_stats.communication_duration(temp);
+        this->time_stats.allreduce_duration(temp);
 
         norms = sqrt(norms);
         for (int i = 0; i < this->k; i++) {
@@ -507,14 +520,7 @@ class DistAUNMF : public DistNMF<INPUTMATTYPE> {
         this->Ht = this->H.t();
         
 
-#ifdef MPI_VERBOSE
-        DISTPRINTINFO("::it=" << iter << PRINTMAT(this->H));
-#endif
-        double temp = MPITOC;  // nnls H
-        this->time_stats.compute_duration(temp);
-        this->time_stats.nnls_duration(temp);
-        this->reportTime(temp, "NNLS::H::");
-      }
+
       // Update W given HtH and AH step 3 of the algorithm.
       {
         // compute HtH
