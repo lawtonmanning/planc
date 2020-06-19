@@ -14,7 +14,7 @@
  *            Typically number of processes on a particular mode
  * @param[in] r is the rank of the mpi process in that mode. fiber rank
  */
-inline int itersplit(int n, int p, int r) {
+inline uint64_t itersplit(uint64_t n, int p, int r) {
   int split = (r < n % p) ? n / p + 1 : n / p;
   return split;
 }
@@ -26,7 +26,7 @@ inline int itersplit(int n, int p, int r) {
  * @param[in] p is the number of splits of n.
  * @param[in] r is the rank of the mpi process in that mode. fiber rank
  */
-inline int startidx(int n, int p, int r) {
+inline uint64_t startidx(uint64_t n, int p, int r) {
   int rem = n % p;
   int idx =
       (r < rem) ? r * (n / p + 1) : (rem * (n / p + 1) + ((r - rem) * (n / p)));
