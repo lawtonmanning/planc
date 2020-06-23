@@ -4,10 +4,12 @@
 
 \usepackage{cite,doi}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{algorithmic}
+\usepackage{algorithm,algpseudocode}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{cleveref}
+\usepackage{ourmacros}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
@@ -69,6 +71,18 @@ test reference: \cite{GKP15}
 \subsection{Parallelization}
 
 \subsubsection{Algorithm}
+
+\begin{algorithm}
+\caption{TT-right-orthogonalization}
+\label{alg:parrank2nmf}
+\begin{algorithmic}[1]
+	\Require{}
+	\Ensure{}
+	\Function{$\M{Y} =$ Parallel-Rank2-NMF}{$\M{A}$}
+		\State
+	\EndFunction
+\end{algorithmic}
+\end{algorithm}
 
 \subsubsection{Analysis}
 
