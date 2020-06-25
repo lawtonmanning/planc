@@ -1,8 +1,11 @@
 paper.pdf
 conference_101719.pdf
 *.out
+*.snm
+*.toc
 *.blg
 *.log
+*.nav
 *.bbl
 *.aux
 *.synctex.gz
