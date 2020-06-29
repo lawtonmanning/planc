@@ -25,8 +25,9 @@ namespace planc {
         UVEC cols;
         bool accepted = false;
         int index;
+        int level;
 
-        int global_m, global_n;
+        unsigned long long global_m, global_n;
 
         UVEC top_words;
 
@@ -122,10 +123,11 @@ namespace planc {
           this->cols = cols;
           this->A0 = A;
           this->global_m = parent->global_m;
-          this->global_n = parent->global_n;
+          this->global_n = cols.n_elem;
           this->W = W;
           this->parent = parent;
           this->index = index;
+          this->level = parent->level + 1;
           this->mpicomm = parent->mpicomm;
           this->pc = parent->pc;
           this->allocate();
@@ -229,7 +231,7 @@ namespace planc {
   template <class INPUTMATTYPE>
     class RootNode : public Node<INPUTMATTYPE> {
       public:
-        RootNode(INPUTMATTYPE * A, int global_m, int global_n, UVEC & cols, MPICommunicator * mpicomm, ParseCommandLine * pc) : Node<INPUTMATTYPE>() {
+        RootNode(INPUTMATTYPE * A, unsigned long long global_m, unsigned long long global_n, UVEC & cols, MPICommunicator * mpicomm, ParseCommandLine * pc) : Node<INPUTMATTYPE>() {
           this->cols = cols;
           this->A0 = A;
           this->global_m = global_m;
@@ -240,6 +242,7 @@ namespace planc {
           this->A = INPUTMATTYPE(*A);
           this->sigma = 0.0;
           this->index = 0;
+          this->level = 0;
           this->lvalid = false;
           this->rvalid = false;
         }
