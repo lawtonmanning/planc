@@ -108,13 +108,13 @@ test reference: \cite{GKP15}
 			\State $\M{G}_W = \textsc{All-Reduce}(\M[\hat]{G})$
 			\State $\M[\hat]{B} = \M[\hat]{W}^\Tra \M[\hat]{A}$ %\hfill \Comment{local matrix multiplication}
 			\State $\M[\hat]{C} = \textsc{Reduce-Scatter}(\M[\hat]{B})$
-			\State $\M[\hat]{H} = \textsc{Rank2-NLS-Solve}(\M{G}_W,\M[\hat]{C})$
+			\State $\M[\hat]{H} = \textsc{Rank2-NLS-Solve}(\M[\hat]{C},\M{G}_W)$
 			\State \Comment{Compute $\M{W}$}
 			\State $\M[\hat]{G}_H = \M[\hat]{H}^\Tra \M[\hat]{H}$
 			\State $\M{G}_H = \textsc{All-Reduce}(\M[\hat]{G}_H)$
 			\State $\M{H} = \textsc{All-Gather}(\M[\hat]{H})$
 			\State $\M[\hat]{D} = \M[\hat]{A} \M{H}$ %\hfill \Comment{local matrix multiplication}
-			\State $\M[\hat]{W} = \textsc{Rank2-NLS-Solve}(\M{G}_H,\M[\hat]{D})$
+			\State $\M[\hat]{W} = \textsc{Rank2-NLS-Solve}(\M[\hat]{D},\M{G}_H)$
 		\EndWhile
 	\EndFunction
 	\Ensure{$\M{A} \approx \M{W}\M{H}^\Tra$ with $\M{W}$, $\M{H}$ row-distributed}
@@ -127,19 +127,56 @@ test reference: \cite{GKP15}
 
 \subsection{Experimental Platform}
 
+\GB{Lawton, can you add a description of Summit?  use the recent SC submission as an example}
+
 \subsection{Datasets}
+
+\GB{Lawton, can you add these descriptions?}
+\begin{itemize}
+	\item synthetic (dense and sparse)
+	\item HSI: DC and Aviris
+	\item Doc-clustering: Reuters and PubMed
+\end{itemize}
 
 \subsection{Performance}
 
+\subsubsection{Rank-2 NMF Strong Scaling}
+
+\GB{Lawton, can you gather this data, Ramki can you visualize it?}
+\begin{itemize}
+	\item compare 1D distribution scaling with optimal 2D grid scaling
+	\item use synthetic short-and-fat dense and squarish sparse
+\end{itemize}
+
+\subsubsection{Level Scaling}
+
+\GB{Ramki, can you add a bar plot to show time breakdown across complete levels?  Let's do Aviris and PubMed; just use levels data file}
+
 \subsubsection{Weak Scaling}
 
+\GB{maybe this section is lower priority}
+\begin{itemize}
+	\item dense and sparse
+\end{itemize}
+
 \subsubsection{Strong Scaling}
+
+\begin{itemize}
+	\item big dense synthetic
+	\item big sparse synthetic
+	\item Aviris
+	\item PubMed
+\end{itemize}
 
 \subsection{Clustering}
 
 \subsubsection{Hyperspectral Imaging}
 
+\GB{Lawton, show some visualization of the tree}
+
 \subsubsection{Document Corpus}
+
+\GB{Lawton, show a visualization of top words in tree}
 
 \section{Conclusion}
 
