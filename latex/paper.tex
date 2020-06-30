@@ -72,7 +72,7 @@ test reference: \cite{GKP15}
 \subsubsection{Rank-2 NMF}
 
 \begin{algorithm}
-\caption{Rank-2 Nonnegative Least Squares Solve}
+\caption{Rank-2 Nonnegative Least Squares Solve \cite{KP13}}
 \label{alg:r2nmf}
 \begin{algorithmic}[1]
 	\Require{$\M{C}$ is $n\times 2$ and $\M{G}$ is $2\times 2$ and s.p.d.}
@@ -95,6 +95,28 @@ test reference: \cite{GKP15}
 \end{algorithm}
 
 \subsubsection{Hierarchical Clustering}
+
+\begin{algorithm}
+\caption{Hierarchical Clustering via Rank-2 NMF}
+\label{alg:hiernmf2}
+\begin{algorithmic}[1]
+	\Require{$\M{A}$ is $m\times n$, $k$ is target number of leaves}
+	\Function{${\cal T} =$ Hier-R2-NMF}{$\M{A}$}
+		\State ${\cal R} = \text{node}(\M{A})$ \hfill \Comment{create root node}
+		\State inject$({\cal Q},{\cal R})$ \hfill \Comment{create priority queue of leaves}
+		\While{leaves$({\cal T}) < k$}
+			\State ${\cal N} = \text{deleteMax}({\cal Q})$ \hfill \Comment{get leaf with max score}
+			\State $[\M{W},\M{H}] = \textsc{Rank2-NMF}({\cal N}.\M{A})$ \hfill \Comment{split $\cal N$}
+			\State partition ${\cal N}.\M{A}$ into $\M{A}_1$ and $\M{A}_2$ using $\M{H}$
+			\State ${\cal N}_1 = \text{node}(\M{A}_1,\text{score}(\M{A}_1),\V{W}_1)$ \hfill \Comment{left child}
+			\State ${\cal N}_2 = \text{node}(\M{A}_2,\text{score}(\M{A}_2),\V{W}_2)$ \hfill \Comment{right child}
+			\State ${\cal N}.\text{left} = {\cal N}_1$, ${\cal N}.\text{right} = {\cal N}_2$
+			\State inject$({\cal Q},{\cal N}_1)$, inject$({\cal Q},{\cal N}_2)$ 
+		\EndWhile
+	\EndFunction
+	\Ensure{$\cal{T}$ is binary tree with $k$ leaves, each node has subset of columns of $\M{A}$ and feature vector $\V{w}$}
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Parallelization}
 
@@ -125,6 +147,8 @@ test reference: \cite{GKP15}
 	\Ensure{$\M{A} \approx \M{W}\M{H}^\Tra$ with $\M{W}$, $\M{H}$ row-distributed}
 \end{algorithmic}
 \end{algorithm}
+
+
 
 \subsubsection{Analysis}
 
