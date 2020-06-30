@@ -9,6 +9,7 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{cleveref}
+\usepackage{tikz}
 \usepackage{ourmacros}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -61,9 +62,13 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 
 \section{Introduction}
 
-test reference: \cite{GKP15}
+
 
 \section{Preliminaries}
+
+\begin{itemize}
+	\item NMF, BCD, rank-2 NMF
+\end{itemize}
 
 \section{Algorithm}
 
@@ -97,7 +102,7 @@ test reference: \cite{GKP15}
 \subsubsection{Hierarchical Clustering}
 
 \begin{algorithm}
-\caption{Hierarchical Clustering via Rank-2 NMF}
+\caption{Hierarchical Clustering via Rank-2 NMF \cite{KP13}}
 \label{alg:hiernmf2}
 \begin{algorithmic}[1]
 	\Require{$\M{A}$ is $m\times n$, $k$ is target number of leaves}
@@ -105,7 +110,7 @@ test reference: \cite{GKP15}
 		\State ${\cal R} = \text{node}(\M{A})$ \hfill \Comment{create root node}
 		\State inject$({\cal Q},{\cal R})$ \hfill \Comment{create priority queue of leaves}
 		\While{leaves$({\cal T}) < k$}
-			\State ${\cal N} = \text{deleteMax}({\cal Q})$ \hfill \Comment{get leaf with max score}
+			\State ${\cal N} = \text{eject}({\cal Q})$ \hfill \Comment{get leaf with max score}
 			\State $[\M{W},\M{H}] = \textsc{Rank2-NMF}({\cal N}.\M{A})$ \hfill \Comment{split $\cal N$}
 			\State partition ${\cal N}.\M{A}$ into $\M{A}_1$ and $\M{A}_2$ using $\M{H}$
 			\State ${\cal N}_1 = \text{node}(\M{A}_1,\text{score}(\M{A}_1),\V{W}_1)$ \hfill \Comment{left child}
@@ -148,7 +153,11 @@ test reference: \cite{GKP15}
 \end{algorithmic}
 \end{algorithm}
 
-
+\begin{figure}
+\input{fig/split}
+\caption{Parallel splitting using Rank-2 NMF}
+\label{fig:split}
+\end{figure}
 
 \subsubsection{Analysis}
 
