@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/dense_hiernmf.dir/hiernmf.cpp.o"
-  "dense_hiernmf"
   "dense_hiernmf.pdb"
+  "dense_hiernmf"
 )
 
 # Per-language clean rules from dependency scanning.

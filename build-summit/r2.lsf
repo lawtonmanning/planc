@@ -8,5 +8,6 @@
 #BSUB -N
 
 cd ~/planc/build-summit
+source ./summit_load.sh
 
-jsrun -n 6 -a 7 -c 7 -g 0 ./dense_distnmf/dense_distnmf -a 7 -i rand_lowrank -d "65536 65536" -p "7 6" -k 2 -t 100 -e 1
+jsrun -n 42 -a 1 -c 1 -g 0 ./dense_distnmf/dense_distnmf -a 7 -i rand_lowrank -d "65536 65536" -p "7 6" -k 2 -t 100 -e 1

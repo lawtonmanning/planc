@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/sparse_distnmf.dir/distnmf.cpp.o"
-  "sparse_distnmf"
   "sparse_distnmf.pdb"
+  "sparse_distnmf"
 )
 
 # Per-language clean rules from dependency scanning.

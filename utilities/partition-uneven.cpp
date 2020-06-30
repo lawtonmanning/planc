@@ -71,13 +71,12 @@ int main(int argc, char **argv) {
   std::vector< std::vector<uint64_t> > procColIdxs(procCount);
   std::vector< std::vector<double> > procVals(procCount);
   printf("Partitioning nonzeros and outputting to files...\n");
-  int order;
   uint64_t nnz;
   uint64_t rowCount, colCount;
   fscanf(file, "%" SCNu64, &rowCount);
   fscanf(file, "%" SCNu64, &colCount);
   fscanf(file, "%" SCNu64, &nnz);
-  printf("order::%d::nnz::%ju::rowcount::%ju::colcount::%ju\n", order, nnz, rowCount, colCount);
+  printf("nnz::%ju::rowcount::%ju::colcount::%ju\n", nnz, rowCount, colCount);
   for (uint64_t i = 0; i < nnz; i++) {
     uint64_t rowIdx, colIdx;
     double val;
@@ -114,6 +113,7 @@ int main(int argc, char **argv) {
     for (uint64_t j = 0; j < curRowIdxs.size(); j++) {
       fprintf(file, "%" PRIu64 " %" PRIu64 " %e\n", curRowIdxs[j], curColIdxs[j], curVals[j]);
     }
+    fprintf(file, "%" PRIu64 " %" PRIu64 " 0\n",m-1,n-1); 
     fclose(file);
   }
 

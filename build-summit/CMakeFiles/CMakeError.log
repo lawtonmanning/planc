@@ -1,40 +1,20 @@
-Determining if the function sgemm_ exists failed with the following output:
-Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
-
-Run Build Command:"/usr/bin/gmake" "cmTC_a90f5/fast"
-/usr/bin/gmake -f CMakeFiles/cmTC_a90f5.dir/build.make CMakeFiles/cmTC_a90f5.dir/build
-gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_a90f5.dir/CheckFunctionExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=sgemm_   -o CMakeFiles/cmTC_a90f5.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckFunctionExists/CheckFunctionExists.cxx
-Linking CXX executable cmTC_a90f5
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.13.4-glp7fk6jzzpzrv3ielkg5mjcar2umm7n/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a90f5.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=sgemm_    CMakeFiles/cmTC_a90f5.dir/CheckFunctionExists.cxx.o  -o cmTC_a90f5 
-CMakeFiles/cmTC_a90f5.dir/CheckFunctionExists.cxx.o: In function `main':
-CheckFunctionExists.cxx:(.text+0x28): undefined reference to `sgemm_'
-/usr/bin/ld: link errors found, deleting executable `cmTC_a90f5'
-collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_a90f5] Error 1
-gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_a90f5/fast] Error 2
-
-
 Determining if the pthread_create exist failed with the following output:
 Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/gmake" "cmTC_e72b9/fast"
-/usr/bin/gmake -f CMakeFiles/cmTC_e72b9.dir/build.make CMakeFiles/cmTC_e72b9.dir/build
+Run Build Command:"/usr/bin/gmake" "cmTC_1e009/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_1e009.dir/build.make CMakeFiles/cmTC_1e009.dir/build
 gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_e72b9.dir/CheckSymbolExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++     -o CMakeFiles/cmTC_e72b9.dir/CheckSymbolExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
-Linking CXX executable cmTC_e72b9
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.13.4-glp7fk6jzzpzrv3ielkg5mjcar2umm7n/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e72b9.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++       CMakeFiles/cmTC_e72b9.dir/CheckSymbolExists.cxx.o  -o cmTC_e72b9 
-CMakeFiles/cmTC_e72b9.dir/CheckSymbolExists.cxx.o:(.toc+0x0): undefined reference to `pthread_create'
-/usr/bin/ld: link errors found, deleting executable `cmTC_e72b9'
+Building CXX object CMakeFiles/cmTC_1e009.dir/CheckSymbolExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++     -o CMakeFiles/cmTC_1e009.dir/CheckSymbolExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTC_1e009
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1e009.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++       CMakeFiles/cmTC_1e009.dir/CheckSymbolExists.cxx.o  -o cmTC_1e009 
+CMakeFiles/cmTC_1e009.dir/CheckSymbolExists.cxx.o:(.toc+0x0): undefined reference to `pthread_create'
+/usr/bin/ld: link errors found, deleting executable `cmTC_1e009'
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_e72b9] Error 1
+gmake[1]: *** [cmTC_1e009] Error 1
 gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_e72b9/fast] Error 2
+gmake: *** [cmTC_1e009/fast] Error 2
 
 File /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
 /* */
@@ -54,38 +34,38 @@ int main(int argc, char** argv)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/gmake" "cmTC_f3e64/fast"
-/usr/bin/gmake -f CMakeFiles/cmTC_f3e64.dir/build.make CMakeFiles/cmTC_f3e64.dir/build
+Run Build Command:"/usr/bin/gmake" "cmTC_7cf32/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_7cf32.dir/build.make CMakeFiles/cmTC_7cf32.dir/build
 gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_f3e64.dir/CheckFunctionExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_f3e64.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
-Linking CXX executable cmTC_f3e64
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.13.4-glp7fk6jzzpzrv3ielkg5mjcar2umm7n/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f3e64.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_f3e64.dir/CheckFunctionExists.cxx.o  -o cmTC_f3e64 -lpthreads 
+Building CXX object CMakeFiles/cmTC_7cf32.dir/CheckFunctionExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_7cf32.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_7cf32
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7cf32.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_7cf32.dir/CheckFunctionExists.cxx.o  -o cmTC_7cf32 -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_f3e64] Error 1
+gmake[1]: *** [cmTC_7cf32] Error 1
 gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_f3e64/fast] Error 2
+gmake: *** [cmTC_7cf32/fast] Error 2
 
 
 Determining if the pthread_create exist failed with the following output:
 Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/gmake" "cmTC_ed644/fast"
-/usr/bin/gmake -f CMakeFiles/cmTC_ed644.dir/build.make CMakeFiles/cmTC_ed644.dir/build
+Run Build Command:"/usr/bin/gmake" "cmTC_2a344/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_2a344.dir/build.make CMakeFiles/cmTC_2a344.dir/build
 gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_ed644.dir/CheckSymbolExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++      -o CMakeFiles/cmTC_ed644.dir/CheckSymbolExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
-Linking CXX executable cmTC_ed644
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20171006/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.6.1-p2u2lftrdym3ldppaanjfpyafpbe7j7j/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ed644.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++        CMakeFiles/cmTC_ed644.dir/CheckSymbolExists.cxx.o  -o cmTC_ed644 
-CMakeFiles/cmTC_ed644.dir/CheckSymbolExists.cxx.o:(.toc+0x0): undefined reference to `pthread_create'
-/usr/bin/ld: link errors found, deleting executable `cmTC_ed644'
+Building CXX object CMakeFiles/cmTC_2a344.dir/CheckSymbolExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++     -o CMakeFiles/cmTC_2a344.dir/CheckSymbolExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTC_2a344
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2a344.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++       CMakeFiles/cmTC_2a344.dir/CheckSymbolExists.cxx.o  -o cmTC_2a344 
+CMakeFiles/cmTC_2a344.dir/CheckSymbolExists.cxx.o:(.toc+0x0): undefined reference to `pthread_create'
+/usr/bin/ld: link errors found, deleting executable `cmTC_2a344'
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_ed644] Error 1
+gmake[1]: *** [cmTC_2a344] Error 1
 gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_ed644/fast] Error 2
+gmake: *** [cmTC_2a344/fast] Error 2
 
 File /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
 /* */
@@ -105,203 +85,316 @@ int main(int argc, char** argv)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/gmake" "cmTC_22a31/fast"
-/usr/bin/gmake -f CMakeFiles/cmTC_22a31.dir/build.make CMakeFiles/cmTC_22a31.dir/build
+Run Build Command:"/usr/bin/gmake" "cmTC_dd49d/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_dd49d.dir/build.make CMakeFiles/cmTC_dd49d.dir/build
 gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_22a31.dir/CheckFunctionExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++     -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_22a31.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
-Linking CXX executable cmTC_22a31
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20171006/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.6.1-p2u2lftrdym3ldppaanjfpyafpbe7j7j/bin/cmake -E cmake_link_script CMakeFiles/cmTC_22a31.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_22a31.dir/CheckFunctionExists.cxx.o  -o cmTC_22a31 -lpthreads 
+Building CXX object CMakeFiles/cmTC_dd49d.dir/CheckFunctionExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_dd49d.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_dd49d
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_dd49d.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_dd49d.dir/CheckFunctionExists.cxx.o  -o cmTC_dd49d -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_22a31] Error 1
+gmake[1]: *** [cmTC_dd49d] Error 1
 gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_22a31/fast] Error 2
+gmake: *** [cmTC_dd49d/fast] Error 2
 
 
-Determining if the function sgemm_ exists failed with the following output:
+Determining if the pthread_create exist failed with the following output:
 Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake cmTC_1ea41/fast && /usr/bin/gmake -f CMakeFiles/cmTC_1ea41.dir/build.make CMakeFiles/cmTC_1ea41.dir/build
+Run Build Command:"/usr/bin/gmake" "cmTC_283b7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_283b7.dir/build.make CMakeFiles/cmTC_283b7.dir/build
 gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_1ea41.dir/CheckFunctionExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=sgemm_   -o CMakeFiles/cmTC_1ea41.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckFunctionExists/CheckFunctionExists.cxx
-Linking CXX executable cmTC_1ea41
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1ea41.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=sgemm_    CMakeFiles/cmTC_1ea41.dir/CheckFunctionExists.cxx.o  -o cmTC_1ea41 
-CMakeFiles/cmTC_1ea41.dir/CheckFunctionExists.cxx.o: In function `main':
-CheckFunctionExists.cxx:(.text+0x28): undefined reference to `sgemm_'
-/usr/bin/ld: link errors found, deleting executable `cmTC_1ea41'
+Building CXX object CMakeFiles/cmTC_283b7.dir/CheckSymbolExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++     -o CMakeFiles/cmTC_283b7.dir/CheckSymbolExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTC_283b7
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_283b7.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++       CMakeFiles/cmTC_283b7.dir/CheckSymbolExists.cxx.o  -o cmTC_283b7 
+CMakeFiles/cmTC_283b7.dir/CheckSymbolExists.cxx.o:(.toc+0x0): undefined reference to `pthread_create'
+/usr/bin/ld: link errors found, deleting executable `cmTC_283b7'
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_1ea41] Error 1
+gmake[1]: *** [cmTC_283b7] Error 1
 gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_1ea41/fast] Error 2
+gmake: *** [cmTC_283b7/fast] Error 2
 
-
-
-Performing C++ SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
-Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
-
-Run Build Command(s):/usr/bin/gmake cmTC_7e993/fast && /usr/bin/gmake -f CMakeFiles/cmTC_7e993.dir/build.make CMakeFiles/cmTC_7e993.dir/build
-gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_7e993.dir/src.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_7e993.dir/src.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/src.cxx
-Linking CXX executable cmTC_7e993
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7e993.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_7e993.dir/src.cxx.o  -o cmTC_7e993 
-CMakeFiles/cmTC_7e993.dir/src.cxx.o: In function `main':
-src.cxx:(.text+0x64): undefined reference to `pthread_create'
-src.cxx:(.text+0x74): undefined reference to `pthread_detach'
-src.cxx:(.text+0x88): undefined reference to `pthread_join'
-src.cxx:(.text+0x9c): undefined reference to `pthread_atfork'
-/usr/bin/ld: link errors found, deleting executable `cmTC_7e993'
-collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_7e993] Error 1
-gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_7e993/fast] Error 2
-
-
-Source file was:
+File /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
 #include <pthread.h>
 
-void* test_func(void* data)
+int main(int argc, char** argv)
 {
-  return data;
-}
-
-int main(void)
-{
-  pthread_t thread;
-  pthread_create(&thread, NULL, test_func, NULL);
-  pthread_detach(thread);
-  pthread_join(thread, NULL);
-  pthread_atfork(NULL, NULL, NULL);
-  pthread_exit(NULL);
-
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
   return 0;
-}
-
-Determining if the function sgemm_ exists failed with the following output:
-Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
-
-Run Build Command(s):/usr/bin/gmake cmTC_ea933/fast && /usr/bin/gmake -f CMakeFiles/cmTC_ea933.dir/build.make CMakeFiles/cmTC_ea933.dir/build
-gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_ea933.dir/CheckFunctionExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=sgemm_   -o CMakeFiles/cmTC_ea933.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckFunctionExists/CheckFunctionExists.cxx
-Linking CXX executable cmTC_ea933
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ea933.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=sgemm_    CMakeFiles/cmTC_ea933.dir/CheckFunctionExists.cxx.o  -o cmTC_ea933 
-CMakeFiles/cmTC_ea933.dir/CheckFunctionExists.cxx.o: In function `main':
-CheckFunctionExists.cxx:(.text+0x28): undefined reference to `sgemm_'
-/usr/bin/ld: link errors found, deleting executable `cmTC_ea933'
-collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_ea933] Error 1
-gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_ea933/fast] Error 2
-
-
-
-Performing C++ SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
-Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
-
-Run Build Command(s):/usr/bin/gmake cmTC_ba945/fast && /usr/bin/gmake -f CMakeFiles/cmTC_ba945.dir/build.make CMakeFiles/cmTC_ba945.dir/build
-gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_ba945.dir/src.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_ba945.dir/src.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/src.cxx
-Linking CXX executable cmTC_ba945
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ba945.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_ba945.dir/src.cxx.o  -o cmTC_ba945 
-CMakeFiles/cmTC_ba945.dir/src.cxx.o: In function `main':
-src.cxx:(.text+0x64): undefined reference to `pthread_create'
-src.cxx:(.text+0x74): undefined reference to `pthread_detach'
-src.cxx:(.text+0x88): undefined reference to `pthread_join'
-src.cxx:(.text+0x9c): undefined reference to `pthread_atfork'
-/usr/bin/ld: link errors found, deleting executable `cmTC_ba945'
-collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_ba945] Error 1
-gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_ba945/fast] Error 2
-
-
-Source file was:
-#include <pthread.h>
-
-void* test_func(void* data)
-{
-  return data;
-}
-
-int main(void)
-{
-  pthread_t thread;
-  pthread_create(&thread, NULL, test_func, NULL);
-  pthread_detach(thread);
-  pthread_join(thread, NULL);
-  pthread_atfork(NULL, NULL, NULL);
-  pthread_exit(NULL);
-
-  return 0;
+#endif
 }
 
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake cmTC_8eca4/fast && /usr/bin/gmake -f CMakeFiles/cmTC_8eca4.dir/build.make CMakeFiles/cmTC_8eca4.dir/build
+Run Build Command:"/usr/bin/gmake" "cmTC_804f7/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_804f7.dir/build.make CMakeFiles/cmTC_804f7.dir/build
 gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_8eca4.dir/CheckFunctionExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_8eca4.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
-Linking CXX executable cmTC_8eca4
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8eca4.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_8eca4.dir/CheckFunctionExists.cxx.o  -o cmTC_8eca4 -lpthreads 
+Building CXX object CMakeFiles/cmTC_804f7.dir/CheckFunctionExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_804f7.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_804f7
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_804f7.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_804f7.dir/CheckFunctionExists.cxx.o  -o cmTC_804f7 -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_8eca4] Error 1
+gmake[1]: *** [cmTC_804f7] Error 1
 gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_8eca4/fast] Error 2
+gmake: *** [cmTC_804f7/fast] Error 2
 
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_838a9/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_838a9.dir/build.make CMakeFiles/cmTC_838a9.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_838a9.dir/CheckSymbolExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++     -o CMakeFiles/cmTC_838a9.dir/CheckSymbolExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTC_838a9
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_838a9.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++       CMakeFiles/cmTC_838a9.dir/CheckSymbolExists.cxx.o  -o cmTC_838a9 
+CMakeFiles/cmTC_838a9.dir/CheckSymbolExists.cxx.o:(.toc+0x0): undefined reference to `pthread_create'
+/usr/bin/ld: link errors found, deleting executable `cmTC_838a9'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_838a9] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_838a9/fast] Error 2
+
+File /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_84545/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_84545.dir/build.make CMakeFiles/cmTC_84545.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_84545.dir/CheckFunctionExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_84545.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_84545
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_84545.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_84545.dir/CheckFunctionExists.cxx.o  -o cmTC_84545 -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_84545] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_84545/fast] Error 2
+
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_132a6/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_132a6.dir/build.make CMakeFiles/cmTC_132a6.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_132a6.dir/CheckSymbolExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++     -o CMakeFiles/cmTC_132a6.dir/CheckSymbolExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTC_132a6
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_132a6.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++       CMakeFiles/cmTC_132a6.dir/CheckSymbolExists.cxx.o  -o cmTC_132a6 
+CMakeFiles/cmTC_132a6.dir/CheckSymbolExists.cxx.o:(.toc+0x0): undefined reference to `pthread_create'
+/usr/bin/ld: link errors found, deleting executable `cmTC_132a6'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_132a6] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_132a6/fast] Error 2
+
+File /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_58ae6/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_58ae6.dir/build.make CMakeFiles/cmTC_58ae6.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_58ae6.dir/CheckFunctionExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_58ae6.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_58ae6
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_58ae6.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_58ae6.dir/CheckFunctionExists.cxx.o  -o cmTC_58ae6 -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_58ae6] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_58ae6/fast] Error 2
+
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_17e75/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_17e75.dir/build.make CMakeFiles/cmTC_17e75.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_17e75.dir/CheckSymbolExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++     -o CMakeFiles/cmTC_17e75.dir/CheckSymbolExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTC_17e75
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_17e75.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++       CMakeFiles/cmTC_17e75.dir/CheckSymbolExists.cxx.o  -o cmTC_17e75 
+CMakeFiles/cmTC_17e75.dir/CheckSymbolExists.cxx.o:(.toc+0x0): undefined reference to `pthread_create'
+/usr/bin/ld: link errors found, deleting executable `cmTC_17e75'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_17e75] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_17e75/fast] Error 2
+
+File /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_64a2f/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_64a2f.dir/build.make CMakeFiles/cmTC_64a2f.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_64a2f.dir/CheckFunctionExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_64a2f.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_64a2f
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_64a2f.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_64a2f.dir/CheckFunctionExists.cxx.o  -o cmTC_64a2f -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_64a2f] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_64a2f/fast] Error 2
+
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_dc83c/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_dc83c.dir/build.make CMakeFiles/cmTC_dc83c.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_dc83c.dir/CheckSymbolExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++     -o CMakeFiles/cmTC_dc83c.dir/CheckSymbolExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+Linking CXX executable cmTC_dc83c
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_dc83c.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++       CMakeFiles/cmTC_dc83c.dir/CheckSymbolExists.cxx.o  -o cmTC_dc83c 
+CMakeFiles/cmTC_dc83c.dir/CheckSymbolExists.cxx.o:(.toc+0x0): undefined reference to `pthread_create'
+/usr/bin/ld: link errors found, deleting executable `cmTC_dc83c'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_dc83c] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_dc83c/fast] Error 2
+
+File /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/gmake" "cmTC_67fc5/fast"
+/usr/bin/gmake -f CMakeFiles/cmTC_67fc5.dir/build.make CMakeFiles/cmTC_67fc5.dir/build
+gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_67fc5.dir/CheckFunctionExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_67fc5.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_67fc5
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.11.3-riuq5icnaxsiaai5eybsmtvjuixsp5iv/bin/cmake -E cmake_link_script CMakeFiles/cmTC_67fc5.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_67fc5.dir/CheckFunctionExists.cxx.o  -o cmTC_67fc5 -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_67fc5] Error 1
+gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
+gmake: *** [cmTC_67fc5/fast] Error 2
 
 
 Determining if the function sgemm_ exists failed with the following output:
 Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake cmTC_290be/fast && /usr/bin/gmake -f CMakeFiles/cmTC_290be.dir/build.make CMakeFiles/cmTC_290be.dir/build
+Run Build Command(s):/usr/bin/gmake cmTC_5171a/fast && /usr/bin/gmake -f CMakeFiles/cmTC_5171a.dir/build.make CMakeFiles/cmTC_5171a.dir/build
 gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_290be.dir/CheckFunctionExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=sgemm_   -o CMakeFiles/cmTC_290be.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckFunctionExists/CheckFunctionExists.cxx
-Linking CXX executable cmTC_290be
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_290be.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=sgemm_    CMakeFiles/cmTC_290be.dir/CheckFunctionExists.cxx.o  -o cmTC_290be 
-CMakeFiles/cmTC_290be.dir/CheckFunctionExists.cxx.o: In function `main':
+Building CXX object CMakeFiles/cmTC_5171a.dir/CheckFunctionExists.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=sgemm_   -o CMakeFiles/cmTC_5171a.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckFunctionExists/CheckFunctionExists.cxx
+Linking CXX executable cmTC_5171a
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5171a.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=sgemm_    CMakeFiles/cmTC_5171a.dir/CheckFunctionExists.cxx.o  -o cmTC_5171a 
+CMakeFiles/cmTC_5171a.dir/CheckFunctionExists.cxx.o: In function `main':
 CheckFunctionExists.cxx:(.text+0x28): undefined reference to `sgemm_'
-/usr/bin/ld: link errors found, deleting executable `cmTC_290be'
+/usr/bin/ld: link errors found, deleting executable `cmTC_5171a'
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_290be] Error 1
+gmake[1]: *** [cmTC_5171a] Error 1
 gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_290be/fast] Error 2
+gmake: *** [cmTC_5171a/fast] Error 2
 
 
 
 Performing C++ SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
 Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/usr/bin/gmake cmTC_89dc7/fast && /usr/bin/gmake -f CMakeFiles/cmTC_89dc7.dir/build.make CMakeFiles/cmTC_89dc7.dir/build
+Run Build Command(s):/usr/bin/gmake cmTC_9f0c4/fast && /usr/bin/gmake -f CMakeFiles/cmTC_9f0c4.dir/build.make CMakeFiles/cmTC_9f0c4.dir/build
 gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_89dc7.dir/src.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_89dc7.dir/src.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/src.cxx
-Linking CXX executable cmTC_89dc7
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_89dc7.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_89dc7.dir/src.cxx.o  -o cmTC_89dc7 
-CMakeFiles/cmTC_89dc7.dir/src.cxx.o: In function `main':
+Building CXX object CMakeFiles/cmTC_9f0c4.dir/src.cxx.o
+/sw/summit/gcc/6.4.0/bin/c++    -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_9f0c4.dir/src.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_9f0c4
+/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9f0c4.dir/link.txt --verbose=1
+/sw/summit/gcc/6.4.0/bin/c++   -DCMAKE_HAVE_LIBC_PTHREAD    CMakeFiles/cmTC_9f0c4.dir/src.cxx.o  -o cmTC_9f0c4 
+CMakeFiles/cmTC_9f0c4.dir/src.cxx.o: In function `main':
 src.cxx:(.text+0x64): undefined reference to `pthread_create'
 src.cxx:(.text+0x74): undefined reference to `pthread_detach'
 src.cxx:(.text+0x88): undefined reference to `pthread_join'
 src.cxx:(.text+0x9c): undefined reference to `pthread_atfork'
-/usr/bin/ld: link errors found, deleting executable `cmTC_89dc7'
+/usr/bin/ld: link errors found, deleting executable `cmTC_9f0c4'
 collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_89dc7] Error 1
+gmake[1]: *** [cmTC_9f0c4] Error 1
 gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_89dc7/fast] Error 2
+gmake: *** [cmTC_9f0c4/fast] Error 2
 
 
 Source file was:
@@ -323,22 +416,4 @@ int main(void)
 
   return 0;
 }
-
-Determining if the function pthread_create exists in the pthreads failed with the following output:
-Change Dir: /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp
-
-Run Build Command(s):/usr/bin/gmake cmTC_a9cf3/fast && /usr/bin/gmake -f CMakeFiles/cmTC_a9cf3.dir/build.make CMakeFiles/cmTC_a9cf3.dir/build
-gmake[1]: Entering directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-Building CXX object CMakeFiles/cmTC_a9cf3.dir/CheckFunctionExists.cxx.o
-/sw/summit/gcc/6.4.0/bin/c++    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_a9cf3.dir/CheckFunctionExists.cxx.o -c /ccs/home/mannlg15/planc/build-summit/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx
-Linking CXX executable cmTC_a9cf3
-/autofs/nccs-svm1_sw/summit/.swci/0-core/opt/spack/20180914/linux-rhel7-ppc64le/gcc-4.8.5/cmake-3.15.2-xit2o3iepxvqbyku77lwcugufilztu7t/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a9cf3.dir/link.txt --verbose=1
-/sw/summit/gcc/6.4.0/bin/c++   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_a9cf3.dir/CheckFunctionExists.cxx.o  -o cmTC_a9cf3 -lpthreads 
-/usr/bin/ld: cannot find -lpthreads
-collect2: error: ld returned 1 exit status
-gmake[1]: *** [cmTC_a9cf3] Error 1
-gmake[1]: Leaving directory `/autofs/nccs-svm1_home1/mannlg15/planc/build-summit/CMakeFiles/CMakeTmp'
-gmake: *** [cmTC_a9cf3/fast] Error 2
-
-
 

@@ -28,18 +28,18 @@ int main(int argc, char **argv) {
   std::vector< std::vector<uint64_t> > procColIdxs(procCount);
   std::vector< std::vector<double> > procVals(procCount);
   printf("Partitioning nonzeros and outputting to files...\n");
-  int order;
+  int order = 0;
   uint64_t nnz;
   uint64_t rowCount, colCount;
-  fscanf(file, " %d %" SCNu64, &order, &nnz);
   fscanf(file, "%" SCNu64, &rowCount);
   fscanf(file, "%" SCNu64, &colCount);
+  fscanf(file, "%" SCNu64, &nnz);
   printf("order::%d::nnz::%ju::rowcount::%ju::colcount::%ju\n", order, nnz, rowCount, colCount);
   uint64_t rowsPerProc = rowCount / rowProcCount;
   uint64_t colsPerProc = colCount / colProcCount;
   printf("Assigning %ju rows and %ju columns per part.\n", rowsPerProc, colsPerProc);
   for (uint64_t i = 0; i < nnz; i++) {
-    if (i % 100000 == 0 && i > 0) { printf("Processing %ju.th nonzero...\n", i); }
+    //if (i % 100000 == 0 && i > 0) { printf("Processing %ju.th nonzero...\n", i); }
     uint64_t rowIdx, colIdx;
     double val;
     fscanf(file, "%" SCNu64, &rowIdx);

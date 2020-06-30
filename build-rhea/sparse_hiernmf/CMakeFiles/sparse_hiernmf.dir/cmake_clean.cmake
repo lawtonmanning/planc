@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/sparse_hiernmf.dir/hiernmf.cpp.o"
-  "sparse_hiernmf"
   "sparse_hiernmf.pdb"
+  "sparse_hiernmf"
 )
 
 # Per-language clean rules from dependency scanning.

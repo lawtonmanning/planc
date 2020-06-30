@@ -10,13 +10,11 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
-  "BUILD_CUDA=1"
   "__WITH__BARRIER__TIMING__=1"
   )
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/sw/summit/cuda/10.1.243/include"
   "/ccs/home/mannlg15/Armadillo/include"
   "/ccs/home/mannlg15/Armadillo/include/.."
   "../nmf"

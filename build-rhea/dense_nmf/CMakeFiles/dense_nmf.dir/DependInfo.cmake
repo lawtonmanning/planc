@@ -15,8 +15,8 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/ccs/home/mannlg15/armadillo/include"
-  "/ccs/home/mannlg15/armadillo/include/.."
+  "/ccs/home/mannlg15/Armadillo/include"
+  "/ccs/home/mannlg15/Armadillo/include/.."
   "../nmf"
   "../nmf/.."
   "../nmf/../common"
