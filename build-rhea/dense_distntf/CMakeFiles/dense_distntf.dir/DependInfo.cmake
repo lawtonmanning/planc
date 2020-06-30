@@ -16,12 +16,13 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/ccs/home/mannlg15/Armadillo/include"
-  "/ccs/home/mannlg15/Armadillo/include/.."
+  "/ccs/home/mannlg15/armadillo/include"
+  "/ccs/home/mannlg15/armadillo/include/.."
   "../distntf"
   "../distntf/.."
   "../distntf/../common"
   "../distntf/../nnls"
+  "/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20191017/linux-rhel7-x86_64/gcc-6.2.0/openmpi-3.1.4-6i3xptfa3r6joouympddcnja5njc3eda/include"
   )
 
 # Targets to which this target links.

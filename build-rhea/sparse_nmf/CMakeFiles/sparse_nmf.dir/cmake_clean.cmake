@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/sparse_nmf.dir/nmf.cpp.o"
-  "sparse_nmf.pdb"
   "sparse_nmf"
+  "sparse_nmf.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

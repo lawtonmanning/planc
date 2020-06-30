@@ -91,8 +91,6 @@ string
 -
 vector
 -
-cmath
--
 distnmf/distnmf.hpp
 ../distnmf/distnmf/distnmf.hpp
 distnmf/mpicomm.hpp
@@ -139,10 +137,6 @@ pacoss/pacoss.h
 ../distnmf/pacoss/pacoss.h
 
 ../hiernmf/matutils.hpp
-common/utils.hpp
-../hiernmf/common/utils.hpp
-common/distutils.hpp
-../hiernmf/common/distutils.hpp
 
 ../hiernmf/node.hpp
 queue
@@ -2542,8 +2536,6 @@ string
 queue
 -
 vector
--
-fstream
 -
 common/distutils.hpp
 /ccs/home/mannlg15/planc/hiernmf/common/distutils.hpp

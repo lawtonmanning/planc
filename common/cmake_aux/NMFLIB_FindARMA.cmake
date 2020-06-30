@@ -5,7 +5,6 @@ find_path(ARMADILLO_INCLUDE_DIR
   NAMES armadillo
   PATHS "$ENV{ProgramFiles}/Armadillo/include"
   )
-message(STATUS "ProgramFiles $ENV{ProgramFiles}")
 
 message(STATUS "     ARMA_FOUND = ${ARMADILLO_INCLUDE_DIR}")
 
@@ -16,7 +15,7 @@ set(NMFLIB_USE_ATLAS            false)
 OPTION(CMAKE_IGNORE_MKL "Build Ignoring MKL" ON)
 
 #to build sparse comment or uncomment this line.
-#OPTION(CMAKE_BUILD_SPARSE "Build Sparse" OFF)
+OPTION(CMAKE_BUILD_SPARSE "Build Sparse" OFF)
 if(CMAKE_BUILD_SPARSE)
   add_definitions(-DBUILD_SPARSE=1)
 endif()
@@ -59,7 +58,7 @@ if(BLAS_FOUND)
   set(NMFLIB_LIBS ${NMFLIB_LIBS} ${BLAS_LIBRARIES})
 endif()
 if(LAPACK_FOUND)
-  set(NMFLIB_LIBS ${NMFLIB_LIBS} ${LAPACK_LIBRARIES})
+  set(NMFLIB_LIBS ${NMFLIB_LIBS} ${LAPACK_LIBRARIES} /usr/lib/x86_64-linux-gnu/liblapacke.so)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
@@ -72,11 +71,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 #  endif()
 #endif()
 
-OPTION(CMAKE_BUILD_CUDA "Build with CUDA/NVBLAS" OFF)
+#OPTION(CMAKE_BUILD_CUDA "Build with CUDA/NVBLAS" OFF)
 if(CMAKE_BUILD_CUDA)
-  #find_package(CUDA REQUIRED)
+  find_package(CUDA REQUIRED)
 else()
-  #find_package(CUDA)
+  find_package(CUDA)
 endif()
 message(STATUS " CUDA_FOUND = ${CUDA_FOUND}" )
 if (CUDA_FOUND)

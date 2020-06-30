@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/dense_distntf.dir/distntf.cpp.o"
-  "dense_distntf.pdb"
   "dense_distntf"
+  "dense_distntf.pdb"
 )
 
 # Per-language clean rules from dependency scanning.

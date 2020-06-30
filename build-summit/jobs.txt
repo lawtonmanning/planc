@@ -1,6 +1,3 @@
 169396 -- it=10,tol=NONE,tnodes=100,cnodes=1
 169717 -- it=10,tol=NONE,tnodes=100,cnodes=1
 173841 -- it=1000,tol=NONE,tnodes=100,cnodes=1
-173992 -- it=1000,tol=NONE,tnodes=100,cnodes=1
-179994 -- it=100,tol=NONE,tnodes=100,cnodes=2-100
-180001 -- it=100,tol=NONE,tnodes=100,cnodes=2-100
