@@ -9,6 +9,7 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{cleveref}
+\usepackage{tikz}
 \usepackage{ourmacros}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -47,7 +48,12 @@ hpark@cc.gatech.edu}
 \maketitle
 
 \begin{abstract}
-\GB{to be done...}
+Nonnegative Matrix Factorization (NMF) is an effective tool for clustering nonnegative data, either for computing a flat partitioning of a dataset or for determining a hierarchy of similarity.
+In this paper, we propose a parallel algorithm for hierarchical clustering that uses a divide-and-conquer approach based on rank-two NMF to split a data set into two cohesive parts.
+Not only does this approach uncover more structure in the data than a flat NMF clustering, but also rank-two NMF can be computed more quickly than for general ranks, providing comparable overall time to solution.
+Furthermore, the rank-two NMF algorithm can be parallelized efficiently using a computational kernel similar to matrix-vector multiplication.
+Our data distribution and parallelization strategies are designed to maintain computational load balance throughout the data-dependent hierarchy of computation while limiting interprocess communication, allowing the algorithm to scale to large dense and sparse data sets.
+We demonstrate the scalability of our parallel algorithm in terms of data size and number of processors, and apply the hierarchical clustering approach to large (dense) hyperspectral imaging and (sparse) text document data.
 \end{abstract}
 
 %\begin{IEEEkeywords}
@@ -56,9 +62,13 @@ hpark@cc.gatech.edu}
 
 \section{Introduction}
 
-test reference: \cite{GKP15}
+
 
 \section{Preliminaries}
+
+\begin{itemize}
+	\item NMF, BCD, rank-2 NMF
+\end{itemize}
 
 \section{Algorithm}
 
@@ -67,7 +77,7 @@ test reference: \cite{GKP15}
 \subsubsection{Rank-2 NMF}
 
 \begin{algorithm}
-\caption{Rank-2 Nonnegative Least Squares Solve}
+\caption{Rank-2 Nonnegative Least Squares Solve \cite{KP13}}
 \label{alg:r2nmf}
 \begin{algorithmic}[1]
 	\Require{$\M{C}$ is $n\times 2$ and $\M{G}$ is $2\times 2$ and s.p.d.}
@@ -90,6 +100,28 @@ test reference: \cite{GKP15}
 \end{algorithm}
 
 \subsubsection{Hierarchical Clustering}
+
+\begin{algorithm}
+\caption{Hierarchical Clustering via Rank-2 NMF \cite{KP13}}
+\label{alg:hiernmf2}
+\begin{algorithmic}[1]
+	\Require{$\M{A}$ is $m\times n$, $k$ is target number of leaves}
+	\Function{${\cal T} =$ Hier-R2-NMF}{$\M{A}$}
+		\State ${\cal R} = \text{node}(\M{A})$ \hfill \Comment{create root node}
+		\State inject$({\cal Q},{\cal R})$ \hfill \Comment{create priority queue of leaves}
+		\While{leaves$({\cal T}) < k$}
+			\State ${\cal N} = \text{eject}({\cal Q})$ \hfill \Comment{get leaf with max score}
+			\State $[\M{W},\M{H}] = \textsc{Rank2-NMF}({\cal N}.\M{A})$ \hfill \Comment{split $\cal N$}
+			\State partition ${\cal N}.\M{A}$ into $\M{A}_1$ and $\M{A}_2$ using $\M{H}$
+			\State ${\cal N}_1 = \text{node}(\M{A}_1,\text{score}(\M{A}_1),\V{W}_1)$ \hfill \Comment{left child}
+			\State ${\cal N}_2 = \text{node}(\M{A}_2,\text{score}(\M{A}_2),\V{W}_2)$ \hfill \Comment{right child}
+			\State ${\cal N}.\text{left} = {\cal N}_1$, ${\cal N}.\text{right} = {\cal N}_2$
+			\State inject$({\cal Q},{\cal N}_1)$, inject$({\cal Q},{\cal N}_2)$ 
+		\EndWhile
+	\EndFunction
+	\Ensure{$\cal{T}$ is binary tree with $k$ leaves, each node has subset of columns of $\M{A}$ and feature vector $\V{w}$}
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Parallelization}
 
@@ -120,6 +152,12 @@ test reference: \cite{GKP15}
 	\Ensure{$\M{A} \approx \M{W}\M{H}^\Tra$ with $\M{W}$, $\M{H}$ row-distributed}
 \end{algorithmic}
 \end{algorithm}
+
+\begin{figure}
+\input{fig/split}
+\caption{Parallel splitting using Rank-2 NMF}
+\label{fig:split}
+\end{figure}
 
 \subsubsection{Analysis}
 
