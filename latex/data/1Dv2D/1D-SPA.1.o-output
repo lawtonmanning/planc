@@ -1,0 +1,2 @@
+m,n,p,pr,pc,d-min,d-avg,d-max,comm-min,comm-avg,comm-max,comp-min,comp-avg,comp-max,allgather-min,allgather-avg,allgather-max,allreduce-min,allreduce-avg,allreduce-max,reducescatter-min,reducescatter-avg,reducescatter-max,gram-min,gram-avg,gram-max,mm-min,mm-avg,mm-max,nnls-min,nnls-avg,nnls-max
+1000000,1000000,42,42,1,204.716,204.717,204.717,1.99959,2.05274,2.18356,202.218,202.233,202.247,0.632444,0.665242,0.789955,0.0021103,0.0132202,0.0136607,1.36504,1.37428,1.38012,0.0251649,0.0338132,0.041447,199.893,199.901,199.902,2.28032,2.29798,2.30511
