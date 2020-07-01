@@ -102,24 +102,46 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 \subsubsection{Hierarchical Clustering}
 
 \begin{algorithm}
-\caption{Hierarchical Clustering via Rank-2 NMF \cite{KP13}}
+\caption{Hierarchical Clustering \cite{KP13}}
 \label{alg:hiernmf2}
 \begin{algorithmic}[1]
 	\Require{$\M{A}$ is $m\times n$, $k$ is target number of leaves}
 	\Function{${\cal T} =$ Hier-R2-NMF}{$\M{A}$}
 		\State ${\cal R} = \text{node}(\M{A})$ \hfill \Comment{create root node}
-		\State inject$({\cal Q},{\cal R})$ \hfill \Comment{create priority queue of leaves}
-		\While{leaves$({\cal T}) < k$}
+		\State \textsc{Split}$({\cal R})$
+		\State inject$({\cal Q},{\cal R}.\text{left})$ \hfill \Comment{create priority queue}
+		\State inject$({\cal Q},{\cal R}.\text{right})$ \hfill \Comment{of frontier nodes}
+		\While{size$({\cal Q}) < k$}
 			\State ${\cal N} = \text{eject}({\cal Q})$ \hfill \Comment{get leaf with max score}
-			\State $[\M{W},\M{H}] = \textsc{Rank2-NMF}({\cal N}.\M{A})$ \hfill \Comment{split $\cal N$}
-			\State partition ${\cal N}.\M{A}$ into $\M{A}_1$ and $\M{A}_2$ using $\M{H}$
-			\State ${\cal N}_1 = \text{node}(\M{A}_1,\text{score}(\M{A}_1),\V{W}_1)$ \hfill \Comment{left child}
-			\State ${\cal N}_2 = \text{node}(\M{A}_2,\text{score}(\M{A}_2),\V{W}_2)$ \hfill \Comment{right child}
-			\State ${\cal N}.\text{left} = {\cal N}_1$, ${\cal N}.\text{right} = {\cal N}_2$
-			\State inject$({\cal Q},{\cal N}_1)$, inject$({\cal Q},{\cal N}_2)$ 
+			\State \textsc{Split}$({\cal R}.\text{left})$ \hfill \Comment{split left child}
+			\State inject$({\cal Q},{\cal R}.\text{left})$ \hfill \Comment{and add to $\cal Q$}
+			\State \textsc{Split}$({\cal R}.\text{right})$ \hfill \Comment{split right child}
+			\State inject$({\cal Q},{\cal R}.\text{right})$ \hfill \Comment{and add to $\cal Q$}
 		\EndWhile
 	\EndFunction
-	\Ensure{$\cal{T}$ is binary tree with $k$ leaves, each node has subset of columns of $\M{A}$ and feature vector $\V{w}$}
+	\Ensure{$\cal{T}$ is binary tree rooted at $\cal R$ with $k$ frontier nodes, each node has subset of cols of $\M{A}$ and feature vector $\V{w}$}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}
+\input{fig/tree}
+\caption{Hierarchy node classification}
+\label{fig:tree}
+\end{figure}
+
+\begin{algorithm}
+\caption{Node Splitting via Rank-Two NMF}
+\label{alg:split}
+\begin{algorithmic}[1]
+	\Require{$\cal N$ has a subset of columns given by field $\M{A}$}
+	\Function{Split}{$\cal N$}
+		\State $[\M{W},\M{H}] = \textsc{Rank2-NMF}({\cal N}.\M{A})$ \hfill \Comment{split $\cal N$}
+		\State partition ${\cal N}.\M{A}$ into $\M{A}_1$ and $\M{A}_2$ using $\M{H}$
+		\State ${\cal N}.\text{left} = \text{node}(\M{A}_1,\V{W}_1)$ \hfill \Comment{create left child}
+		\State ${\cal N}.\text{right} = \text{node}(\M{A}_2,\V{W}_2)$ \hfill \Comment{create right child}
+		\State ${\cal N}.\text{score} = \sigma_1(\M{A}_1) + \sigma_1(\M{A}_2) - \sigma_1({\cal N}.\M{A})$
+	\EndFunction
+	\Ensure{$\cal{N}$ has two children and a score}
 \end{algorithmic}
 \end{algorithm}
 
