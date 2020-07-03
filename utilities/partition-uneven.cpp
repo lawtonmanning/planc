@@ -114,6 +114,7 @@ int main(int argc, char **argv) {
     for (uint64_t j = 0; j < curRowIdxs.size(); j++) {
       fprintf(file, "%" PRIu64 " %" PRIu64 " %e\n", curRowIdxs[j], curColIdxs[j], curVals[j]);
     }
+    fprintf(file, "%" PRIu64 " %" PRIu64 " 0\n", m-1,n-1);
     fclose(file);
   }
 
