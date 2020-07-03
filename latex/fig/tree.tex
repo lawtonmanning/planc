@@ -4,23 +4,23 @@
 \begin{tikzpicture}[scale=.9,level/.style={sibling distance=50mm/#1}]
 \node [circle,draw] (z) {}
   child {node [circle,draw,fill=gray] (a) {}
-    child {node [circle,draw,dashed] (b) {}}
-    child {node [circle,draw,dashed] (g) {}}
+    child[dashed] {node [circle,draw,dashed] (b) {}}
+    child[dashed] {node [circle,draw,dashed] (g) {}}
   }
   child {node [circle,draw] (j) {}
     child {node [circle,draw] (k) {}
       child {node [circle,draw,fill=gray] (o) {}
-        child {node [circle,draw,dashed] (x) {}}
-        child {node [circle,draw,dashed] (y) {}}
+        child[dashed] {node [circle,draw,dashed] (x) {}}
+        child[dashed] {node [circle,draw,dashed] (y) {}}
       }
       child {node [circle,draw,fill=gray] (p) {}
-        child {node [circle,draw,dashed] (x) {}}
-        child {node [circle,draw,dashed] (y) {}}
+        child[dashed] {node [circle,draw,dashed] (x) {}}
+        child[dashed] {node [circle,draw,dashed] (y) {}}
       }
     }
   child {node [circle,draw,fill=gray] (l) {}
-    child {node [circle,draw,dashed] (c) {}}
-    child {node [circle,draw,dashed] (d) {}}
+    child[dashed] {node [circle,draw,dashed] (c) {}}
+    child[dashed] {node [circle,draw,dashed] (d) {}}
   }
 };
 

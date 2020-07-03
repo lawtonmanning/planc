@@ -21,7 +21,7 @@
 
 % draw H
 \draw[thick,shift={(0,4.1)},xscale=4,yscale=.15] (0,0) grid ++(1,2);
-\node at (4+3*\offset,4.4) {$\M{H}$};
+\node at (4+4*\offset,4.3) {$\M{H}^\Tra$};
 \draw[fill=gray,shift={(0,4.1)}] (0,.15) rectangle ++(.5,.15);
 \draw[fill=gray,shift={(0,4.1)}] (.5,0) rectangle ++(1.25,.15);
 \draw[fill=gray,shift={(0,4.1)}] (1.75,.15) rectangle ++(1.25,.15);
@@ -45,16 +45,16 @@
 
 % draw arrows to A_1 and w_1
 % TODO: make these arrows prettier
-\draw[thick] (0.25,-\offset) parabola (1.5,-0.5);
-\draw[thick] (2.25,-\offset) parabola (1.5,-0.5);
-\draw[thick,->] (1.5,-0.5) parabola (.125,-2+\offset);
+\draw[thick] (0.25,-\offset) parabola (.125,-0.5);
+\draw[thick] (2.25,-\offset) parabola (.125,-0.5);
+\draw[thick,->] (.125,-0.5) parabola (.125,-2+\offset);
 \draw[thick,->] (-.5+.075,-\offset) parabola (-1.5+.075,-2+\offset);
 
 % draw arrows to A_2
 % TODO: make these arrows prettier
-\draw[thick] (1,-\offset) parabola (2.5,-0.5);
-\draw[thick] (3.5,-\offset) parabola (2.5,-0.5);
-\draw[thick,->] (2.5,-0.5) parabola (4.875,-2+\offset);
+\draw[thick] (1,-\offset) parabola (4.375,-0.5);
+\draw[thick] (3.5,-\offset) parabola (4.375,-0.5);
+\draw[thick,->] (4.375,-0.5) parabola (4.875,-2+\offset);
 \draw[thick,->] (-.5+.225,-\offset) parabola (3.5+.075,-2+\offset);
 
 \end{tikzpicture}

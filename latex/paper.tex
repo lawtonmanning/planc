@@ -62,7 +62,7 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 
 \section{Introduction}
 
-\GB{ask Haesun to write intro paragraph motivating hierarchical clustering but noting the limitations of time and data size?}
+\GB{ask Haesun to write intro paragraph motivating hierarchical clustering but noting the limitations of time and data size}
 
 \section{Preliminaries}
 
@@ -77,15 +77,28 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 
 \subsubsection{Rank-2 NMF}
 
+\begin{itemize}
+	\item subroutine for splitting node is rank-2 NMF
+	\item using BCD, subproblem is set of independent NNLS problems with variable vector of length 2
+	\item 4 possibilities
+	\begin{itemize}
+		\item all-zero option never optimum if input is nonnegative
+		\item if all-pos option is optimum, it is solution to unconstrained problem
+		\item can choose between one-zero options using line 6 of algorithm
+		\item describe \cref{alg:r2nmf}
+	\end{itemize}
+\end{itemize}
+
 \begin{algorithm}
 \caption{Rank-2 Nonnegative Least Squares Solve \cite{KP13}}
 \label{alg:r2nmf}
 \begin{algorithmic}[1]
 	\Require{$\M{C}$ is $n\times 2$ and $\M{G}$ is $2\times 2$ and s.p.d.}
 	\Function{$\M{H} =$ Rank2-NLS-Solve}{$\M{C},\M{G}$}
-		\State $\M{H} = \M{C}\M{G}^{-1}$
+		\State $\M{H} = \M{C}\M{G}^{-1}$ \hfill \Comment{Solve unconstrained system}
 		\For{$i=1$ to $n$}
 			\If{$\ME{H}{i1} < 0$ or $\ME{H}{i2} < 0$}
+				\State \Comment{Choose between single-variable solutions}
 				\If{$\ME{H}{i1} \sqrt{\ME{G}{11}}  < \ME{H}{i2} \sqrt{\ME{G}{22}} $}
 					\State $\ME{H}{i1} = 0$
 					\State $\ME{H}{i2} = \ME{C}{i2} / \ME{G}{22}$
@@ -113,11 +126,11 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 		\State inject$({\cal Q},{\cal R}.\text{left})$ \hfill \Comment{create priority queue}
 		\State inject$({\cal Q},{\cal R}.\text{right})$ \hfill \Comment{of frontier nodes}
 		\While{size$({\cal Q}) < k$}
-			\State ${\cal N} = \text{eject}({\cal Q})$ \hfill \Comment{get leaf with max score}
-			\State \textsc{Split}$({\cal R}.\text{left})$ \hfill \Comment{split left child}
-			\State inject$({\cal Q},{\cal R}.\text{left})$ \hfill \Comment{and add to $\cal Q$}
-			\State \textsc{Split}$({\cal R}.\text{right})$ \hfill \Comment{split right child}
-			\State inject$({\cal Q},{\cal R}.\text{right})$ \hfill \Comment{and add to $\cal Q$}
+			\State ${\cal N} = \text{eject}({\cal Q})$ \hfill \Comment{frontier node with max score}
+			\State \textsc{Split}$({\cal N}.\text{left})$ \hfill \Comment{split left child}
+			\State inject$({\cal Q},{\cal N}.\text{left})$ \hfill \Comment{and add to $\cal Q$}
+			\State \textsc{Split}$({\cal N}.\text{right})$ \hfill \Comment{split right child}
+			\State inject$({\cal Q},{\cal N}.\text{right})$ \hfill \Comment{and add to $\cal Q$}
 		\EndWhile
 	\EndFunction
 	\Ensure{$\cal{T}$ is binary tree rooted at $\cal R$ with $k$ frontier nodes, each node has subset of cols of $\M{A}$ and feature vector $\V{w}$}
