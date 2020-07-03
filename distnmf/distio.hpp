@@ -466,8 +466,8 @@ namespace planc {
                 SP_MAT temp_spmat(idxs, vals);
                 m_A = temp_spmat;
               }
-              // m_A.load(sr.str(), arma::coord_ascii);
-              uniform_dist_matrix(m_A);
+              m_A.load(sr.str(), arma::coord_ascii);
+              // uniform_dist_matrix(m_A);
 #else
               m_A.load(sr.str());
 #endif
