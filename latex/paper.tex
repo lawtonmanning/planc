@@ -10,6 +10,7 @@
 \usepackage{xcolor}
 \usepackage{cleveref}
 \usepackage{tikz}
+\usepackage{mathtools}
 \usepackage{ourmacros}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -67,7 +68,7 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 \section{Preliminaries}
 
 \begin{itemize}
-	\item NMF, BCD, rank-2 NMF
+	\item NMF, BCD, NNLS
 	\item PLANC
 \end{itemize}
 
@@ -89,6 +90,29 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 	\end{itemize}
 \end{itemize}
 
+Using the 2-block BCD approach for a rank-2 NMF yields NNLS subproblems of the form $\displaystyle \min_{\M[\bar]{H} \geq \M{0}} \|\M{W}\M[\bar]{H}^\Tra-\M{A}\|$ and $\min_{\M[\bar]{W} \geq \M{0}} \|\M{H}\M[\bar]{W}^\Tra-\M{A}^\Tra\|$.
+In each case, the columns of the transposed variable matrix can be computed independently.
+Considering the $i$th row of $\M[\bar]{H}$, for example, the NNLS problem to solve is
+\begin{align*}
+\begin{multlined}
+\min_{\ME[\bar]{H}{i,1},\ME[\bar]{H}{i,2} \geq 0} \left\|\begin{bmatrix} \V{w}_1 & \V{w}_2 \end{bmatrix} \begin{bmatrix}\ME[\bar]{H}{i,1} \\ \ME[\bar]{H}{i,2} \end{bmatrix} - \V{A}_i \right\| \\ = \min_{\ME[\bar]{H}{i,1},\ME[\bar]{H}{i,2} \geq 0} \left\|\ME[\bar]{H}{i,1} \V{w}_1 + \ME[\bar]{H}{i,2} \V{w}_2 - \V{a}_i \right\|
+\end{multlined}
+\end{align*}
+where $\V{w}_1$ and $\V{W}_2$ are the two columns of $\M{W}$ and $\V{a}_i$ is the $i$ column of $\M{A}$.
+We note that there are four possibilities of solutions, as each of the two scalar variables may be positive or zero.
+
+As shown by Kuang and Park \cite{KP13}, determining which of the four possible solutions is feasible and optimal can be done efficiently by exploiting the following properties:
+\begin{itemize}
+	\item if the solution to the unconstrained least squares problem admits two positive values, it is the optimal solution to the nonnegatively constrained problem,
+	\item if $\M{W}$ and $\M{A}$ are both nonnegative, then the candidate solution with two zero values is never (uniquely) optimal and can be discarded, and
+	\item if the solution to the unconstrained problem does not admit two positive values, the better of the two remaining solutions can be determined by comparing $\V{a}_{j}^\Tra\V{w}_1 / \|\V{w}_1\|$ and $\V{a}_{j}^\Tra\V{w}_2 / \|\V{w}_2\|$.
+\end{itemize}
+If the unconstrained problem is solved via the normal equations, then the temporary matrices computed for the normal equations ($\M{W}^\Tra\M{W}$ and $\M{A}^\Tra\M{W}$) can be re-used to determine the better of the two single-positive-variable solutions.
+
+\Cref{alg:r2nmf} implements this strategy for all rows of $\M{H}$ simultaneously.
+It takes as input the matrices $\M{C}=\M{A}^\Tra\M{W}$ and $\M{G}=\M{W}^\Tra\M{W}$, first solves the normal equations for the unconstrained problem, and then determines between the two alternate possibilities as necessary.
+\GB{To avoid two passes through the data, we could combine the solve and the update if necessary.  It might also help to pre-compute the inverse of $\M{G}$...  Also Lawton, please check the details of the pseudocode!}
+
 \begin{algorithm}
 \caption{Rank-2 Nonnegative Least Squares Solve \cite{KP13}}
 \label{alg:r2nmf}
@@ -99,7 +123,7 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 		\For{$i=1$ to $n$}
 			\If{$\ME{H}{i1} < 0$ or $\ME{H}{i2} < 0$}
 				\State \Comment{Choose between single-variable solutions}
-				\If{$\ME{H}{i1} \sqrt{\ME{G}{11}}  < \ME{H}{i2} \sqrt{\ME{G}{22}} $}
+				\If{$\ME{C}{i1} / \sqrt{\ME{G}{11}}  < \ME{C}{i2} / \sqrt{\ME{G}{22}} $}
 					\State $\ME{H}{i1} = 0$
 					\State $\ME{H}{i2} = \ME{C}{i2} / \ME{G}{22}$
 				\Else
