@@ -78,18 +78,6 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 
 \subsubsection{Rank-2 NMF}
 
-\begin{itemize}
-	\item subroutine for splitting node is rank-2 NMF
-	\item using BCD, subproblem is set of independent NNLS problems with variable vector of length 2
-	\item 4 possibilities
-	\begin{itemize}
-		\item all-zero option never optimum if input is nonnegative
-		\item if all-pos option is optimum, it is solution to unconstrained problem
-		\item can choose between one-zero options using line 6 of algorithm
-		\item describe \cref{alg:r2nmf}
-	\end{itemize}
-\end{itemize}
-
 Using the 2-block BCD approach for a rank-2 NMF yields NNLS subproblems of the form $\displaystyle \min_{\M[\bar]{H} \geq \M{0}} \|\M{W}\M[\bar]{H}^\Tra-\M{A}\|$ and $\min_{\M[\bar]{W} \geq \M{0}} \|\M{H}\M[\bar]{W}^\Tra-\M{A}^\Tra\|$.
 In each case, the columns of the transposed variable matrix can be computed independently.
 Considering the $i$th row of $\M[\bar]{H}$, for example, the NNLS problem to solve is
@@ -107,15 +95,17 @@ As shown by Kuang and Park \cite{KP13}, determining which of the four possible s
 	\item if $\M{W}$ and $\M{A}$ are both nonnegative, then the candidate solution with two zero values is never (uniquely) optimal and can be discarded, and
 	\item if the solution to the unconstrained problem does not admit two positive values, the better of the two remaining solutions can be determined by comparing $\V{a}_{j}^\Tra\V{w}_1 / \|\V{w}_1\|$ and $\V{a}_{j}^\Tra\V{w}_2 / \|\V{w}_2\|$.
 \end{itemize}
-If the unconstrained problem is solved via the normal equations, then the temporary matrices computed for the normal equations ($\M{W}^\Tra\M{W}$ and $\M{A}^\Tra\M{W}$) can be re-used to determine the better of the two single-positive-variable solutions.
+If the unconstrained problem is solved via the normal equations, then the temporary matrices computed for the normal equations ($\M{W}^\Tra\M{W}$ and $\M{A}^\Tra\M{W}$) can be re-used to determine the better of the two solutions with a single positive variable.
 
-\Cref{alg:r2nmf} implements this strategy for all rows of $\M{H}$ simultaneously.
-It takes as input the matrices $\M{C}=\M{A}^\Tra\M{W}$ and $\M{G}=\M{W}^\Tra\M{W}$, first solves the normal equations for the unconstrained problem, and then determines between the two alternate possibilities as necessary.
+\Cref{alg:r2nnls} implements this strategy for all rows of $\M{H}$ simultaneously.
+It takes as input the matrices $\M{C}=\M{A}^\Tra\M{W}$ and $\M{G}=\M{W}^\Tra\M{W}$, first solves the normal equations for the unconstrained problem, and then chooses between the two alternate possibilities as necessary.
+We note that each row of $\M{H}$ is independent, and therefore this algorithm is easily parallelized.
+Solving for $\M{W}$ can be done using inputs $\M{C}=\M{A}\M{H}$ and $\M{G}=\M{H}^\Tra\M{H}$.
 \GB{To avoid two passes through the data, we could combine the solve and the update if necessary.  It might also help to pre-compute the inverse of $\M{G}$...  Also Lawton, please check the details of the pseudocode!}
 
 \begin{algorithm}
 \caption{Rank-2 Nonnegative Least Squares Solve \cite{KP13}}
-\label{alg:r2nmf}
+\label{alg:r2nnls}
 \begin{algorithmic}[1]
 	\Require{$\M{C}$ is $n\times 2$ and $\M{G}$ is $2\times 2$ and s.p.d.}
 	\Function{$\M{H} =$ Rank2-NLS-Solve}{$\M{C},\M{G}$}
@@ -137,13 +127,25 @@ It takes as input the matrices $\M{C}=\M{A}^\Tra\M{W}$ and $\M{G}=\M{W}^\Tra\M{W
 \end{algorithmic}
 \end{algorithm}
 
+Given that the computational complexity of \Cref{alg:r2nnls} is $O(n)$ (or $O(m)$ when computing $\M{W}$), and the complexity of computing $\M{W}^\Tra\M{W}$ and $\M{H}^\Tra\M{H}$ is $O(m+n)$, the typical dominant cost of each iteration of Rank-2 NMF is that of computing $\M{A}^\Tra\M{W}$ and $\M{A}\M{H}$, which is $O(mn)$ when $\M{A}$ is dense and $O(\text{nnz}(A))$ when $\M{A}$ is sparse.
+
 \subsubsection{Hierarchical Clustering}
+
+\begin{itemize}
+	\item summarize approach: expand binary tree until number of leaves hits desired target
+	\item choosing leaf node to split is done using priority queue based on that leaf's score
+	\begin{itemize}
+		\item score can be defined in multiple ways...
+	\end{itemize}
+	\item explain frontier nodes
+	\item explain \Cref{alg:hiernmf2} notation, fields of nodes, etc.
+\end{itemize}
 
 \begin{algorithm}
 \caption{Hierarchical Clustering \cite{KP13}}
 \label{alg:hiernmf2}
 \begin{algorithmic}[1]
-	\Require{$\M{A}$ is $m\times n$, $k$ is target number of leaves}
+	\Require{$\M{A}$ is $m\times n$, $k$ is target number of leaf clusters}
 	\Function{${\cal T} =$ Hier-R2-NMF}{$\M{A}$}
 		\State ${\cal R} = \text{node}(\M{A})$ \hfill \Comment{create root node}
 		\State \textsc{Split}$({\cal R})$
