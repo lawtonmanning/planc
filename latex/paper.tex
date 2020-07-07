@@ -131,15 +131,39 @@ Given that the computational complexity of \Cref{alg:r2nnls} is $O(n)$ (or $O(m)
 
 \subsubsection{Hierarchical Clustering}
 
-\begin{itemize}
-	\item summarize approach: expand binary tree until number of leaves hits desired target
-	\item choosing leaf node to split is done using priority queue based on that leaf's score
-	\begin{itemize}
-		\item score can be defined in multiple ways...
-	\end{itemize}
-	\item explain frontier nodes
-	\item explain \Cref{alg:hiernmf2} notation, fields of nodes, etc.
-\end{itemize}
+A Rank-2 NMF can be used to partition the columns of the matrix into two parts.
+In this case, the columns of the $\M{W}$ factor represent feature weights for each of the two latent components, and the strength of membership in the two components for each column of $\M{A}$ is given by the two values in the corresponding row of $\M{H}$.
+We can determine part membership by comparing those values: if $\ME{H}{i1} > \ME{H}{i2}$, then column $i$ of $\M{A}$ is assigned to the first part, which is associated with feature vector $\V{w}_1$.
+Membership can be determined by other metrics that also take into account balance across parts or attempt to detect outliers.
+
+Given Rank-2 NMF as a splitting procedure, hierarchical clustering builds a binary tree such that each node corresponds to a subset of samples from the original data set and each node's children correspond to a 2-way partition of the node's samples.
+In this way, the leaves form a partition of the original data, and the internal nodes specify the hierarchical relationship among clusters.
+As the tree is built, nodes are split in order of their score, or relative value to the overall clustering of the data.
+The process can be continued until a target number of leaves is produced or until all remaining leaves have a score below a given threshold.
+
+A node's score can be computed in different ways.
+For document clustering, Kuang and Park \cite{KP13} propose using modified normalized discounted cumulative gain, which measures how distinct a node's children are from each other using the feature weights associated with the node and its children.
+For hyperspectral imaging data, Gillis et al. \cite{GKP15} propose using the possible reduction in overall NMF error if the node is split -- the difference in error between using the node itself or using its children.
+We use the latter in our implementation.
+
+In any case, a node's score depends on properties of its children, so the computation for a split must be done before the split is actually accepted.
+To this end, we define a \emph{frontier} node to be a parent of leaves; these are nodes whose children have been computed but whose splits have not been accepted.
+\Cref{fig:tree} depicts the classification of nodes into internal, frontier, and leaf nodes.
+As the tree is built, the algorithm selects the frontier node with the highest score to split, though no computation is required to split the node.
+When a frontier node split is accepted, it becomes an internal node and its children are split (so that their scores can be computed) and added to the set of frontier nodes.
+When the algorithm terminates, the leaves are discarded and the frontier nodes become the leaves of the output tree.
+
+\begin{figure}
+\input{fig/tree}
+\caption{Hierarchy node classification}
+\label{fig:tree}
+\end{figure}
+
+Our hierarchical clustering algorithm is presented in \Cref{alg:hiernmf2} and follows that of Kuang and Park \cite{KP13}.
+Each node includes a field $\M{A}$, which is a subset of columns (samples) of the original data, a feature vector $\V{w}$, which is its corresponding column of the $\M{W}$ matrix from its parent's Rank-2 NMF, a score, and pointers to its left and right children.
+A priority queue $\cal Q$ tracks the frontier nodes so that the node with the highest score is split at each step of the algorithm.
+We use a target number of leaf clusters $k$ as the termination condition.
+When a node is selected from the priority queue, it is removed from the set of frontier nodes and its children are added.
 
 \begin{algorithm}
 \caption{Hierarchical Clustering \cite{KP13}}
@@ -163,11 +187,10 @@ Given that the computational complexity of \Cref{alg:r2nnls} is $O(n)$ (or $O(m)
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}
-\input{fig/tree}
-\caption{Hierarchy node classification}
-\label{fig:tree}
-\end{figure}
+The splitting procedure is specified in \Cref{alg:split}.
+After the Rank-2 NMF is performed, the $\M{H}$ factor is used to determine part membership, and the columns of the $\M{W}$ factor are assigned to the child nodes.
+The score of the node is computed as the reduction in overall NMF error if the node is split, which can be computed from the principal singular values of the subsets of columns of the node and its children.
+The principal singular values of the children are computed via the power method (the principal singular value of the node was computed when its parent's score was computed).
 
 \begin{algorithm}
 \caption{Node Splitting via Rank-Two NMF}
@@ -179,7 +202,7 @@ Given that the computational complexity of \Cref{alg:r2nnls} is $O(n)$ (or $O(m)
 		\State partition ${\cal N}.\M{A}$ into $\M{A}_1$ and $\M{A}_2$ using $\M{H}$
 		\State ${\cal N}.\text{left} = \text{node}(\M{A}_1,\V{W}_1)$ \hfill \Comment{create left child}
 		\State ${\cal N}.\text{right} = \text{node}(\M{A}_2,\V{W}_2)$ \hfill \Comment{create right child}
-		\State ${\cal N}.\text{score} = \sigma_1(\M{A}_1) + \sigma_1(\M{A}_2) - \sigma_1({\cal N}.\M{A})$
+		\State ${\cal N}.\text{score} = \sigma_1^2(\M{A}_1) + \sigma_1^2(\M{A}_2) - \sigma_1^2({\cal N}.\M{A})$
 	\EndFunction
 	\Ensure{$\cal{N}$ has two children and a score}
 \end{algorithmic}
@@ -217,7 +240,7 @@ Given that the computational complexity of \Cref{alg:r2nnls} is $O(n)$ (or $O(m)
 
 \begin{figure}
 \input{fig/split}
-\caption{Parallel splitting using Rank-2 NMF}
+\caption{Parallel splitting using Rank-2 NMF \GB{add more to caption and possibly color code W and H}}
 \label{fig:split}
 \end{figure}
 
