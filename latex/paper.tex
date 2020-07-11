@@ -249,13 +249,23 @@ The principal singular values of the children are computed via the power method 
 \section{Experimental Results}
 
 \subsection{Experimental Platform}
+All the experiments in this section were conducted on Summit. Summit is a supercomputer created by IBM for the Oak Ridge National Laboratory. 
+There are approximately 4,600 nodes on Summit. Each node contains two IBM POWER9 processors on separate sockets with dual NVLINK bricks to facilitate a transfer rate of 
+25 GB/s between the processors. Each node contains 512 GB of DDR4 memory for use by both processors. Each POWER9 processor utilizes 22 IBM SIMD Multi-Cores (SMCs), 
+although one of these SMCs on each processor is dedicated to memory transfer and is therefore not available for computation. 
+For node scaling experiments, all 42 available SMCs were utilized in each node so that every node computed with 42 separate MPI processes.
+Additionally, every node also supports six NVIDIA Volta V100 accelerators but these were unused by our algorithm. 
 
-\GB{Lawton, can you add a description of Summit?  use the recent SC submission as an example}
+H2NMF uses the Armadillo library (version 9.900.1) for all matrix operations. 
+In Armadillo, sparse matrices are stored in Compressed Sparse Column (CSC) format and dense matrices are stored in column-major ordering.
+On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and IBM's Spectrum MPI (version 10.3.1.2-20200121).
+
 
 \subsection{Datasets}
 
 \GB{Lawton, can you add these descriptions?}
 \begin{itemize}
+
 	\item synthetic (dense and sparse)
 	\item HSI: DC and Aviris
 	\item Doc-clustering: Reuters and PubMed
