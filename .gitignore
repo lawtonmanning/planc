@@ -1,1 +1,4 @@
 .DS_Store
+latex/paper.dvi
+latex/paper.fdb_latexmk
+latex/paper.fls
