@@ -66,6 +66,7 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 \GB{ask Haesun to write intro paragraph motivating hierarchical clustering but noting the limitations of time and data size}
 
 \section{Preliminaries}
+\label{sec:prelim}
 
 \begin{itemize}
 	\item NMF, BCD, NNLS
@@ -210,7 +211,36 @@ The principal singular values of the children are computed via the power method 
 
 \subsection{Parallelization}
 
-\subsubsection{Algorithm}
+In this section, we consider the options for parallelizing Hierarchical Rank-2 NMF Clustering (\Cref{alg:hiernmf2}) and provide an analysis for the approach we take.
+The running time of an algorithm is data dependent because not only does each Rank-2 NMF computation require a variable number of iterations, but also the shape of the tree can vary from a balanced binary tree with $O(\log k)$ levels to a tall, flat tree with $O(k)$ levels.
+For the sake of analysis, we will assume a fixed number of NMF iterations for every node of the tree and we will analyze the cost of complete levels.
+
+The first possibility for parallelization is across the nodes of the tree, as each Rank-2 NMF split is independent.
+We choose not to parallelize across nodes in the tree for two reasons.
+The first reason is that while the NMF computations are independent, choosing which nodes to split may depend on global information.
+In particular, when the global target is to determine $k$ leaf clusters, the nodes must be split in order of their scores, which leads to a serialization of the node splits.
+This serialization might be relaxed using speculative execution, but it risks performing unnecessary computation.
+If the global target is to split all nodes with sufficiently high scores, then this serialization is also avoided and node splits become truly independent.
+We choose not to parallelize in this way to remain agnostic to the global stopping criterion.
+
+The second reason is that parallelizing across nodes requires redistribution of the input data.
+Given a node split by $\hat p$ processors, in order to assign disjoint sets of processors to each child node, each of the $\hat p$ processors would have to redistribute their local data, sending data for samples not in their child's set and receiving data for those in their child's set.
+The communication would be data dependent, but on average, each processor would communicate half of its data in the redistribution set, which could have an all-to-all communication pattern among the $\hat p$ processors.
+For a node with $\hat n$ columns, the communication cost would be at least $O(m\hat n/ \hat p)$ words, which is much larger than the communication cost per iteration of Parallel Rank-2 NMF, as we will see in \Cref{sec:analysis}.
+
+By choosing not to parallelize across nodes in the tree, we employ all $p$ processors on each node, and split nodes in sequence.
+The primary computations used to split a node are the Rank-2 NMF and the score computation, which is based on an approximation of the largest singular value.
+We use an alternating-updating algorithm for Rank-2 NMF as described in \Cref{sec:prelim}, and we parallelize it following the methodology proposed in \cite{EH+19-TR} and presented in \Cref{alg:parrank2nmf}.
+
+The communication cost of the algorithm depends on the parallel distribution of the input matrix data $\M{A}$.
+In order to avoid redistribution of the matrix data, we choose a 1D row distribution so that each processor owns a subset of the rows of $\M{A}$.
+Because the clustering partition splits the columns of $\M{A}$, each processor can partition its local data into left and right children to perform the split without any interprocessor communication.
+If we use a 2D distribution for a given node, then because the partition is data dependent, a data redistribution is required in order to obtain a load balanced distribution of both children.
+In the following subsections, we describe the parallel algorithms for Rank-2 NMF and approximating the principle singular value given this 1D data distribution and analyze their complexity in the context of the hierarchical clustering algorithm.
+
+\subsubsection{Algorithms}
+
+\paragraph{\emph{Parallel Rank-2 NMF}}
 
 \begin{algorithm}
 \caption{Parallel Rank-2 NMF}
@@ -223,7 +253,7 @@ The principal singular values of the children are computed via the power method 
 			\State \Comment{Compute $\M{H}$}
 			\State $\M[\hat]{G}_W = \M[\hat]{W}^\Tra \M[\hat]{W}$
 			\State $\M{G}_W = \textsc{All-Reduce}(\M[\hat]{G})$
-			\State $\M[\hat]{B} = \M[\hat]{W}^\Tra \M[\hat]{A}$ %\hfill \Comment{local matrix multiplication}
+			\State $\M[\hat]{B} = \M[\hat]{A}^\Tra \M[\hat]{W}$ %\hfill \Comment{local matrix multiplication}
 			\State $\M[\hat]{C} = \textsc{Reduce-Scatter}(\M[\hat]{B})$
 			\State $\M[\hat]{H} = \textsc{Rank2-NLS-Solve}(\M[\hat]{C},\M{G}_W)$
 			\State \Comment{Compute $\M{W}$}
@@ -238,6 +268,28 @@ The principal singular values of the children are computed via the power method 
 \end{algorithmic}
 \end{algorithm}
 
+\paragraph{\emph{Parallel Power Method}}
+
+\begin{algorithm}
+\caption{Parallel Power Method}
+\label{alg:parpowmeth}
+\begin{algorithmic}[1]
+	\Require{$\M{A}$ is $m\times n$ and row-distributed across processors so that $\M[\hat]{A}$ is local $(m/p)\times n$ submatrix}
+	\Function{$\sigma =$ Parallel-Power-Method}{$\M{A}$}
+		\State Initialize $\V{v}$ randomly and redundantly
+		\While{not converged}
+			\State $\V[\hat]{u} = \M[\hat]{A} \V{v}$
+			\State $\V[\hat]{z} = \M[\hat]{A}^\Tra \V[\hat]{u}$
+			\State $\V{v} = \textsc{All-Reduce}(\V[\hat]{z})$
+			\State $\sigma = \|\V{v}\|$
+			\State $\V{v} = \V{v}/\sigma$
+		\EndWhile
+	\EndFunction
+	\Ensure{$\sigma \approx \sigma_1(\M{A})$ is  redundantly owned by all procs}
+\end{algorithmic}
+\end{algorithm}
+
+
 \begin{figure}
 \input{fig/split}
 \caption{Parallel splitting using Rank-2 NMF \GB{add more to caption and possibly color code W and H}}
@@ -245,6 +297,13 @@ The principal singular values of the children are computed via the power method 
 \end{figure}
 
 \subsubsection{Analysis}
+\label{sec:analysis}
+
+\paragraph{\emph{Parallel Rank-2 NMF}}
+
+\paragraph{\emph{Parallel Power Method}}
+
+\paragraph{\emph{Hierarchical Clustering}}
 
 \section{Experimental Results}
 
