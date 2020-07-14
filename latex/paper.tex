@@ -236,11 +236,28 @@ The communication cost of the algorithm depends on the parallel distribution of 
 In order to avoid redistribution of the matrix data, we choose a 1D row distribution so that each processor owns a subset of the rows of $\M{A}$.
 Because the clustering partition splits the columns of $\M{A}$, each processor can partition its local data into left and right children to perform the split without any interprocessor communication.
 If we use a 2D distribution for a given node, then because the partition is data dependent, a data redistribution is required in order to obtain a load balanced distribution of both children.
-In the following subsections, we describe the parallel algorithms for Rank-2 NMF and approximating the principle singular value given this 1D data distribution and analyze their complexity in the context of the hierarchical clustering algorithm.
+\Cref{fig:split} presents a visualization of the node-splitting process using a 1D processor distribution.
+In the following subsections, we describe the parallel algorithms for Rank-2 NMF and approximating the principal singular value given this 1D data distribution and analyze their complexity in the context of the hierarchical clustering algorithm.
+
+\begin{figure}
+\input{fig/split}
+\caption{Parallel splitting using Rank-2 NMF and 1D processor distribution.  A Rank-2 NMF computes factor matrices $\M{W}$ and $\M{H}$ to approximate $\M{A}$, the values of $\M{H}$ are used to determine child membership of each column (either red or blue), and the corresponding column of the $\M{W}$ matrix represents the part's feature weighting.  The 1D distribution is depicted for 3 processors to show that the splitting requires no interprocessor redistribution as the children are evenly distributed identically to the parent.}
+\label{fig:split}
+\end{figure}
 
 \subsubsection{Algorithms}
 
 \paragraph{\emph{Parallel Rank-2 NMF}}
+
+\Cref{alg:parrank2nmf} presents the parallelization of an alternating-updating scheme for NMF that uses the exact rank-2 solve algorithm presented in \Cref{alg:r2nnls} to update each factor matrix.
+The algorithm computes the inputs to the rank-2 solves in parallel and then exploits the parallelism across rows of the factor matrix so that each processor solves for a subset of rows simultaneously.
+The distribution of all matrices is 1D row distribution, so that each processor owns a subset of the rows of $\M{A}$, $\M{W}$, and $\M{H}$.
+We use the notation $\M[\hat]{A}$ to refer to the $(m/p) \times n$ local data matrix and $\M[\hat]{W}$ and $\M[\hat]{H}$ to refer to the $(m/p) \times 2$ and $(n/p)\times 2$ local factor matrices.
+With this distribution, the computation of $\M{W}^\Tra\M{W}$ and $\M{H}^\Tra\M{H}$ each is done via local multiplication followed by a single all-reduce collective.
+All processors own the data they need to compute their contribution to $\M{A}^\Tra \M{W}$; in order to distribute the result to compute the rows $\M{H}$ independently, a reduce-scatter collective is used to sum and simultaneously distribute across processors.
+To obtain the data needed to compute $\M[\hat]{W}$, each processor must access all of $\M{H}$, which is performed via an all-gather collective.
+The iteration progresses until a convergence criterion is satisfied.
+For performance benchmarking we use a fixed number of iterations, and in practice we use relative change in objective function value (residual norm).
 
 \begin{algorithm}
 \caption{Parallel Rank-2 NMF}
@@ -270,6 +287,18 @@ In the following subsections, we describe the parallel algorithms for Rank-2 NMF
 
 \paragraph{\emph{Parallel Power Method}}
 
+In order to compute the score for a frontier node, we use the difference between the principal singular value of the matrix columns of the node and the sum of those of its children.
+Thus, we must determine the principal singular value of every node in the tree once, including leaf nodes.
+We use the power method to approximate it, repeatedly applying $\M{A}\M{A}^\Tra$ to a vector until it converges to the leading right singular vector.
+We present the power method in \Cref{alg:parpowmeth}.
+Note that we do not normalize the approximate left singular vector so that the computed value approximates the square of the largest singular value.
+
+Given the 1D distribution, only one communication collective is required for the pair of matrix-vector multiplications.
+That is, the approximate right singular vector $\V{v}$ is redundantly owned on each processor, and the approximate left singular vector $\V{u}$ is distributed across processors.
+Each processor can compute its local $\V[\hat]{u}$ from $\V{v}$ without communication and use the result for its contribution to $\V{v}=\M{A}^\Tra \V{u}$.
+An all-reduce collective is used to obtain a copy of $\V{v}$ on every processor for the next iteration, and the norm is redundantly computed without further communication.
+Again, we use a fixed number of iterations for benchmarking, but the more practical stopping criterion is based on the relative change in $\sigma$.
+
 \begin{algorithm}
 \caption{Parallel Power Method}
 \label{alg:parpowmeth}
@@ -285,16 +314,12 @@ In the following subsections, we describe the parallel algorithms for Rank-2 NMF
 			\State $\V{v} = \V{v}/\sigma$
 		\EndWhile
 	\EndFunction
-	\Ensure{$\sigma \approx \sigma_1(\M{A})$ is  redundantly owned by all procs}
+	\Ensure{$\sigma \approx \sigma_1^2(\M{A})$ is  redundantly owned by all procs}
 \end{algorithmic}
 \end{algorithm}
 
 
-\begin{figure}
-\input{fig/split}
-\caption{Parallel splitting using Rank-2 NMF \GB{add more to caption and possibly color code W and H}}
-\label{fig:split}
-\end{figure}
+
 
 \subsubsection{Analysis}
 \label{sec:analysis}
