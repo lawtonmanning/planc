@@ -71,7 +71,7 @@ namespace planc {
           MPI_File fh;
           int ret =
               MPI_File_open(MPI_COMM_WORLD, filename.c_str(),
-                            MPI_MODE_CREATE | MPI_MODE_WRONLY, MPI_INFO_NULL, &fh);
+                            MPI_MODE_RDONLY, MPI_INFO_NULL, &fh);
           if (ISROOT && ret != MPI_SUCCESS) {
             DISTPRINTINFO("Error: Could not open file " << filename << std::endl);
           }
