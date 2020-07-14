@@ -45,27 +45,25 @@ namespace planc {
 
         const iodistributions m_distio;
 
-        void read_dist_tensor(const std::string filename) {
+        void read_dist_matrix(const std::string filename) {
           // all processes reading the file_name.info file.
           std::string filename_no_extension =
               filename.substr(0, filename.find_last_of("."));
-          int modes = local_tensor.modes();
+          int pr = m_mpicomm.pr();
+          int pc = m_mpicomm.pc();
+          int rrank = m_mpicomm.row_rank();
+          int crank = m_mpicomm.col_rank();
           int global_rows = 3145728;
           int global_cols = 33126;
           int gsizes[] = {global_rows, global_cols};
-          int lsizes[] = {global_rows/p, global_cols};
-          int *starts = new int[modes];
-          UVEC tmp_proc_grids = this->m_mpicomm.proc_grids();
-          for (int i = 0; i < 2; i++) {
-            starts[i] =
-                startidx(gsizes[i], tmp_proc_grids[i], this->m_mpicomm.fiber_rank(i));
-          }
+          int lsizes[] = {itersplit(global_rows,pr,rrank), itersplit(global_cols,pc,crank)};
+          int starts[] = {startidx(global_rows,pr,rrank),  startidx(global_cols,pc,crank)};
           MPI_Barrier(MPI_COMM_WORLD);
           // Now each of write to the file.
           // Create the datatype associated with this layout
 
           MPI_Datatype view;
-          MPI_Type_create_subarray(modes, gsizes, lsizes, starts, MPI_ORDER_FORTRAN,
+          MPI_Type_create_subarray(2, gsizes, lsizes, starts, MPI_ORDER_FORTRAN,
                                   MPI_DOUBLE, &view);
           MPI_Type_commit(&view);
 
@@ -87,7 +85,7 @@ namespace planc {
           double *input_array = (double *)malloc(sizeof(float)*count);
           assert(count <= std::numeric_limits<int>::max());
           MPI_Status status;
-          ret = MPI_File_read_all(fh, input, count, MPI_DOUBLE,
+          ret = MPI_File_read_all(fh, &m_A, count, MPI_DOUBLE,
                                   &status);
           if (ret != MPI_SUCCESS) {
             DISTPRINTINFO("Error: Could not write file " << filename << std::endl);
@@ -96,10 +94,6 @@ namespace planc {
           MPI_File_close(&fh);
           // Free the datatype
           MPI_Type_free(&view);
-          // free the allocated memories
-          delete[] gsizes;
-          delete[] lsizes;
-          delete[] starts;
         }
 
         /**
@@ -527,7 +521,7 @@ namespace planc {
               m_A.load(sr.str(), arma::coord_ascii);
               // uniform_dist_matrix(m_A);
 #else
-              read_dist_tensor(file_name);
+              read_dist_matrix(file_name);
 #endif
             }
           }
