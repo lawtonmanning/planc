@@ -40,3 +40,70 @@
   url         = {https://arxiv.org/abs/1909.01149},
 }
 
+@Article{BCDH+14,
+  Title                    = {Communication lower bounds and optimal algorithms for numerical linear algebra},
+  Author                   = {Ballard, G. and Carson, E. and Demmel, J. and Hoemmen, M. and Knight, N. and Schwartz, O.},
+  Journal                  = {Acta Numerica},
+  Year                     = {2014},
+
+  Month                    = {May},
+  Pages                    = {1--155},
+  Volume                   = {23},
+
+  Abstract                 = {The traditional metric for the efficiency of a numerical algorithm has been the number of arithmetic operations it performs. Technological trends have long been reducing the time to perform an arithmetic operation, so it is no longer the bottleneck in many algorithms; rather, communication, or moving data, is the bottleneck. This motivates us to seek algorithms that move as little data as possible, either between levels of a memory hierarchy or between parallel processors over a network. In this paper we summarize recent progress in three aspects of this problem. First we describe lower bounds on communication. Some of these generalize known lower bounds for dense classical (O(n^3)) matrix multiplication to all direct methods of linear algebra, to sequential and parallel algorithms, and to dense and sparse matrices. We also present lower bounds for Strassen-like algorithms, and for iterative methods, in particular Krylov subspace methods applied to sparse matrices. Second, we compare these lower bounds to widely used versions of these algorithms, and note that these widely used algorithms usually communicate asymptotically more than is necessary. Third, we identify or invent new algorithms for most linear algebra problems that do attain these lower bounds, and demonstrate large speed-ups in theory and practice.},
+  Annote                   = {Invited paper.},
+  Doi                      = {10.1017/S0962492914000038},
+  File                     = {BCDH+14.pdf:BCDH+14.pdf:PDF},
+  ISSN                     = {1474-0508},
+  Numpages                 = {155},
+  Url                      = {http://journals.cambridge.org/article_S0962492914000038}
+}
+
+@Article{CH+07,
+  Title                    = {Collective communication: theory, practice, and experience},
+  Author                   = {Chan, E. and Heimlich, M. and Purkayastha, A. and van de Geijn, R.},
+  Journal                  = {Concurrency and Computation: Practice and Experience},
+  Year                     = {2007},
+  Number                   = {13},
+  Pages                    = {1749--1783},
+  Volume                   = {19},
+
+  Doi                      = {10.1002/cpe.1206},
+  File                     = {CH+07.pdf:CH+07.pdf:PDF},
+  ISSN                     = {1532-0634},
+  Keywords                 = {collective communication, distributed-memory architecture, clusters},
+  Publisher                = {John Wiley \& Sons, Ltd.},
+  Url                      = {http://dx.doi.org/10.1002/cpe.1206}
+}
+
+@Article{TRG05,
+  Title                    = {Optimization of Collective Communication Operations in {MPICH}},
+  Author                   = {Thakur, Rajeev and Rabenseifner, Rolf and Gropp, William},
+  Journal                  = {International Journal of High Performance Computing Applications},
+  Year                     = {2005},
+  Number                   = {1},
+  Pages                    = {49--66},
+  Volume                   = {19},
+
+  Doi                      = {10.1177/1094342005051521},
+  Eprint                   = {http://hpc.sagepub.com/content/19/1/49.full.pdf+html},
+  File                     = {TRG05.pdf:TRG05.pdf:PDF},
+  Url                      = {http://hpc.sagepub.com/content/19/1/49.abstract}
+}
+
+@InProceedings{GOS16,
+  author    = {Gropp, William and Olson, Luke N. and Samfass, Philipp},
+  title     = {Modeling {MPI} Communication Performance on SMP Nodes: Is It Time to Retire the Ping Pong Test},
+  booktitle = {Proceedings of the 23rd European MPI Users' Group Meeting},
+  year      = {2016},
+  series    = {EuroMPI 2016},
+  pages     = {41--50},
+  address   = {New York, NY, USA},
+  publisher = {Association for Computing Machinery},
+  doi       = {10.1145/2966884.2966919},
+  file      = {:GOS16.pdf:PDF},
+  isbn      = {9781450342346},
+  location  = {Edinburgh, United Kingdom},
+  numpages  = {10},
+}
+
