@@ -65,14 +65,37 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 
 \GB{ask Haesun to write intro paragraph motivating hierarchical clustering but noting the limitations of time and data size}
 
-\section{Preliminaries}
+\section{Preliminaries and Related Work}
 \label{sec:prelim}
 
-\begin{itemize}
-	\item NMF, BCD, NNLS
-	\item PLANC
-	\item communication model and collectives
-\end{itemize}
+\GB{use Kuang's related work for NMF (2016 paper for divide-and-conquer NMF in JGO \cite{DKDP17}, use PPoPP/TKDE/arXiv of ours and also Liavas, pyramid NMF: \doi{10.1109/IJCNN.2003.1224004}}
+
+\subsection{NMF}
+
+\GB{general NMF, BCD/AO algorithms, NNLS, R2-HierNMF \cite{KP13,GKP15}, DC-NMF \cite{DKDP17}}
+
+\subsection{Parallel NMF}
+
+\GB{PLANC (PPoPP/TKDE/arXiv) and other related work like Liavas}
+
+\subsection{Communication Model}
+
+We use the $\alpha$-$\beta$-$\gamma$ model \cite{TRG05,CH+07,BCDH+14} for analysis of distributed-memory parallel algorithms. 
+In this model, the cost of sending a single message of $n$ words of data between two processors is $\alpha + \beta \cdot n$, so that $\alpha$ represents the latency cost of the message and $\beta$ represents the bandwidth cost of each word in the message.
+The $\gamma$ parameter represents the computational cost of a single floating point operation (flop).
+In this simplified communication model, we ignore contention in the network, assuming in effect a fully connected network, and other limiting factors in practice such as the number of hops between nodes and the network injection rate \cite{GOS16}.
+We let $p$ represent the number of processors available on the machine.
+
+All of the interprocessor communication in the algorithms presented in this work are encapsulated in collective communication operations that involve the full set of processors.
+Algorithms for implementing the collective operations are built out of pairwise send and receive operations, and we assume the most efficient algorithms are used in our analysis \cite{TRG05,CH+07}.
+The collectives used in our algorithms are all-reduce, all-gather, and reduce-scatter.
+In an all-reduce, all processors start out with the same amount of data and all end with a copy of the same result, which is in our case a sum of all the inputs (and the same size as a single input).
+The cost of an all-reduce of size $n$ words is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$ for $n>p$ and $(\alpha+\beta) \cdot O(\log p)$ for $n<p$.
+In an all-gather, all processors start out with separate data and all end with a copy of the same result, which is the union of all the input data.
+If each processor starts with $n/p$ data and ends with $n$ data, the cost of the all-gather is $\alpha \cdot O(\log p) + \beta \cdot O(n)$.
+In a reduce-scatter, all processors start out with the same amount of data and all end with a subset of the result, which is in our case a sum of all the inputs (and is smaller than its input).
+If each processor starts with $n$ data and ends with $n/p$ data, the cost of the reduce-scatter is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$.
+In the case of all-reduce and reduce-scatter, the computational cost is typically dominated by the bandwidth cost because $\beta \gg \gamma$.
 
 \section{Algorithm}
 
@@ -332,6 +355,7 @@ Thus, the cost of \cref{alg:r2nnls} is proportional to the number of rows of the
 In the context of \Cref{alg:parrank2nmf}, the per-iteration computational cost of rank-2 solves is then $O((m+n)/p)$.
 The other local computations are the matrix multiplications $\M[\hat]{W}^\Tra \M[\hat]{W}$ and $\M[\hat]{H}^\Tra \M[\hat]{H}$, which also amount to $O((m+n)/p)$ flops, and $\M[\hat]{A}^\Tra \M[\hat]{W}$ and $\M[\hat]{A} \M{H}$, which require $O(mn/p)$ flops because they involve the data matrix.
 Thus, the computation cost is $\gamma \cdot O((mn+m+n)/p)$ and typically dominated by the multiplications involving $\M{A}$.
+We track the lower order terms corresponding to NNLS solves because their hidden constants are larger than that of the dominating term.
 
 There are four communication collectives each iteration, and each involves all $p$ processors.
 The two all-reduce collectives to compute the Gram matrices of the factor matrices involve $2\times 2$ matrices and incur a communication cost of $(\beta + \alpha) \cdot O(\log p)$.
@@ -339,7 +363,7 @@ The reduce-scatter and all-gather collectives involve $n\times 2$ matrices (the 
 If the algorithm performs $\imath$ iterations, the overall cost of \Cref{alg:parrank2nmf} is
 \begin{equation}
 \label{eq:r2nmfcost}
-\gamma \cdot O\left( \frac{\imath mn}{p} \right) + \beta \cdot O(\imath n) + \alpha \cdot O(\imath \log p).
+\gamma \cdot O\left( \frac{\imath (mn+m+n)}{p} \right) + \beta \cdot O(\imath n) + \alpha \cdot O(\imath \log p).
 \end{equation}
 
 \paragraph{\emph{Parallel Power Method}}
@@ -365,23 +389,27 @@ Furthermore, because each split is a partition, every column of $\M{A}$ is repre
 If we assume that all nodes perform the same number of NMF iterations ($\imath$) and power method iterations $(\jmath)$, then the dominating costs of a node with $\overline{n}$ columns is
 \begin{equation*}
 \label{eq:nodecost}
-\gamma \cdot O\left( \frac{(\imath+\jmath) m\overline{n}}{p} \right) + \beta \cdot O((\imath+\jmath) \overline{n}) + \alpha \cdot O((\imath+\jmath) \log p).
+\begin{split}
+\gamma \cdot O\left( \frac{(\imath+\jmath) m\overline{n} + \imath (m+\overline{n}) }{p} \right) + \beta \cdot O((\imath+\jmath) \overline{n}) \\ + \alpha \cdot O((\imath+\jmath) \log p).
+\end{split}
 \end{equation*}
 Because the sum of the number of columns across any level of the tree is $n$, the cost of the $\ell$th level of the tree is
 \begin{equation*}
 \label{eq:levelcost}
-\gamma \cdot O\left( \frac{(\imath+\jmath) mn}{p} \right) + \beta \cdot O((\imath+\jmath) n) + \alpha \cdot O((\imath+\jmath) 2^\ell \log p).
+\begin{split}
+\gamma \cdot O\left( \frac{(\imath+\jmath) mn + \imath m 2^\ell}{p} \right) + \beta \cdot O((\imath+\jmath) n) \\ + \alpha \cdot O((\imath+\jmath) 2^\ell \log p).
+\end{split}
 \end{equation*}
 Note that the only cost that depends on the level index $\ell$ is the latency cost.
 Summing over levels and assuming the tree is nearly balanced and has height $O(\log k)$ where $k$ is the number of frontier nodes, we obtain an overall cost of \Cref{alg:hiernmf2} of
 \begin{equation*}
 \label{eq:treecost}
 \begin{split}
-\gamma \cdot O\left( \frac{(\imath+\jmath) mn}{p} \log k \right) + \beta \cdot O((\imath+\jmath) n \log k) \\ + \alpha \cdot O((\imath+\jmath) k \log p).
+\gamma \cdot O\left( \frac{(\imath+\jmath) mn}{p}  \log k + \frac{\imath mk}{p} \right) + \beta \cdot O((\imath+\jmath) n \log k) \\ + \alpha \cdot O((\imath+\jmath) k \log p).
 \end{split}
 \end{equation*}
 
-We see that the computational cost is logarithmic in $k$ and perfectly load balanced.
+We see that the leading order computational cost is logarithmic in $k$ and perfectly load balanced.
 If the overall running time is dominated by the computation (and in particular the matrix multiplications involving $\M{A}$), we expect near-perfect strong scaling.
 The bandwidth cost is also logarithmic in $k$ but does not scale with the number of processors.
 The latency cost grows most quickly with the target number of clusters $k$ but is also independent of the matrix dimensions $m$ and $n$.
@@ -467,6 +495,8 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \end{itemize}
 
 \subsubsection{Strong Scaling}
+
+\include{plots}
 
 \begin{itemize}
 	\item big dense synthetic
