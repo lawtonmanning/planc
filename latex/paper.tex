@@ -369,7 +369,7 @@ Again, we use a fixed number of iterations for benchmarking, but the more practi
 Each iteration of \Cref{alg:parrank2nmf} incurs the same cost, so we analyze per-iteration computation and communication costs.
 We first consider the cost of the Rank-2 NNLS solves, which are local computations.
 In the notation of \Cref{alg:r2nnls}, matrix $\M{G}$ is $2\times 2$, so solving the unconstrained system (via Cholesky decomposition) and then choosing between single-positive-variables solutions if necessary requires constant time per row of $\M{C}$.
-Thus, the cost of \cref{alg:r2nnls} is proportional to the number of rows of the first input matrix.
+Thus, the cost of \Cref{alg:r2nnls} is proportional to the number of rows of the first input matrix.
 In the context of \Cref{alg:parrank2nmf}, the per-iteration computational cost of rank-2 solves is then $O((m+n)/p)$.
 The other local computations are the matrix multiplications $\M[\hat]{W}^\Tra \M[\hat]{W}$ and $\M[\hat]{H}^\Tra \M[\hat]{H}$, which also amount to $O((m+n)/p)$ flops, and $\M[\hat]{A}^\Tra \M[\hat]{W}$ and $\M[\hat]{A} \M{H}$, which require $O(mn/p)$ flops because they involve the data matrix.
 Thus, the computation cost is $\gamma \cdot O((mn+m+n)/p)$ and typically dominated by the multiplications involving $\M{A}$.
@@ -412,20 +412,20 @@ If we assume that all nodes perform the same number of NMF iterations ($\imath$)
 \end{split}
 \end{equation*}
 Because the sum of the number of columns across any level of the tree is $n$, the cost of the $\ell$th level of the tree is
-\begin{equation*}
+\begin{equation}
 \label{eq:levelcost}
 \begin{split}
 \gamma \cdot O\left( \frac{(\imath+\jmath) mn + \imath m 2^\ell}{p} \right) + \beta \cdot O((\imath+\jmath) n) \\ + \alpha \cdot O((\imath+\jmath) 2^\ell \log p).
 \end{split}
-\end{equation*}
+\end{equation}
 Note that the only cost that depends on the level index $\ell$ is the latency cost.
 Summing over levels and assuming the tree is nearly balanced and has height $O(\log k)$ where $k$ is the number of frontier nodes, we obtain an overall cost of \Cref{alg:hiernmf2} of
-\begin{equation*}
+\begin{equation}
 \label{eq:treecost}
 \begin{split}
 \gamma \cdot O\left( \frac{(\imath+\jmath) mn}{p}  \log k + \frac{\imath mk}{p} \right) + \beta \cdot O((\imath+\jmath) n \log k) \\ + \alpha \cdot O((\imath+\jmath) k \log p).
 \end{split}
-\end{equation*}
+\end{equation}
 
 We see that the leading order computational cost is logarithmic in $k$ and perfectly load balanced.
 If the overall running time is dominated by the computation (and in particular the matrix multiplications involving $\M{A}$), we expect near-perfect strong scaling.
@@ -447,10 +447,12 @@ In Armadillo, sparse matrices are stored in Compressed Sparse Column (CSC) forma
 On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and IBM's Spectrum MPI (version 10.3.1.2-20200121).
 
 
-\GB{specify that $\imath=\jmath=100$ in all experiments, also what do we set $k$ to be?  fixed number for each dataset?  any other experimental parameters we should specify?}
+\GB{specify that $\imath=\jmath=100$ in all experiments, also what do we set $k$ to be?  fixed number for each dataset?  any other experimental parameters we should specify? could also specify these at the beginning of \Cref{sec:perf}}
 
 
 \subsection{Datasets}
+
+\GB{need shortcut names for datasets: synthetic, DC, and something better than IMAGE}
 
 \begin{itemize}
 	\item \textit{Document Clustering}:
@@ -495,22 +497,22 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \end{itemize}
 
 \subsection{Performance}
+\label{sec:perf}
 
 \subsubsection{Rank-2 NMF Strong Scaling}
 
-\GB{4 plots: 2 data sets with speedup/breakdown}
+We perform strong scaling experiments for a single Rank-2 NMF (\Cref{alg:parrank2nmf}) on the synthetic and IMAGE datasets.
+The theory (\Cref{eq:r2nmfcost}) suggests that perfect strong scaling is possible as long as the execution time is dominated by local computation.
+Both the matrix multiplications and NNLS solves scale linearly with $1/p$ (we expect MatMul to dominate), but the bandwidth cost is independent of $p$ and the latency cost increases slightly with $p$.
 
-\begin{itemize}
-	\item theory says...
-	\item Figs 3 and 5 show performance relative to the smallest number of nodes required to store data and factor matrices
-	\item strong scaling is nearly linear, see 49X (check number) on 50 nodes for synthetic data and 7.3X (check number) on 80 nodes for image data
-	\item Figs 4 and 6 show time breakdown, explain scaling: MM scales perfectly because it's mem-bw bound and the local problem size decreases linearly, bandwidth cost is fixed relative to $p$, so relative cost grows as we scale; comm is bandwidth bound because we see all-gather and reduce-scatter dominate all-reduce
-\end{itemize}
+\Cref{fig:synrank2speedup,fig:rwrank2speedup} show performance relative to the smallest number of nodes required to store data and factor matrices.
+The synthetic data is chosen to fit on a single node, while the IMAGE data requires 10 nodes to store the input matrix as well as temporary and output matrices.
+For these data sets, we observe nearly perfect strong scaling, with 47$\times$ speedup on 50 nodes (over 1 node) for synthetic data and 7.1$\times$ speedup on 80 nodes (over 10 nodes) for IMAGE data.
 
 \begin{figure}
 \begin{center}
 \includegraphics[height=2in, width=\columnwidth]{plots/synthetic_rank2_speedup.pdf}
-\caption{Strong Scaling Speedup for Rank-2 NMF \cref{alg:parrank2nmf} at Level-0}
+\caption{Strong Scaling Speedup for Rank-2 NMF on synthetic data}
 \label{fig:synrank2speedup}
 \end{center}
 \end{figure}
@@ -518,15 +520,22 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \begin{figure}
 \begin{center}
 \includegraphics[height=2in, width=\columnwidth]{plots/synthetic_rank2_strongscaling.pdf}
-\caption{Relative Time Breakdown for Rank-2 NMF \cref{alg:parrank2nmf} Strong Scaling at Level-0}
+\caption{Relative Time Breakdown for Rank-2 NMF on synthetic data}
 \label{fig:synrank2strongscaling}
 \end{center}
 \end{figure}
 
+The relative time breakdowns are presented in \Cref{fig:synrank2strongscaling,fig:rwrank2strongscaling} and explain the strong scaling performance.
+Each experiment is normalized to 100\% time, so comparisons cannot be readily made across numbers of compute nodes. 
+For both data sets, we see that the time is dominated by MatMul, which is the primary reason for the scalability.
+The dominant matrix multiplications are between a large matrix and a matrix with 2 columns, so it is locally memory bandwidth bound, with performance proportional to the size of the large matrix.
+In each plot, we also see the relative time of all-gather and reduce-scatter increasing, which is because the local computation is decreasing while the communication cost is slightly increasing with $p$.
+This pattern will continue as $p$ increases, which will eventually limit scalability, but for these data sets the MatMul takes around 80\% of the time at over 2000 cores.
+
 \begin{figure}
 \begin{center}
 \includegraphics[height=2in, width=\columnwidth]{plots/realworld_rank2_speedup.pdf}
-\caption{Strong Scaling Speedup for Rank-2 NMF \cref{alg:parrank2nmf} at Level-0 on Realworld Data}
+\caption{Strong Scaling Speedup for Rank-2 NMF on IMAGE data}
 \label{fig:rwrank2speedup}
 \end{center}
 \end{figure}
@@ -534,7 +543,7 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \begin{figure}
 \begin{center}
 \includegraphics[height=2in, width=\columnwidth]{plots/realworld_rank2_strongscaling.pdf}
-\caption{Relative Time Breakdown for Rank-2 NMF \cref{alg:parrank2nmf} Strong Scaling at Level-0 on Realworld Data}
+\caption{Relative Time Breakdown for Rank-2 NMF on IMAGE data}
 \label{fig:rwrank2strongscaling}
 \end{center}
 \end{figure}
@@ -548,7 +557,7 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \GB{4 plots: 2 data sets with speedup/breakdown, note that we include time for complete levels, ignoring nodes in incomplete levels for easier interpretation}
 
 \begin{itemize}
-	\item theory says...t
+	\item theory (\Cref{eq:treecost}) says...
 	\item Fig 7 shows limit of strong scaling for synthetic data (time increases at 50 nodes compared to 40), Fig 8 gives breakdown and explains
 	\begin{itemize}
 		\item drastic performance dropoff may be artifact of all-gather, which should take about the same time as reduce-scatter, but speedup from 30 to 40 nodes is also slight
@@ -595,7 +604,7 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \GB{3 plots: for synthetic level breakdown for 1 node and for 40 nodes; for realworld just for 80 nodes}
 
 \begin{itemize}
-	\item theory says 
+	\item theory says per-level cost is \Cref{eq:levelcost}
 \end{itemize}
 
 \begin{figure}
