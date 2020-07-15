@@ -53,6 +53,7 @@ namespace planc {
           int pc = m_mpicomm.pc();
           int rrank = m_mpicomm.row_rank();
           int crank = m_mpicomm.col_rank();
+          int rank = m_mpicomm.rank();
           int global_rows = 3145728;
           int global_cols = 33126;
           int gsizes[] = {global_rows, global_cols};
@@ -80,15 +81,15 @@ namespace planc {
           MPI_Offset disp = 0;
           MPI_File_set_view(fh, disp, MPI_DOUBLE, view, "native", MPI_INFO_NULL);
 
-          // Write the file
+          // Read the file
+          m_A.zeros(lsizes[0],lsizes[1]);
           int count = lsizes[0]*lsizes[1];
-          double *input_array = (double *)malloc(sizeof(float)*count);
           assert(count <= std::numeric_limits<int>::max());
           MPI_Status status;
-          ret = MPI_File_read_all(fh, &m_A, count, MPI_DOUBLE,
+          ret = MPI_File_read_all(fh, m_A.memptr(), count, MPI_DOUBLE,
                                   &status);
           if (ret != MPI_SUCCESS) {
-            DISTPRINTINFO("Error: Could not write file " << filename << std::endl);
+            DISTPRINTINFO("Error: Could not read file " << filename << std::endl);
           }
           // Close the file
           MPI_File_close(&fh);
