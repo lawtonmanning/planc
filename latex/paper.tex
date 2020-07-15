@@ -63,7 +63,7 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 
 \section{Introduction}
 
-\GB{ask Haesun to write intro paragraph motivating hierarchical clustering but noting the limitations of time and data size}
+\GB{Prof Park, can you draft an introduction?  We are focusing on the dense case and using HSI and image clustering as applications.  Section 4 is still unfinished, but nearly all of the performance plots are there.  Feel free to leave placeholders for details that aren't obvious, we can clean them up Wednesday night.}
 
 \section{Preliminaries and Related Work}
 \label{sec:prelim}
@@ -476,7 +476,7 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 	The HYDICE image is flattened from $1280\times 307\times 191$ to $191\times 392960$ and the AVIRIS image is likewise
 	flattened from $8940\times 747\times 224$ to $224\times 6678180$. Unlike with document clustering, hyperspectral image sizes grow in pixels
-	and not spectral bands. So, for both images, large scaling is impossible given our current data distribution.
+	and not spectral bands. So, for both images, large scaling is impossible given our current data distribtion.
 	\LM{I think this is awkward and I'm not sure if we need to include it}
 	
 
@@ -495,35 +495,107 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 \subsubsection{Rank-2 NMF Strong Scaling}
 
-\GB{Lawton, can you gather this data, Ramki can you visualize it?}
-\begin{itemize}
-	\item compare 1D distribution scaling with optimal 2D grid scaling
-	\item use synthetic short-and-fat dense and squarish sparse
-\end{itemize}
+\GB{4 plots: 2 data sets with speedup/breakdown}
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_rank2_strongscaling.pdf}
+\caption{Relative Time Breakdown for Rank-2 NMF \cref{alg:parrank2nmf} Strong Scaling at Level-0}
+\label{fig:synrank2strongscaling}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_rank2_speedup.pdf}
+\caption{Strong Scaling Speedup for Rank-2 NMF \cref{alg:parrank2nmf} at Level-0}
+\label{fig:synrank2speedup}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/realworld_rank2_strongscaling.pdf}
+\caption{Relative Time Breakdown for Rank-2 NMF \cref{alg:parrank2nmf} Strong Scaling at Level-0 on Realworld Data}
+\label{fig:rwrank2strongscaling}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/realworld_rank2_speedup.pdf}
+\caption{Strong Scaling Speedup for Rank-2 NMF \cref{alg:parrank2nmf} at Level-0 on Realworld Data}
+\label{fig:rwrank2speedup}
+\end{center}
+\end{figure}
+
+\subsubsection{Hierarchical Clustering Strong Scaling}
+
+\GB{4 plots: 2 data sets with speedup/breakdown}
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_hierarchical_speedup.pdf}
+\caption{Strong Scaling Speedup for Hierarchical Clustering. The total time taken for complete Hierarchical Clustering \cref{alg:hiernmf2}}
+\label{fig:synhierspeedup}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_hier_strongscaling.pdf}
+\caption{Relative Time Breakdown for Hierarchical Clustering. The plot uses the total time taken for complete Hierarchical Clustering \cref{alg:hiernmf2}}
+\label{fig:synhierstrongscaling}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/realworld_hierarchical_speedup.pdf}
+\caption{Strong Scaling Speedup for Hierarchical Clustering on Realworld Data. The total time taken for complete Hierarchical Clustering \cref{alg:hiernmf2}}
+\label{fig:rwhierspeedup}
+\end{center}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/realworld_hier_strongscaling.pdf}
+\caption{Relative Time Breakdown for Hierarchical Clustering on Realworld. The plot uses the total time taken for complete Hierarchical Clustering \cref{alg:hiernmf2}}
+\label{fig:rwhierstrongscaling}
+\end{center}
+\end{figure}
 
 \subsubsection{Level Scaling}
 
-\GB{Ramki, can you add a bar plot to show time breakdown across complete levels?  Let's do Aviris and PubMed; just use levels data file}
+\GB{3 plots: for synthetic level breakdown for 1 node and for 40 nodes; for realworld just for 80 nodes
 
-\subsubsection{Weak Scaling}
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_sequential_level_breakdown.pdf}
+\caption{Sequential Breakdown plot for levels 0 to 5. y-axis is absolute wall clock time in seconds}
+\label{fig:seqlevelbreakdown}
+\end{center}
+\end{figure}
 
-\GB{maybe this section is lower priority}
-\begin{itemize}
-	\item dense and sparse
-\end{itemize}
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_parallel_level_breakdown.pdf}
+\caption{Parallel Breakdown plot for levels 0 to 5 on 40 nodes. y-axis is absolute wall clock time in seconds}
+\label{fig:parallellevelbreakdown}
+\end{center}
+\end{figure}
 
-\subsubsection{Strong Scaling}
 
-\include{plots}
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/realworld_parallel_level_breakdown.pdf}
+\caption{Parallel Breakdown plot for levels 0 to 5 on 80 nodes. y-axis is absolute wall clock time in seconds}
+\label{fig:rwparallellevelbreakdown}
+\end{center}
+\end{figure}
 
-\begin{itemize}
-	\item big dense synthetic
-	\item big sparse synthetic
-	\item Aviris
-	\item PubMed
-\end{itemize}
 
-\subsection{Clustering}
+\subsection{DC Clustering Results}
 
 \subsubsection{Hyperspectral Imaging}
 \begin{figure}
@@ -532,11 +604,6 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \label{fig:dc}
 \end{figure}
 
-\GB{Lawton, show some visualization of the tree}
-
-\subsubsection{Document Corpus}
-
-\GB{Lawton, show a visualization of top words in tree}
 
 \section{Conclusion}
 
