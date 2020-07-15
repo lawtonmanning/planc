@@ -68,11 +68,11 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 \section{Preliminaries and Related Work}
 \label{sec:prelim}
 
-\GB{use Kuang's related work for NMF (2016 paper for divide-and-conquer NMF in JGO \cite{DKDP17}, use PPoPP/TKDE/arXiv of ours and also Liavas, pyramid NMF: \doi{10.1109/IJCNN.2003.1224004}}
+\GB{use Kuang's related work for NMF (2016 paper for divide-and-conquer NMF in JGO \cite{DKDP17}, use PPoPP \cite{KBP16}/TKDE \cite{KBP17}/arXiv \cite{EH+19-TR} of ours and also Liavas \cite{LK+17b}, pyramid NMF: \doi{10.1109/IJCNN.2003.1224004}}
 
 \subsection{NMF}
 
-\GB{general NMF, BCD/AO algorithms, NNLS, R2-HierNMF \cite{KP13,GKP15}, DC-NMF \cite{DKDP17}}
+\GB{general NMF, BCD/AO algorithms \cite{KHP14}, NNLS \cite{KP11}, R2-HierNMF \cite{KP13,GKP15}, DC-NMF \cite{DKDP17}}
 
 \subsection{Parallel NMF}
 
@@ -126,7 +126,6 @@ If the unconstrained problem is solved via the normal equations, then the tempor
 It takes as input the matrices $\M{C}=\M{A}^\Tra\M{W}$ and $\M{G}=\M{W}^\Tra\M{W}$, first solves the normal equations for the unconstrained problem, and then chooses between the two alternate possibilities as necessary.
 We note that each row of $\M{H}$ is independent, and therefore this algorithm is easily parallelized.
 Solving for $\M{W}$ can be done using inputs $\M{C}=\M{A}\M{H}$ and $\M{G}=\M{H}^\Tra\M{H}$.
-\GB{To avoid two passes through the data, we could combine the solve and the update if necessary.  It might also help to pre-compute the inverse of $\M{G}$...  Also Lawton, please check the details of the pseudocode!}
 
 \begin{algorithm}
 \caption{Rank-2 Nonnegative Least Squares Solve \cite{KP13}}

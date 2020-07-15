@@ -56,7 +56,6 @@
   File                     = {BCDH+14.pdf:BCDH+14.pdf:PDF},
   ISSN                     = {1474-0508},
   Numpages                 = {155},
-  Url                      = {http://journals.cambridge.org/article_S0962492914000038}
 }
 
 @Article{CH+07,
@@ -73,7 +72,6 @@
   ISSN                     = {1532-0634},
   Keywords                 = {collective communication, distributed-memory architecture, clusters},
   Publisher                = {John Wiley \& Sons, Ltd.},
-  Url                      = {http://dx.doi.org/10.1002/cpe.1206}
 }
 
 @Article{TRG05,
@@ -86,9 +84,7 @@
   Volume                   = {19},
 
   Doi                      = {10.1177/1094342005051521},
-  Eprint                   = {http://hpc.sagepub.com/content/19/1/49.full.pdf+html},
   File                     = {TRG05.pdf:TRG05.pdf:PDF},
-  Url                      = {http://hpc.sagepub.com/content/19/1/49.abstract}
 }
 
 @InProceedings{GOS16,
@@ -120,3 +116,82 @@
   publisher = {Springer},
 }
 
+@Article{KP11,
+  author  = {Jingu Kim and Haesun Park},
+  title   = {Fast Nonnegative Matrix Factorization: An Active-Set-Like Method and Comparisons},
+  journal = {SIAM Journal on Scientific Computing},
+  year    = {2011},
+  volume  = {33},
+  number  = {6},
+  pages   = {3261-3281},
+  doi     = {10.1137/110821172},
+  file    = {KP11.pdf:KP11.pdf:PDF},
+  url     = {https://doi.org/10.1137/110821172},
+}
+
+@Article{KHP14,
+  Title                    = {Algorithms for nonnegative matrix and tensor factorizations: a unified view based on block coordinate descent framework},
+  Author                   = {Kim, Jingu and He, Yunlong and Park, Haesun},
+  Journal                  = {Journal of Global Optimization},
+  Year                     = {2014},
+  Number                   = {2},
+  Pages                    = {285-319},
+  Volume                   = {58},
+
+  Doi                      = {10.1007/s10898-013-0035-4},
+  File                     = {:KHP14.pdf:PDF},
+  ISSN                     = {0925-5001},
+  Language                 = {English},
+  Publisher                = {Springer US},
+}
+
+@InProceedings{KBP16,
+  author      = {Kannan, Ramakrishnan and Ballard, Grey and Park, Haesun},
+  title       = {A High-Performance Parallel Algorithm for Nonnegative Matrix Factorization},
+  booktitle   = {Proceedings of the 21st ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming},
+  year        = {2016},
+  series      = {PPoPP '16},
+  pages       = {9:1--9:11},
+  address     = {New York, NY, USA},
+  month       = {February},
+  publisher   = {ACM},
+  abstract    = {Non-negative matrix factorization (NMF) is the problem of determining two non-negative low rank factors W and H, for the given input matrix A, such that WH approximates A. NMF is a useful tool for many applications in different domains such as topic modeling in text mining, background separation in video analysis, and community detection in social networks. Despite its popularity in the data mining community, there is a lack of efficient distributed algorithms to solve the problem for big data sets.
+
+We propose a high-performance distributed-memory parallel algorithm that computes the factorization by iteratively solving alternating non-negative least squares (NLS) subproblems for W and H. It maintains the data and factor matrices in memory (distributed across processors), uses MPI for interprocessor communication, and, in the dense case, provably minimizes communication costs (under mild assumptions). As opposed to previous implementations, our algorithm is also flexible: (1) it performs well for both dense and sparse matrices, and (2) it allows the user to choose any one of the multiple algorithms for solving the updates to low rank factors W and H within the alternating iterations. We demonstrate the scalability of our algorithm and compare it with baseline implementations, showing significant performance improvements.},
+  acmid       = {2851152},
+  articleno   = {9},
+  doi         = {10.1145/2851141.2851152},
+  file        = {:KBP16.pdf:PDF},
+  isbn        = {978-1-4503-4092-2},
+  location    = {Barcelona, Spain},
+  numpages    = {11},
+  techversion = {KBP15-TR},
+  url         = {http://doi.acm.org/10.1145/2851141.2851152},
+}
+
+@Article{KBP17,
+  author   = {Ramakrishnan Kannan and Grey Ballard and Haesun Park},
+  title    = {{MPI-FAUN}: An {MPI}-Based Framework for Alternating-Updating Nonnegative Matrix Factorization},
+  journal  = {IEEE Transactions on Knowledge and Data Engineering},
+  year     = {2018},
+  volume   = {30},
+  number   = {3},
+  pages    = {544-558},
+  month    = {March},
+  abstract = {Non-negative matrix factorization (NMF) is the problem of determining two non-negative low rank factors W and H, for the given input matrix A, such that WH approximates A. NMF is a useful tool for many applications in different domains such as topic modeling in text mining, background separation in video analysis, and community detection in social networks. Despite its popularity in the data mining community, there is a lack of efficient parallel algorithms to solve the problem for big data sets. The main contribution of this work is a new, high-performance parallel computational framework for a broad class of NMF algorithms that iteratively solves alternating non-negative least squares (NLS) subproblems for $mathbf{W}$ and $mathbf{H}$ . It maintains the data and factor matrices in memory (distributed across processors), uses MPI for interprocessor communication, and, in the dense case, provably minimizes communication costs (under mild assumptions). The framework is flexible and able to leverage- a variety of NMF and NLS algorithms, including Multiplicative Update, Hierarchical Alternating Least Squares, and Block Principal Pivoting. Our implementation allows us to benchmark and compare different algorithms on massive dense and sparse data matrices of size that spans from few hundreds of millions to billions. We demonstrate the scalability of our algorithm and compare it with baseline implementations, showing significant performance improvements. The code and the datasets used for conducting the experiments are available online.},
+  doi      = {10.1109/TKDE.2017.2767592},
+  issn     = {1041-4347},
+  url      = {https://www.computer.org/csdl/trans/tk/2018/03/08089433-abs.html},
+}
+
+@Article{LK+17b,
+  author  = {A. P. Liavas and G. Kostoulas and G. Lourakis and K. Huang and N. D. Sidiropoulos},
+  title   = {Nesterov-based Alternating Optimization for Nonnegative Tensor Factorization: Algorithm and Parallel Implementation},
+  journal = {IEEE Transactions on Signal Processing},
+  year    = {2017},
+  month   = {Nov},
+  doi     = {10.1109/TSP.2017.2777399},
+  file    = {:LK+17b.pdf:PDF},
+  issn    = {1053-587X},
+  url     = {http://ieeexplore.ieee.org/document/8119874/},
+}
