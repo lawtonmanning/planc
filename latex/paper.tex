@@ -447,6 +447,9 @@ In Armadillo, sparse matrices are stored in Compressed Sparse Column (CSC) forma
 On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and IBM's Spectrum MPI (version 10.3.1.2-20200121).
 
 
+\GB{specify that $\imath=\jmath=100$ in all experiments, also what do we set $k$ to be?  fixed number for each dataset?  any other experimental parameters we should specify?}
+
+
 \subsection{Datasets}
 
 \begin{itemize}
@@ -497,13 +500,12 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 \GB{4 plots: 2 data sets with speedup/breakdown}
 
-\begin{figure}
-\begin{center}
-\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_rank2_strongscaling.pdf}
-\caption{Relative Time Breakdown for Rank-2 NMF \cref{alg:parrank2nmf} Strong Scaling at Level-0}
-\label{fig:synrank2strongscaling}
-\end{center}
-\end{figure}
+\begin{itemize}
+	\item theory says...
+	\item Figs 3 and 5 show performance relative to the smallest number of nodes required to store data and factor matrices
+	\item strong scaling is nearly linear, see 49X (check number) on 50 nodes for synthetic data and 7.3X (check number) on 80 nodes for image data
+	\item Figs 4 and 6 show time breakdown, explain scaling: MM scales perfectly because it's mem-bw bound and the local problem size decreases linearly, bandwidth cost is fixed relative to $p$, so relative cost grows as we scale; comm is bandwidth bound because we see all-gather and reduce-scatter dominate all-reduce
+\end{itemize}
 
 \begin{figure}
 \begin{center}
@@ -515,9 +517,9 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=2in, width=\columnwidth]{plots/realworld_rank2_strongscaling.pdf}
-\caption{Relative Time Breakdown for Rank-2 NMF \cref{alg:parrank2nmf} Strong Scaling at Level-0 on Realworld Data}
-\label{fig:rwrank2strongscaling}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_rank2_strongscaling.pdf}
+\caption{Relative Time Breakdown for Rank-2 NMF \cref{alg:parrank2nmf} Strong Scaling at Level-0}
+\label{fig:synrank2strongscaling}
 \end{center}
 \end{figure}
 
@@ -529,9 +531,32 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \end{center}
 \end{figure}
 
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/realworld_rank2_strongscaling.pdf}
+\caption{Relative Time Breakdown for Rank-2 NMF \cref{alg:parrank2nmf} Strong Scaling at Level-0 on Realworld Data}
+\label{fig:rwrank2strongscaling}
+\end{center}
+\end{figure}
+
+
+
 \subsubsection{Hierarchical Clustering Strong Scaling}
 
-\GB{4 plots: 2 data sets with speedup/breakdown}
+\GB{Do these breakdowns include the score function?  actually this may explain why all-reduce costs more, it also has $O(n)$ data for score...}
+
+\GB{4 plots: 2 data sets with speedup/breakdown, note that we include time for complete levels, ignoring nodes in incomplete levels for easier interpretation}
+
+\begin{itemize}
+	\item theory says...t
+	\item Fig 7 shows limit of strong scaling for synthetic data (time increases at 50 nodes compared to 40), Fig 8 gives breakdown and explains
+	\begin{itemize}
+		\item drastic performance dropoff may be artifact of all-gather, which should take about the same time as reduce-scatter, but speedup from 30 to 40 nodes is also slight
+		\item by 50 nodes, about 50\% of time in communication; still mostly dominated by bandwidth cost because ag and rs dominate ar
+		\item note the difference between the scaling of single rank-2 and entire tree: poor scaling must be due to lower levels, which we explore in the next section
+	\end{itemize}
+	\item Fig 9 shows reasonable scaling for entire tree -- speedup drops from 7x to 6x over 80 nodes; Fig 10 shows that MM is still 70\% of run time on 80 nodes, which allows for near-linear scaling
+\end{itemize}
 
 \begin{figure}
 \begin{center}
@@ -568,6 +593,10 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \subsubsection{Level Scaling}
 
 \GB{3 plots: for synthetic level breakdown for 1 node and for 40 nodes; for realworld just for 80 nodes}
+
+\begin{itemize}
+	\item theory says 
+\end{itemize}
 
 \begin{figure}
 \begin{center}
@@ -606,6 +635,12 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 
 \section{Conclusion}
+
+\begin{itemize}
+	\item consider sparse case
+	\item consider parallelizing across tree
+	\item consider redistribution for 2D
+\end{itemize}
 
 \section*{Acknowledgment}
 
