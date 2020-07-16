@@ -43,6 +43,8 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 \subsection{Performance}
 \label{sec:perf}
+For all hierarchical clustering experiments in this section, the number of tree leaf nodes $k$ was set at $100$, the tolerance
+for the power iteration was set at $0$, and only complete levels were considered for analysis purposes for both level and strong scaling plots.
 
 \subsubsection{Single-Node Scaling for DC Dataset}
 
@@ -67,9 +69,9 @@ We perform strong scaling experiments for a single Rank-2 NMF (\Cref{alg:parrank
 The theory (\Cref{eq:r2nmfcost}) suggests that perfect strong scaling is possible as long as the execution time is dominated by local computation.
 Both the matrix multiplications and NNLS solves scale linearly with $1/p$ (we expect MatMul to dominate), but the bandwidth cost is independent of $p$ and the latency cost increases slightly with $p$.
 
-\Cref{fig:synrank2speedup,fig:rwrank2speedup} show performance relative to the smallest number of nodes required to store data and factor matrices.
-The synthetic data is chosen to fit on a single node, while the \image{} data requires 10 nodes to store the input matrix as well as temporary and output matrices.
-For these data sets, we observe nearly perfect strong scaling, with 47$\times$ speedup on 50 nodes (over 1 node) for synthetic data and 7.1$\times$ speedup on 80 nodes (over 10 nodes) for \image{} data.
+\Cref{fig:synrank2speedup,fig:rwrank2speedup} show performance relative to the smallest number of compute nodes required to store data and factor matrices.
+The synthetic data is chosen to fit on a single node, while the \image{} data requires 10 compute nodes to store the input matrix as well as temporary and output matrices.
+For these data sets, we observe nearly perfect strong scaling, with 47$\times$ speedup on 50 compute nodes (over 1 compute node) for synthetic data and 7.1$\times$ speedup on 80 compute nodes (over 10 compute nodes) for \image{} data.
 
 \begin{figure}
 \begin{center}
@@ -111,7 +113,6 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 \end{figure}
 
 
-
 \subsubsection{Hierarchical Clustering Strong Scaling}
 \label{sec:hiernmf2scaling}
 
@@ -119,11 +120,20 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 
 \GB{4 plots: 2 data sets with speedup/breakdown, note that we include time for complete levels, ignoring nodes in incomplete levels for easier interpretation}
 
-From equation \ref{eq:treecost}, we expect to see perfect strong scaling in a computationally bound H2NMF problem with fixed frontier node $k$ count.
-However, the problem should become latency bound with its $\log p$ cost as we scale. Figure \ref{fig:fig:synhierspeedup} shows this latency limit as
-we scale to 50 compute nodes on the synthetic data. Figure \ref{fig:synhierstrongscaling}
 
-From equation \ref{eq:levelcost}
+From equation \ref{eq:treecost}, we expect to see perfect strong scaling in a computationally bound hierarchical clustering problem with fixed frontier node $k=100$ count.
+The problem should become latency bound with its $\log p$ cost as we scale. 
+
+Figure \ref{fig:synhierstrongscaling} shows the limits of scaling as the hierarchical cost is becoming saturated with communication.
+The AllReduce segment would consistently grow if the problem was becoming latency bound, which is not the case.
+So, the problem is becoming bandwidth bound as seen through the ReduceScatter and AllGather segments. 
+However, computation still makes up more than 60\% of the total cost.
+
+With the much larger \image{} dataset, it's possible to scale much further as seen in Figure \ref{fig:rwhierspeedup} without being overwhelmed by the communication cost.
+From Figure \ref{fig:fig:rwhierstrongscaling}, the communication cost doesn't make up more than 20\% of the total cost even scaling to 80 compute nodes. 
+
+Note that in order to compare hierarchical clusters between differing compute nodes, we limited the output to include only complete levels in the tree.
+
 \begin{itemize}
 	\item theory (\Cref{eq:treecost}) says...
 	\item Fig 7 shows limit of strong scaling for synthetic data (time increases at 50 nodes compared to 40), Fig 8 gives breakdown and explains
@@ -170,6 +180,12 @@ From equation \ref{eq:levelcost}
 \subsubsection{Level Scaling}
 
 \GB{3 plots: for synthetic level breakdown for 1 node and for 40 nodes; for realworld just for 80 nodes}
+
+To show the level scaling in a particular tree, we only considered complete levels as the analysis from Equation \ref{eq:levelcost} only considers
+complete levels. From Equation \ref{eq:levelcost}, the high order computational term (represented by MatMul) is constant per level, the lower order 
+computational term (represented by NNLS) grows like $O(2^\ell)$, and the latency cost grows similarly like $O(2^\ell)$. 
+
+From Figure \ref{fig:seqlevelbreakdown}, the MatMul cost decreases slightly per level, which 
 
 \begin{itemize}
 	\item theory says per-level cost is \Cref{eq:levelcost}
