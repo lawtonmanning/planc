@@ -119,11 +119,20 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 
 \GB{4 plots: 2 data sets with speedup/breakdown, note that we include time for complete levels, ignoring nodes in incomplete levels for easier interpretation}
 
-From equation \ref{eq:treecost}, we expect to see perfect strong scaling in a computationally bound H2NMF problem with fixed frontier node $k$ count.
-However, the problem should become latency bound with its $\log p$ cost as we scale. Figure \ref{fig:fig:synhierspeedup} shows this latency limit as
-we scale to 50 compute nodes on the synthetic data. Figure \ref{fig:synhierstrongscaling}
 
-From equation \ref{eq:levelcost}
+From equation \ref{eq:treecost}, we expect to see perfect strong scaling in a computationally bound hierarchical clustering problem with fixed frontier node $k=100$ count.
+The problem should become latency bound with its $\log p$ cost as we scale. 
+
+Figure \ref{fig:synhierstrongscaling} shows the limits of scaling as the hierarchical cost is becoming saturated with communication.
+The AllReduce segment would consistently grow if the problem was becoming latency bound, which is not the case.
+So, the problem is becoming bandwidth bound as seen through the ReduceScatter and AllGather segments. 
+However, computation still makes up more than 60\% of the total cost.
+
+With the much larger \image{} dataset, it's possible to scale much further as seen in Figure \ref{fig:rwhierspeedup} without being overwhelmed by the communication cost.
+From Figure \ref{fig:fig:rwhierstrongscaling}, the communication cost doesn't make up more than 20\% of the total cost even scaling to 80 compute nodes. 
+
+Note that in order to compare hierarchical clusters between differing compute nodes, we limited the output to include only complete levels in the tree.
+
 \begin{itemize}
 	\item theory (\Cref{eq:treecost}) says...
 	\item Fig 7 shows limit of strong scaling for synthetic data (time increases at 50 nodes compared to 40), Fig 8 gives breakdown and explains
