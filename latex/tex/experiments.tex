@@ -18,28 +18,32 @@ Our implementation builds on the PLANC open-source library and uses the Armadill
 On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and IBM's Spectrum MPI (version 10.3.1.2-20200121).
 
 \subsection{Datasets}
-\begin{itemize}
-	\item \textit{Hyperspectral Imaging}:
-	For Hyperspectral imaging, we chose the Hyperspectral digital imagery collection experiment (HYDICE) image of the Washington DC Mall. We will refer
+
+\paragraph{\emph{Hyperspectral Imaging}}
+
+	We use the Hyperspectral Digital Imagery Collection Experiment (HYDICE) image of the Washington DC Mall. We will refer
 	to this dataset as \hyper{}\cite{DC-HYDICE}.
 	
 	\hyper{} is formatted into a 3-way tensor representing two spatial dimensions of pixels and one dimension of spectral bands. So, a slice along
-	the spectral band dimnesion would be the full \hyper{} image in that spectral band. For H2NMF, these tensors are flattened so that the rows represent the
-	$191$ spectral bands and the columns represent the $392960$ pixels. 
+	the spectral band dimension would be the full \hyper{} image in that spectral band. For hierarchical clustering, these tensors are flattened so that the rows represent the
+	$191$ spectral bands and the columns represent the $392960$ pixels.   The data set is approximately 600 MB in size.
 
-	Larger hyperspectral datasets tend to not grow larger than around 200 spectral bands and have millions or billions of pixels. So, scaling is 
-	limited for this dataset given our data distribution scheme.
-	\item \textit{Image Classification}:
-	Image Classification datasets contain tens of thousands of images of equal size. The dataset we chose is the SIIM-ISIC Melanoma classification
-	dataset, which we will refer to as \image{}\cite{SIIM-ISIC}. \image{} consists of $33126$ RGB training images equally sized at $1024 \times 1024$. Unlike with hyperspectral imaging, the resulting
-	matrix used in H2NMF consists of image pixels along the rows and individual images along the columns. So, the resulting sized matrix is
-	$3145728 \times 33126$, which is approximately 800GB in size. 
+	%Larger hyperspectral datasets tend to not grow larger than around 200 spectral bands and have millions or billions of pixels. So, scaling is 
+	%limited for this dataset given our data distribution scheme.
+	
+\paragraph{\emph{Image Classification}}
 
-	Given its size, \image{} can only scale from $10$ Summit nodes.
-	\item \textit{Synthetic Dataset}:
+	The SIIM-ISIC Melanoma classification
+	dataset, which we will refer to as \image{}\cite{SIIM-ISIC}, consists of $33126$ RGB training images equally sized at $1024 \times 1024$. Unlike with hyperspectral imaging, the resulting
+	matrix used in hierarchical clustering consists of image pixels along the rows and individual images along the columns. So, the resulting sized matrix is
+	$3145728 \times 33126$, which is approximately 800 GB in size. 
+
+	Given its size, \image{} requries $10$ Summit nodes to perform hierarchical clustering.
+	
+\paragraph{\emph{Synthetic Dataset}}
+
 	Our synthetic dataset has the same aspect ratio of \image{} but consists of fewer rows and columns by a factor of $3$. The resulting matrix is $1048576 \times 11042$. 
-	We chose a smaller size dataset to fit on a single node.
-\end{itemize}
+	We choose the smaller size in order to fit on a single node for scaling experiments.
 
 \subsection{Performance}
 \label{sec:perf}
@@ -185,7 +189,17 @@ To show the level scaling in a particular tree, we only considered complete leve
 complete levels. From Equation \ref{eq:levelcost}, the high order computational term (represented by MatMul) is constant per level, the lower order 
 computational term (represented by NNLS) grows like $O(2^\ell)$, and the latency cost grows similarly like $O(2^\ell)$. 
 
-From Figure \ref{fig:seqlevelbreakdown}, the MatMul cost decreases slightly per level, which 
+From Figure \ref{fig:seqlevelbreakdown}, the MatMul cost decreases slightly per level, which may be explained by BLAS optimizations occurring in the
+local matrix multiply, especially as each node's subproblem becomes smaller and smaller. The NNLS grows exponentially, which is exactly in line with theory,
+and none of the levels seem to become bandwidth or latency bound for this case.
+
+As we increase the nodes to 40 in the same sequential case, the story completely changes. Figure \ref{fig:parallellevelbreakdown} shows the MatMul cost is almost precisely the same, which is line with the theory.
+The NNLS cost grows exponentially as before and becomes dominating at the lower levels. The latency is also appearing as the AllReduce cost, which is latency bound,
+starts to grow exponentially from level 3 onwards. 
+
+In Figure \ref{fig:rwparallellevelbreakdown}, note that this levels experiment is from the image dataset, which is considerably larger than the synthetic case but is of the same size.
+Although all is relatively the same as in Figure \ref{fig:parallellevelbreakdown}, matrix multiply still dominates at the lower levels and the problem is computationally bound
+at each level, which is indiciative of the strong speedup as seen in the previous section.
 
 \begin{itemize}
 	\item theory says per-level cost is \Cref{eq:levelcost}
