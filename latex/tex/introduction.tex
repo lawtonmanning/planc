@@ -40,9 +40,7 @@ In particular, we confirm that many of the dominant costs are logarithmic in $k$
 We demonstrate in \Cref{sec:results} the efficiency and scalability of our parallel algorithm on three data sets, including the HSI data of the DC mall and an image classification data set involving skin melanoma.
 The experimental results show that our parallelization of Rank-2 NMF is highly scalable, maintaining computation bound performance on 1000s of cores.
 We also show the limits of strong scalability when scaling to large numbers of clusters (leaf nodes), as the execution time shifts to becoming interprocessor bandwidth bound and eventually latency bound.
-The image classification data set requires 800 GB of memory across multiple nodes to process, and in scaling from 10 nodes to 80 nodes of the Summit supercomputer (see \Cref{sec:summit}), we demonstrate parallel speedups of 7.1$\times$ for a single Rank-2 NMF and ZZ$\times$ for a complete hierarchical clustering.
-
-\GB{we should have perhaps compared against SmallK and also against flat NMF...}
+The image classification data set requires 800 GB of memory across multiple nodes to process, and in scaling from 10 nodes to 80 nodes of the Summit supercomputer (see \Cref{sec:summit}), we demonstrate parallel speedups of 7.1$\times$ for a single Rank-2 NMF and 5.9$\times$ for a complete hierarchical clustering.
 
 \begin{figure}
 \input{fig/dc}

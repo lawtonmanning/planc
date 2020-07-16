@@ -1,3 +1,5 @@
+% !TEX root = ../paper.tex
+
 \section{Experimental Results}
 \label{sec:results}
 
@@ -14,10 +16,6 @@ Additionally, every node also supports six NVIDIA Volta V100 accelerators but th
 H2NMF uses the Armadillo library (version 9.900.1) for all matrix operations. 
 In Armadillo, sparse matrices are stored in Compressed Sparse Column (CSC) format and dense matrices are stored in column-major ordering.
 On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and IBM's Spectrum MPI (version 10.3.1.2-20200121).
-
-
-\GB{specify that $\imath=\jmath=100$ in all experiments, also what do we set $k$ to be?  fixed number for each dataset?  any other experimental parameters we should specify? could also specify these at the beginning of \Cref{sec:perf}}
-
 
 \subsection{Datasets}
 \begin{itemize}
@@ -39,16 +37,26 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 	Given its size, \image{} can only scale from $10$ Summit nodes.
 	\item \textit{Synthetic Dataset}:
-	Our synthetic dataset is the same shape of \image{} but consists of fewer rows and columns by a factor of $3$. The resulting matrix is $1048576 \times 11042$. 
-	We chose a smaller size dataset to better see the limits of scaling and to scale from fewer Summit nodes.
+	Our synthetic dataset has the same aspect ratio of \image{} but consists of fewer rows and columns by a factor of $3$. The resulting matrix is $1048576 \times 11042$. 
+	We chose a smaller size dataset to fit on a single node.
 \end{itemize}
 
 \subsection{Performance}
 \label{sec:perf}
+For all hierarchical clustering experiments in this section, the number of tree leaf nodes $k$ was set at $100$, the tolerance
+for the power iteration was set at $0$, and only complete levels were considered for analysis purposes for both level and strong scaling plots.
 
 \subsubsection{Single-Node Scaling for DC Dataset}
 
 \GB{add only speedup plot for entire tree (at least all complete levels) from 1 core to 42 cores}
+
+\hyper{} is small compared to the other datasets, so it can easily fit on one compute node.
+Also, its small number of 191 rows doesn't allow for parallelizing beyond that number of MPI processes.
+So, this dataset was used for a single-node scaling experiment on Summit from 1 to 42 cores.
+Because the hierarchical clustering algorithm is memory bandwidth bound, there should be limited speedup on one node due to it being essentially shared memory 
+parallelism. Figure \LM{FIXME: DC REF} shows that there is enough speedup for it to be worth parallelizing such a small problem. In this experiment, the
+processes were distributed across both sockets so that a minimum amount of shared memory between processes was used.
+
 
 \begin{itemize}
 	\item emphasize we start with a small data set that fits on one node and has only 191 rows
@@ -61,9 +69,9 @@ We perform strong scaling experiments for a single Rank-2 NMF (\Cref{alg:parrank
 The theory (\Cref{eq:r2nmfcost}) suggests that perfect strong scaling is possible as long as the execution time is dominated by local computation.
 Both the matrix multiplications and NNLS solves scale linearly with $1/p$ (we expect MatMul to dominate), but the bandwidth cost is independent of $p$ and the latency cost increases slightly with $p$.
 
-\Cref{fig:synrank2speedup,fig:rwrank2speedup} show performance relative to the smallest number of nodes required to store data and factor matrices.
-The synthetic data is chosen to fit on a single node, while the \image{} data requires 10 nodes to store the input matrix as well as temporary and output matrices.
-For these data sets, we observe nearly perfect strong scaling, with 47$\times$ speedup on 50 nodes (over 1 node) for synthetic data and 7.1$\times$ speedup on 80 nodes (over 10 nodes) for \image{} data.
+\Cref{fig:synrank2speedup,fig:rwrank2speedup} show performance relative to the smallest number of compute nodes required to store data and factor matrices.
+The synthetic data is chosen to fit on a single node, while the \image{} data requires 10 compute nodes to store the input matrix as well as temporary and output matrices.
+For these data sets, we observe nearly perfect strong scaling, with 47$\times$ speedup on 50 compute nodes (over 1 compute node) for synthetic data and 7.1$\times$ speedup on 80 compute nodes (over 10 compute nodes) for \image{} data.
 
 \begin{figure}
 \begin{center}
@@ -105,18 +113,27 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 \end{figure}
 
 
-
 \subsubsection{Hierarchical Clustering Strong Scaling}
+\label{sec:hiernmf2scaling}
 
 \GB{Do these breakdowns include the score function?  actually this may explain why all-reduce costs more, it also has $O(n)$ data for score...}
 
 \GB{4 plots: 2 data sets with speedup/breakdown, note that we include time for complete levels, ignoring nodes in incomplete levels for easier interpretation}
 
-From equation \ref{eq:treecost}, we expect to see perfect strong scaling in a computationally bound H2NMF problem with fixed frontier node $k$ count.
-However, the problem should become latency bound with its $\log p$ cost as we scale. Figure \ref{fig:fig:synhierspeedup} shows this latency limit as
-we scale to 50 compute nodes on the synthetic data. Figure \ref{fig:synhierstrongscaling}
 
-From equation \ref{eq:levelcost}
+From equation \ref{eq:treecost}, we expect to see perfect strong scaling in a computationally bound hierarchical clustering problem with fixed frontier node $k=100$ count.
+The problem should become latency bound with its $\log p$ cost as we scale. 
+
+Figure \ref{fig:synhierstrongscaling} shows the limits of scaling as the hierarchical cost is becoming saturated with communication.
+The AllReduce segment would consistently grow if the problem was becoming latency bound, which is not the case.
+So, the problem is becoming bandwidth bound as seen through the ReduceScatter and AllGather segments. 
+However, computation still makes up more than 60\% of the total cost.
+
+With the much larger \image{} dataset, it's possible to scale much further as seen in Figure \ref{fig:rwhierspeedup} without being overwhelmed by the communication cost.
+From Figure \ref{fig:fig:rwhierstrongscaling}, the communication cost doesn't make up more than 20\% of the total cost even scaling to 80 compute nodes. 
+
+Note that in order to compare hierarchical clusters between differing compute nodes, we limited the output to include only complete levels in the tree.
+
 \begin{itemize}
 	\item theory (\Cref{eq:treecost}) says...
 	\item Fig 7 shows limit of strong scaling for synthetic data (time increases at 50 nodes compared to 40), Fig 8 gives breakdown and explains
@@ -164,6 +181,12 @@ From equation \ref{eq:levelcost}
 
 \GB{3 plots: for synthetic level breakdown for 1 node and for 40 nodes; for realworld just for 80 nodes}
 
+To show the level scaling in a particular tree, we only considered complete levels as the analysis from Equation \ref{eq:levelcost} only considers
+complete levels. From Equation \ref{eq:levelcost}, the high order computational term (represented by MatMul) is constant per level, the lower order 
+computational term (represented by NNLS) grows like $O(2^\ell)$, and the latency cost grows similarly like $O(2^\ell)$. 
+
+From Figure \ref{fig:seqlevelbreakdown}, the MatMul cost decreases slightly per level, which 
+
 \begin{itemize}
 	\item theory says per-level cost is \Cref{eq:levelcost}
 \end{itemize}
@@ -194,11 +217,3 @@ From equation \ref{eq:levelcost}
 \end{figure}
 
 
-\subsection{DC Clustering Results}
-
-\subsubsection{Hyperspectral Imaging}
-\begin{figure}
-\input{fig/dc}
-\caption{Hierarchical Cluster from DC Mall Image}
-\label{fig:dc}
-\end{figure}
