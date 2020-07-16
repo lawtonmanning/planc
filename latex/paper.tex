@@ -462,9 +462,11 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 	\LM{DC: https://engineering.purdue.edu/~biehl/MultiSpec/hyperspectral.html}
 	For Hyperspectral imaging, we chose the Hyperspectral digital imagery collection experiment (HYDICE) image of the Washington DC Mall. We will refer
 	to this dataset as \hyper{}.
+	
 	\hyper{} is formatted into a 3-way tensor representing two spatial dimensions of pixels and one dimension of spectral bands. So, a slice along
 	the spectral band dimnesion would be the full \hyper{} image in that spectral band. For H2NMF, these tensors are flattened so that the rows represent the
 	$191$ spectral bands and the columns represent the $392960$ pixels. 
+
 	Larger hyperspectral datasets tend to not grow larger than around 200 spectral bands and have millions or billions of pixels. So, scaling is 
 	limited for this dataset given our data distribution scheme.
 	\item \textit{Image Classification}:
@@ -473,6 +475,7 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 	dataset, which we will refer to as \image{}. \image{} consists of $33126$ RGB training images equally sized at $1024 \times 1024$. Unlike with hyperspectral imaging, the resulting
 	matrix used in H2NMF consists of image pixels along the rows and individual images along the columns. So, the resulting sized matrix is
 	$3145728 \times 33126$, which is approximately 800GB in size. 
+
 	Given its size, \image{} can only scale from $10$ Summit nodes.
 	\item \textit{Synthetic Dataset}:
 	Our synthetic dataset is the same shape of \image{} but consists of fewer rows and columns by a factor of $3$. The resulting matrix is $1048576 \times 11042$. 
