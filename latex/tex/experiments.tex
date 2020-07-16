@@ -1,3 +1,5 @@
+% !TEX root = ../paper.tex
+
 \section{Experimental Results}
 \label{sec:results}
 
@@ -39,8 +41,8 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 	Given its size, \image{} can only scale from $10$ Summit nodes.
 	\item \textit{Synthetic Dataset}:
-	Our synthetic dataset is the same shape of \image{} but consists of fewer rows and columns by a factor of $3$. The resulting matrix is $1048576 \times 11042$. 
-	We chose a smaller size dataset to better see the limits of scaling and to scale from fewer Summit nodes.
+	Our synthetic dataset has the same aspect ratio of \image{} but consists of fewer rows and columns by a factor of $3$. The resulting matrix is $1048576 \times 11042$. 
+	We chose a smaller size dataset to fit on a single node.
 \end{itemize}
 
 \subsection{Performance}

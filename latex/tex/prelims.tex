@@ -1,3 +1,5 @@
+% !TEX root = ../paper.tex
+
 \section{Preliminaries and Related Work}
 \label{sec:prelim}
 
@@ -23,7 +25,7 @@ We focus in this paper on parallelizing the hierarchical algorithms proposed by 
 \subsection{Parallel NMF}
 
 Scaling algorithms for NMF to large data often requires parallelization in order to fit the data across the memories of multiple compute nodes or speed up the computation to complete in reasonable time.
-Parallelizations of multiple optimization approaches have been proposed for general NMF. \GB{add more citations here, including to SmallK}
+Parallelizations of multiple optimization approaches have been proposed for general NMF \cite{FKPB15,BW09,MESPS20,KBP17,SmallK}. 
 In particular, we build upon the work of Kannan et al. \cite{KBP16,KBP17,EH+19-TR} and the open-source library PLANC, designed for nonnegative matrix and tensor factorizations of dense and sparse data.
 In this parallelization, the alternating optimization approach is employed with various options for the algorithm used to (approximately) solve the NNLS subproblems.
 The efficiency of the parallelization is based on scalable algorithms for the parallel matrix multiplications involved in all NNLS algorithms; these algorithms are based on Cartesian distributions of the input matrix across 1D or 2D processor grids.
