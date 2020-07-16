@@ -180,6 +180,12 @@ Note that in order to compare hierarchical clusters between differing compute no
 
 \GB{3 plots: for synthetic level breakdown for 1 node and for 40 nodes; for realworld just for 80 nodes}
 
+To show the level scaling in a particular tree, we only considered complete levels as the analysis from Equation \ref{eq:levelcost} only considers
+complete levels. From Equation \ref{eq:levelcost}, the high order computational term (represented by MatMul) is constant per level, the lower order 
+computational term (represented by NNLS) grows like $O(2^\ell)$, and the latency cost grows similarly like $O(2^\ell)$. 
+
+From Figure \ref{fig:seqlevelbreakdown}, the MatMul cost decreases slightly per level, which 
+
 \begin{itemize}
 	\item theory says per-level cost is \Cref{eq:levelcost}
 \end{itemize}
