@@ -13,8 +13,8 @@ although one of these SMCs on each processor is dedicated to memory transfer and
 For node scaling experiments, all 42 available SMCs were utilized in each node so that every node computed with 42 separate MPI processes.
 Additionally, every node also supports six NVIDIA Volta V100 accelerators but these were unused by our algorithm. 
 
-H2NMF uses the Armadillo library (version 9.900.1) for all matrix operations. 
-In Armadillo, sparse matrices are stored in Compressed Sparse Column (CSC) format and dense matrices are stored in column-major ordering.
+Our implementation builds on the PLANC open-source library and uses the Armadillo library (version 9.900.1) for all matrix operations. 
+%In Armadillo, sparse matrices are stored in Compressed Sparse Column (CSC) format and dense matrices are stored in column-major ordering.
 On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and IBM's Spectrum MPI (version 10.3.1.2-20200121).
 
 \subsection{Datasets}
