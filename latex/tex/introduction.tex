@@ -1,3 +1,5 @@
+% !TEX root = ../paper.tex
+
 \section{Introduction}
 
 Nonnegative Matrix Factorization (NMF) has been demonstrated to be an effective tool for unsupervised learning problems including clustering \cite{XLG03, SBPP06, DHS05}. 
@@ -28,7 +30,7 @@ The algorithm proceeds to split nodes until a target number of leaves is obtaine
 While the hierarchical clustering method offers advantages in terms of interpretation as well as execution time compared to flat NMF, implementations of the algorithm are limited to single workstations and the dataset must fit in the available memory.
 Currently available implementations can utilize multiple cores via MATLAB \cite{KP13} or explicit shared-memory parallelization in the SmallK library \cite{SmallK}.
 The goal of this work is to use distributed-memory parallelism to scale the algorithm to large datasets that require the memory of multiple compute nodes and to high processor counts.
-While flat NMF algorithms have been scaled to HPC platforms \cite{FKPB15} \GB{add citations beyond our own}, our implementation is the first to our knowledge to scale a hierarchical NMF method to 1000s of cores. 
+While flat NMF algorithms have been scaled to HPC platforms \cite{FKPB15,BW09,MESPS20,KBP17}, our implementation is the first to our knowledge to scale a hierarchical NMF method to 1000s of cores. 
 As discussed in detail in \Cref{sec:paralgs}, we choose to parallelize the computations associated with each node in the tree, which involve a Rank-2 NMF and the computation of the node's score.
 We choose a data matrix distribution across processors that avoids any redistribution of the input matrix regardless of the data-dependent structure of the tree's splitting decisions so that the communication required involves only the small factor matrices.
 Analysis of the algorithm shows the dependence of execution time on computation and communication costs as well as on $k$, the number of clusters computed.
