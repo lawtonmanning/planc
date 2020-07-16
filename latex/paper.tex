@@ -56,8 +56,8 @@ Nonnegative Matrix Factorization (NMF) is an effective tool for clustering nonne
 In this paper, we propose a parallel algorithm for hierarchical clustering that uses a divide-and-conquer approach based on rank-two NMF to split a data set into two cohesive parts.
 Not only does this approach uncover more structure in the data than a flat NMF clustering, but also rank-two NMF can be computed more quickly than for general ranks, providing comparable overall time to solution.
 Furthermore, the rank-two NMF algorithm can be parallelized efficiently using a computational kernel similar to matrix-vector multiplication.
-Our data distribution and parallelization strategies are designed to maintain computational load balance throughout the data-dependent hierarchy of computation while limiting interprocess communication, allowing the algorithm to scale to large dense data sets.
-We demonstrate the scalability of our parallel algorithm in terms of data size and number of processors, and apply the hierarchical clustering approach to hyperspectral imaging and image classification data.
+Our data distribution and parallelization strategies are designed to maintain computational load balance throughout the data-dependent hierarchy of computation while limiting interprocess communication, allowing the algorithm to scale to large dense and sparse data sets.
+We demonstrate the scalability of our parallel algorithm in terms of data size and number of processors, and apply the hierarchical clustering approach to large (dense) hyperspectral imaging and (sparse) text document data.
 \end{abstract}
 
 %\begin{IEEEkeywords}
@@ -104,6 +104,7 @@ The goal of this work is to use distributed-memory parallelism to scale the algo
 \caption{Hierarchical Clustering of DC Mall Hyperspectral Image}
 \label{fig:dc}
 \end{figure}
+
 
 \section{Preliminaries and Related Work}
 \label{sec:prelim}
@@ -492,13 +493,12 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 \subsection{Datasets}
 
-\GB{need shortcut names for datasets: synthetic, DC, and something better than IMAGE}
+\GB{need shortcut names for datasets: synthetic, DC, and something better than \image{}}
 
 \begin{itemize}
 	\item \textit{Hyperspectral Imaging}:
-	\LM{DC: https://engineering.purdue.edu/~biehl/MultiSpec/hyperspectral.html}
 	For Hyperspectral imaging, we chose the Hyperspectral digital imagery collection experiment (HYDICE) image of the Washington DC Mall. We will refer
-	to this dataset as \hyper{}.
+	to this dataset as \hyper{}\cite{DC-HYDICE}.
 	
 	\hyper{} is formatted into a 3-way tensor representing two spatial dimensions of pixels and one dimension of spectral bands. So, a slice along
 	the spectral band dimnesion would be the full \hyper{} image in that spectral band. For H2NMF, these tensors are flattened so that the rows represent the
@@ -507,9 +507,8 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 	Larger hyperspectral datasets tend to not grow larger than around 200 spectral bands and have millions or billions of pixels. So, scaling is 
 	limited for this dataset given our data distribution scheme.
 	\item \textit{Image Classification}:
-	\LM{https://www.kaggle.com/c/siim-isic-melanoma-classification/data}
 	Image Classification datasets contain tens of thousands of images of equal size. The dataset we chose is the SIIM-ISIC Melanoma classification
-	dataset, which we will refer to as \image{}. \image{} consists of $33126$ RGB training images equally sized at $1024 \times 1024$. Unlike with hyperspectral imaging, the resulting
+	dataset, which we will refer to as \image{}\cite{SIIM-ISIC}. \image{} consists of $33126$ RGB training images equally sized at $1024 \times 1024$. Unlike with hyperspectral imaging, the resulting
 	matrix used in H2NMF consists of image pixels along the rows and individual images along the columns. So, the resulting sized matrix is
 	$3145728 \times 33126$, which is approximately 800GB in size. 
 
@@ -533,13 +532,13 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 \subsubsection{Rank-2 NMF Strong Scaling}
 
-We perform strong scaling experiments for a single Rank-2 NMF (\Cref{alg:parrank2nmf}) on the synthetic and IMAGE datasets.
+We perform strong scaling experiments for a single Rank-2 NMF (\Cref{alg:parrank2nmf}) on the synthetic and \image{} datasets.
 The theory (\Cref{eq:r2nmfcost}) suggests that perfect strong scaling is possible as long as the execution time is dominated by local computation.
 Both the matrix multiplications and NNLS solves scale linearly with $1/p$ (we expect MatMul to dominate), but the bandwidth cost is independent of $p$ and the latency cost increases slightly with $p$.
 
 \Cref{fig:synrank2speedup,fig:rwrank2speedup} show performance relative to the smallest number of nodes required to store data and factor matrices.
-The synthetic data is chosen to fit on a single node, while the IMAGE data requires 10 nodes to store the input matrix as well as temporary and output matrices.
-For these data sets, we observe nearly perfect strong scaling, with 47$\times$ speedup on 50 nodes (over 1 node) for synthetic data and 7.1$\times$ speedup on 80 nodes (over 10 nodes) for IMAGE data.
+The synthetic data is chosen to fit on a single node, while the \image{} data requires 10 nodes to store the input matrix as well as temporary and output matrices.
+For these data sets, we observe nearly perfect strong scaling, with 47$\times$ speedup on 50 nodes (over 1 node) for synthetic data and 7.1$\times$ speedup on 80 nodes (over 10 nodes) for \image{} data.
 
 \begin{figure}
 \begin{center}
@@ -567,7 +566,7 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 \begin{figure}
 \begin{center}
 \includegraphics[height=2in, width=\columnwidth]{plots/realworld_rank2_speedup.pdf}
-\caption{Strong Scaling Speedup for Rank-2 NMF on IMAGE data}
+\caption{Strong Scaling Speedup for Rank-2 NMF on \image{} data}
 \label{fig:rwrank2speedup}
 \end{center}
 \end{figure}
@@ -575,7 +574,7 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 \begin{figure}
 \begin{center}
 \includegraphics[height=2in, width=\columnwidth]{plots/realworld_rank2_strongscaling.pdf}
-\caption{Relative Time Breakdown for Rank-2 NMF on IMAGE data}
+\caption{Relative Time Breakdown for Rank-2 NMF on \image{} data}
 \label{fig:rwrank2strongscaling}
 \end{center}
 \end{figure}
@@ -618,7 +617,7 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 \begin{figure}
 \begin{center}
 \includegraphics[height=2in, width=\columnwidth]{plots/realworld_hierarchical_speedup.pdf}
-\caption{Strong Scaling Speedup for Hierarchical Clustering on Realworld Data. The total time taken for complete Hierarchical Clustering \cref{alg:hiernmf2}}
+\caption{Strong Scaling Speedup for Hierarchical Clustering on \image{} Data. The total time taken for complete Hierarchical Clustering \cref{alg:hiernmf2}}
 \label{fig:rwhierspeedup}
 \end{center}
 \end{figure}
@@ -626,7 +625,7 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 \begin{figure}
 \begin{center}
 \includegraphics[height=2in, width=\columnwidth]{plots/realworld_hier_strongscaling.pdf}
-\caption{Relative Time Breakdown for Hierarchical Clustering on Realworld. The plot uses the total time taken for complete Hierarchical Clustering \cref{alg:hiernmf2}}
+\caption{Relative Time Breakdown for Hierarchical Clustering on \image{}. The plot uses the total time taken for complete Hierarchical Clustering \cref{alg:hiernmf2}}
 \label{fig:rwhierstrongscaling}
 \end{center}
 \end{figure}
@@ -662,6 +661,16 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 \caption{Parallel Breakdown plot for levels 0 to 5 on 80 nodes. y-axis is absolute wall clock time in seconds}
 \label{fig:rwparallellevelbreakdown}
 \end{center}
+\end{figure}
+
+
+\subsection{DC Clustering Results}
+
+\subsubsection{Hyperspectral Imaging}
+\begin{figure}
+\input{fig/dc}
+\caption{Hierarchical Cluster from DC Mall Image}
+\label{fig:dc}
 \end{figure}
 
 
