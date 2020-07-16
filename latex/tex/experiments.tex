@@ -185,7 +185,17 @@ To show the level scaling in a particular tree, we only considered complete leve
 complete levels. From Equation \ref{eq:levelcost}, the high order computational term (represented by MatMul) is constant per level, the lower order 
 computational term (represented by NNLS) grows like $O(2^\ell)$, and the latency cost grows similarly like $O(2^\ell)$. 
 
-From Figure \ref{fig:seqlevelbreakdown}, the MatMul cost decreases slightly per level, which 
+From Figure \ref{fig:seqlevelbreakdown}, the MatMul cost decreases slightly per level, which may be explained by BLAS optimizations occurring in the
+local matrix multiply, especially as each node's subproblem becomes smaller and smaller. The NNLS grows exponentially, which is exactly in line with theory,
+and none of the levels seem to become bandwidth or latency bound for this case.
+
+As we increase the nodes to 40 in the same sequential case, the story completely changes. Figure \ref{fig:parallellevelbreakdown} shows the MatMul cost is almost precisely the same, which is line with the theory.
+The NNLS cost grows exponentially as before and becomes dominating at the lower levels. The latency is also appearing as the AllReduce cost, which is latency bound,
+starts to grow exponentially from level 3 onwards. 
+
+In Figure \ref{fig:rwparallellevelbreakdown}, note that this levels experiment is from the image dataset, which is considerably larger than the synthetic case but is of the same size.
+Although all is relatively the same as in Figure \ref{fig:parallellevelbreakdown}, matrix multiply still dominates at the lower levels and the problem is computationally bound
+at each level, which is indiciative of the strong speedup as seen in the previous section.
 
 \begin{itemize}
 	\item theory says per-level cost is \Cref{eq:levelcost}
