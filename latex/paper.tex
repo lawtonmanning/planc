@@ -81,7 +81,7 @@ Many block coordinate descent (BCD) approaches are possible \cite{KHP14}, and on
 This NNLS algorithm is an active-set-like method that determines the sets of entries in the solution vectors that are zero and those that are positive through an iterative but finite process.
 
 When the rank of the factorization (the number of columns of $\M{W}$ and $\M{H}$) is 2, the NNLS subproblems can be solved much more quickly because the number of possible active sets is only 4.
-As explained in more detail in \Cref{sec:r2nmf}, the optimal solution across the 4 possibilities can be determined efficiently to solve the NNLS subproblem more quickly than general-rank approaches like block principal pivoting.
+As explained in more detail in \Cref{sec:r2nmf}, the optimal solution across the 4 possibilities \LM{sets} can be determined efficiently to solve the NNLS subproblem more quickly than general-rank approaches like block principal pivoting.
 Because of the relative ease of solving the NMF problem for the rank-2 case, Kuang and Park \cite{KP13} propose a recursive method to use a rank-2 NMF to partition the input data into 2 parts, whereby each part can be further partitioned via rank-2 NMF of the corresponding original data.
 This approach yields a hierarchical factorization, potentially uncovering more global structure of the input data and allowing for better scalability of the algorithm to large NMF ranks.
 
@@ -111,7 +111,7 @@ All of the interprocessor communication in the algorithms presented in this work
 Algorithms for implementing the collective operations are built out of pairwise send and receive operations, and we assume the most efficient algorithms are used in our analysis \cite{TRG05,CH+07}.
 The collectives used in our algorithms are all-reduce, all-gather, and reduce-scatter.
 In an all-reduce, all processors start out with the same amount of data and all end with a copy of the same result, which is in our case a sum of all the inputs (and the same size as a single input).
-The cost of an all-reduce of size $n$ words is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$ for $n>p$ and $(\alpha+\beta) \cdot O(\log p)$ for $n<p$.
+The cost of an all-reduce of size $n$ words is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$ for $n>p$ and $(\alpha+\beta) \cdot O(\log p)$ for $n<p$. \LM{is the n<p case right? where's the computation?}
 In an all-gather, all processors start out with separate data and all end with a copy of the same result, which is the union of all the input data.
 If each processor starts with $n/p$ data and ends with $n$ data, the cost of the all-gather is $\alpha \cdot O(\log p) + \beta \cdot O(n)$.
 In a reduce-scatter, all processors start out with the same amount of data and all end with a subset of the result, which is in our case a sum of all the inputs (and is smaller than its input).
@@ -139,7 +139,7 @@ We note that there are four possibilities of solutions, as each of the two scala
 As shown by Kuang and Park \cite{KP13}, determining which of the four possible solutions is feasible and optimal can be done efficiently by exploiting the following properties:
 \begin{itemize}
 	\item if the solution to the unconstrained least squares problem admits two positive values, it is the optimal solution to the nonnegatively constrained problem,
-	\item if $\M{W}$ and $\M{A}$ are both nonnegative, then the candidate solution with two zero values is never (uniquely) optimal and can be discarded, and
+	\item if $\M{W}$ and $\M{A}$ are both nonnegative, then the candidate solution with two zero values is never (uniquely) \LM{why uniquely?} optimal and can be discarded, and
 	\item if the solution to the unconstrained problem does not admit two positive values, the better of the two remaining solutions can be determined by comparing $\V{a}_{j}^\Tra\V{w}_1 / \|\V{w}_1\|$ and $\V{a}_{j}^\Tra\V{w}_2 / \|\V{w}_2\|$.
 \end{itemize}
 If the unconstrained problem is solved via the normal equations, then the temporary matrices computed for the normal equations ($\M{W}^\Tra\M{W}$ and $\M{A}^\Tra\M{W}$) can be re-used to determine the better of the two solutions with a single positive variable.
@@ -174,6 +174,7 @@ Solving for $\M{W}$ can be done using inputs $\M{C}=\M{A}\M{H}$ and $\M{G}=\M{H}
 \end{algorithm}
 
 Given that the computational complexity of \Cref{alg:r2nnls} is $O(n)$ (or $O(m)$ when computing $\M{W}$), and the complexity of computing $\M{W}^\Tra\M{W}$ and $\M{H}^\Tra\M{H}$ is $O(m+n)$, the typical dominant cost of each iteration of Rank-2 NMF is that of computing $\M{A}^\Tra\M{W}$ and $\M{A}\M{H}$, which is $O(mn)$ when $\M{A}$ is dense and $O(\text{nnz}(A))$ when $\M{A}$ is sparse.
+\LM{should our analysis keep sparse even when we don't have a sparse dataset?}
 
 \subsubsection{Hierarchical Clustering}
 
@@ -233,10 +234,12 @@ When a node is selected from the priority queue, it is removed from the set of f
 \end{algorithmic}
 \end{algorithm}
 
+\LM{should we have a little bit more of the description of the scoring method? also the language here is awkward}
 The splitting procedure is specified in \Cref{alg:split}.
 After the Rank-2 NMF is performed, the $\M{H}$ factor is used to determine part membership, and the columns of the $\M{W}$ factor are assigned to the child nodes.
 The score of the node is computed as the reduction in overall NMF error if the node is split, which can be computed from the principal singular values of the subsets of columns of the node and its children.
 The principal singular values of the children are computed via the power method (the principal singular value of the node was computed when its parent's score was computed).
+
 
 \begin{algorithm}
 \caption{Node Splitting via Rank-Two NMF}
@@ -343,6 +346,7 @@ That is, the approximate right singular vector $\V{v}$ is redundantly owned on e
 Each processor can compute its local $\V[\hat]{u}$ from $\V{v}$ without communication and use the result for its contribution to $\V{v}=\M{A}^\Tra \V{u}$.
 An all-reduce collective is used to obtain a copy of $\V{v}$ on every processor for the next iteration, and the norm is redundantly computed without further communication.
 Again, we use a fixed number of iterations for benchmarking, but the more practical stopping criterion is based on the relative change in $\sigma$.
+\LM{we did not use a fixed number of iterations for benchmarking}
 
 \begin{algorithm}
 \caption{Parallel Power Method}
@@ -422,6 +426,7 @@ Because the sum of the number of columns across any level of the tree is $n$, th
 \end{split}
 \end{equation}
 Note that the only cost that depends on the level index $\ell$ is the latency cost.
+\LM{both the computation and the latency dpend on this}
 Summing over levels and assuming the tree is nearly balanced and has height $O(\log k)$ where $k$ is the number of frontier nodes, we obtain an overall cost of \Cref{alg:hiernmf2} of
 \begin{equation}
 \label{eq:treecost}
