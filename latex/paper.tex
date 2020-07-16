@@ -15,6 +15,9 @@
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
+\usepackage{paralist}
+\renewenvironment{itemize}[1]{\begin{compactitem}#1}{\end{compactitem}}
+
 \newcommand{\LM}[1]{\textcolor{blue}{\textbf{Lawton}: #1}}    
 \newcommand{\GB}[1]{\textcolor{red}{\textbf{Grey}: #1}}
 \newcommand{\RK}[1]{\textcolor{blue}{\textbf{Ramki}: #1}}
