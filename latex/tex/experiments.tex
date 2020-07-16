@@ -17,10 +17,6 @@ H2NMF uses the Armadillo library (version 9.900.1) for all matrix operations.
 In Armadillo, sparse matrices are stored in Compressed Sparse Column (CSC) format and dense matrices are stored in column-major ordering.
 On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and IBM's Spectrum MPI (version 10.3.1.2-20200121).
 
-
-\GB{specify that $\imath=\jmath=100$ in all experiments, also what do we set $k$ to be?  fixed number for each dataset?  any other experimental parameters we should specify? could also specify these at the beginning of \Cref{sec:perf}}
-
-
 \subsection{Datasets}
 \begin{itemize}
 	\item \textit{Hyperspectral Imaging}:
@@ -51,6 +47,14 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \subsubsection{Single-Node Scaling for DC Dataset}
 
 \GB{add only speedup plot for entire tree (at least all complete levels) from 1 core to 42 cores}
+
+\hyper{} is small compared to the other datasets, so it can easily fit on one compute node.
+Also, its small number of 191 rows doesn't allow for parallelizing beyond that number of MPI processes.
+So, this dataset was used for a single-node scaling experiment on Summit from 1 to 42 cores.
+Because the hierarchical clustering algorithm is memory bandwidth bound, there should be limited speedup on one node due to it being essentially shared memory 
+parallelism. Figure \LM{FIXME: DC REF} shows that there is enough speedup for it to be worth parallelizing such a small problem. In this experiment, the
+processes were distributed across both sockets so that a minimum amount of shared memory between processes was used.
+
 
 \begin{itemize}
 	\item emphasize we start with a small data set that fits on one node and has only 191 rows
