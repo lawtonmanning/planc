@@ -7,14 +7,13 @@
 \label{sec:summit}
 
 All the experiments in this section were conducted on Summit. Summit is a supercomputer created by IBM for the Oak Ridge National Laboratory. 
-There are approximately 4,600 nodes on Summit. Each node contains two IBM POWER9 processors on separate sockets with dual NVLINK bricks to facilitate a transfer rate of 
-25 GB/s between the processors. Each node contains 512 GB of DDR4 memory for use by both processors. Each POWER9 processor utilizes 22 IBM SIMD Multi-Cores (SMCs), 
-although one of these SMCs on each processor is dedicated to memory transfer and is therefore not available for computation. 
+There are approximately 4,600 nodes on Summit. 
+Each node contains two IBM POWER9 processors on separate sockets with 512 GB of DDR4 memory.
+Each POWER9 processor utilizes 22 IBM SIMD Multi-Cores (SMCs), although one of these SMCs on each processor is dedicated to memory transfer and is therefore not available for computation. 
 For node scaling experiments, all 42 available SMCs were utilized in each node so that every node computed with 42 separate MPI processes.
 Additionally, every node also supports six NVIDIA Volta V100 accelerators but these were unused by our algorithm. 
 
-Our implementation builds on the PLANC open-source library and uses the Armadillo library (version 9.900.1) for all matrix operations. 
-%In Armadillo, sparse matrices are stored in Compressed Sparse Column (CSC) format and dense matrices are stored in column-major ordering.
+Our implementation builds on the PLANC open-source library \cite{EH+19-TR} and uses the Armadillo library (version 9.900.1) for all matrix operations. 
 On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and IBM's Spectrum MPI (version 10.3.1.2-20200121).
 
 \subsection{Datasets}
@@ -131,7 +130,7 @@ On 40 nodes, computation still takes 60\% of the total time, but the all-gather 
 Because all-reduce involves only a constant amount of data and its time remains relatively small, we conclude the communication is bandwidth bound at this scale.
 
 With the larger \image{} dataset, it's possible to scale much further as seen in \Cref{fig:rwhierspeedup}, where we observe a 5.9$\times$ speedup of 80 compute nodes compared to 10.
-From \Cref{fig:fig:rwhierstrongscaling}, we see that the communication cost constitutes less than 20\% of the total time even at 80 compute nodes. 
+From \Cref{fig:rwhierstrongscaling}, we see that the communication cost constitutes less than 20\% of the total time even at 80 compute nodes. 
 
 We note that the speedup of the overall hierarchical clustering algorithm is not as high as for a single Rank-2 NMF (measured at the root node).
 This is due to inefficiencies in the lower levels of the tree, as we explore in the next section.
@@ -170,27 +169,22 @@ This is due to inefficiencies in the lower levels of the tree, as we explore in 
 
 \subsubsection{Level Scaling}
 
-\GB{3 plots: for synthetic level breakdown for 1 node and for 40 nodes; for realworld just for 80 nodes}
-
-To show the level scaling in a particular tree, we only considered complete levels as the analysis from Equation \ref{eq:levelcost} only considers
-complete levels. From Equation \ref{eq:levelcost}, the high order computational term (represented by MatMul) is constant per level, the lower order 
+To compare execution time across levels of a particular tree, we consider only complete levels. 
+From \Cref{eq:levelcost}, the dominant computational term (due to MatMul) is constant per level, the lower order 
 computational term (represented by NNLS) grows like $O(2^\ell)$, and the latency cost grows similarly like $O(2^\ell)$. 
 
-From Figure \ref{fig:seqlevelbreakdown}, the MatMul cost decreases slightly per level, which may be explained by BLAS optimizations occurring in the
-local matrix multiply, especially as each node's subproblem becomes smaller and smaller. The NNLS grows exponentially, which is exactly in line with theory,
-and none of the levels seem to become bandwidth or latency bound for this case.
+\Cref{fig:seqlevelbreakdown} show absolute time across levels for the synthetic data set on 1 node.
+The MatMul cost decreases slightly per level, which may be explained by cache effects in the local matrix multiply, as each node's subproblem decreases in size. 
+The NNLS grows exponentially, as expected, and communication is negligible.
 
-As we increase the nodes to 40 in the same sequential case, the story completely changes. Figure \ref{fig:parallellevelbreakdown} shows the MatMul cost is almost precisely the same, which is line with the theory.
-The NNLS cost grows exponentially as before and becomes dominating at the lower levels. The latency is also appearing as the AllReduce cost, which is latency bound,
-starts to grow exponentially from level 3 onwards. 
+\Cref{fig:parallellevelbreakdown} shows the level breakdown for the synthetic data on 40 nodes, where we see different behavior.
+MatMul cost is again constant across levels and the NNLS cost becomes dominating at lower levels suggesting it does not scale as well as MatMul. 
+We also see all-reduce time becoming significant as communication time increases, indicating that the nodes at lower levels are becoming more latency bound.
+Thus, we see that the poorer scaling at the lower levels of the tree is the main reason the overall hierarchical clustering algorithm does not scale as well as the single Rank-2 NMF at the root node.
 
-In Figure \ref{fig:rwparallellevelbreakdown}, note that this levels experiment is from the image dataset, which is considerably larger than the synthetic case but is of the same size.
-Although all is relatively the same as in Figure \ref{fig:parallellevelbreakdown}, matrix multiply still dominates at the lower levels and the problem is computationally bound
-at each level, which is indiciative of the strong speedup as seen in the previous section.
-
-\begin{itemize}
-	\item theory says per-level cost is \Cref{eq:levelcost}
-\end{itemize}
+%In Figure \ref{fig:rwparallellevelbreakdown}, note that this levels experiment is from the image dataset, which is considerably larger than the synthetic case but is of the same size.
+%Although all is relatively the same as in Figure \ref{fig:parallellevelbreakdown}, matrix multiply still dominates at the lower levels and the problem is computationally bound
+%at each level, which is indiciative of the strong speedup as seen in the previous section.
 
 \begin{figure}
 \begin{center}
@@ -209,12 +203,12 @@ at each level, which is indiciative of the strong speedup as seen in the previou
 \end{figure}
 
 
-\begin{figure}
-\begin{center}
-\includegraphics[height=2in, width=\columnwidth]{plots/realworld_parallel_level_breakdown.pdf}
-\caption{Levels Breakdown Timings for 80 Compute Nodes on \image{} Data}
-\label{fig:rwparallellevelbreakdown}
-\end{center}
-\end{figure}
+%\begin{figure}
+%\begin{center}
+%\includegraphics[height=2in, width=\columnwidth]{plots/realworld_parallel_level_breakdown.pdf}
+%\caption{Levels Breakdown Timings for 80 Compute Nodes on \image{} Data}
+%\label{fig:rwparallellevelbreakdown}
+%\end{center}
+%\end{figure}
 
 
