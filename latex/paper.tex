@@ -57,7 +57,7 @@ In this paper, we propose a parallel algorithm for hierarchical clustering that 
 Not only does this approach uncover more structure in the data than a flat NMF clustering, but also rank-two NMF can be computed more quickly than for general ranks, providing comparable overall time to solution.
 Furthermore, the rank-two NMF algorithm can be parallelized efficiently using a computational kernel similar to matrix-vector multiplication.
 Our data distribution and parallelization strategies are designed to maintain computational load balance throughout the data-dependent hierarchy of computation while limiting interprocess communication, allowing the algorithm to scale to large dense and sparse data sets.
-We demonstrate the scalability of our parallel algorithm in terms of data size and number of processors, and apply the hierarchical clustering approach to large (dense) hyperspectral imaging and (sparse) text document data.
+We demonstrate the scalability of our parallel algorithm in terms of data size and number of processors, and apply the hierarchical clustering approach to large (dense) hyperspectral imaging and (sparse) text document data. \GB{On 40 nodes of Summit supercomputer, our algorithm achieves (a) linear speedup for solving the Rank-2 Non-negative Least squares kernels and (b) achieves 14x speedup on synthetic matrices. We also demonstrate that in the case of real world matrices, the algorithm scales to 80 summit nodes.} 
 \end{abstract}
 
 %\begin{IEEEkeywords}
