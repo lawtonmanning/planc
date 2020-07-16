@@ -77,6 +77,7 @@ Both the matrix multiplications and NNLS solves scale linearly with $1/p$ (we ex
 For these data sets, we observe nearly perfect strong scaling, with 42$\times$ speedup on 40 compute nodes (over 1 compute node) for synthetic data and 7.1$\times$ speedup on 80 compute nodes (over 10 compute nodes) for \image{} data.
 
 \begin{figure}
+\centering
 \begin{subfigure}{1.5in}
 \begin{center}
 \includegraphics[height=1.4in, width=1.4in]{plots/synthetic_rank2_speedup.pdf}
@@ -139,6 +140,7 @@ This is due to inefficiencies in the lower levels of the tree, as we explore in 
 
 
 \begin{figure}
+\centering
 \begin{subfigure}{1.5in}
 \begin{center}
 \includegraphics[height=1.4in, width=1.4in]{plots/synthetic_hierarchical_speedup.pdf}
