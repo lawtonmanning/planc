@@ -1,5 +1,5 @@
 @InProceedings{KP13,
-  author    = {Kuang, Da and Park, Haesun},
+  author    = {Kuang, D. and Park, H.},
   title     = {Fast Rank-2 Nonnegative Matrix Factorization for Hierarchical Document Clustering},
   booktitle = {Proceedings of the 19th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining},
   year      = {2013},
@@ -30,7 +30,7 @@
 }
 
 @TechReport{EH+19-TR,
-  author      = {Eswar, Srinivas and Hayashi, Koby and Ballard, Grey and Kannan, Ramakrishnan and Matheson, Michael A. and Park, Haesun},
+  author      = {Eswar, S. and Hayashi, K. and Ballard, G. and Kannan, R. and Matheson, M.A. and Park, H.},
   title       = {{PLANC}: Parallel Low Rank Approximation with Non-negativity Constraints},
   institution = {arXiv},
   year        = {2019},
@@ -76,7 +76,7 @@
 
 @Article{TRG05,
   Title                    = {Optimization of Collective Communication Operations in {MPICH}},
-  Author                   = {Thakur, Rajeev and Rabenseifner, Rolf and Gropp, William},
+  Author                   = {Thakur, R. and Rabenseifner, R. and Gropp, W.},
   Journal                  = {International Journal of High Performance Computing Applications},
   Year                     = {2005},
   Number                   = {1},
@@ -88,7 +88,7 @@
 }
 
 @InProceedings{GOS16,
-  author    = {Gropp, William and Olson, Luke N. and Samfass, Philipp},
+  author    = {Gropp, W. and Olson, L.N. and Samfass, P.},
   title     = {Modeling {MPI} Communication Performance on SMP Nodes: Is It Time to Retire the Ping Pong Test},
   booktitle = {Proceedings of the 23rd European MPI Users' Group Meeting},
   year      = {2016},
@@ -104,7 +104,7 @@
 }
 
 @Article{DKDP17,
-  author    = {Du, Rundong and Kuang, Da and Drake, Barry and Park, Haesun},
+  author    = {Du, R. and Kuang, D. and Drake, B. and Park, H.},
   title     = {{DC-NMF}: nonnegative matrix factorization based on divide-and-conquer for fast clustering and topic modeling},
   journal   = {Journal of Global Optimization},
   year      = {2017},
@@ -117,7 +117,7 @@
 }
 
 @Article{KP11,
-  author  = {Jingu Kim and Haesun Park},
+  author  = {J. Kim and H. Park},
   title   = {Fast Nonnegative Matrix Factorization: An Active-Set-Like Method and Comparisons},
   journal = {SIAM Journal on Scientific Computing},
   year    = {2011},
@@ -131,7 +131,7 @@
 
 @Article{KHP14,
   Title                    = {Algorithms for nonnegative matrix and tensor factorizations: a unified view based on block coordinate descent framework},
-  Author                   = {Kim, Jingu and He, Yunlong and Park, Haesun},
+  Author                   = {Kim, J. and He, Y. and Park, H.},
   Journal                  = {Journal of Global Optimization},
   Year                     = {2014},
   Number                   = {2},
@@ -146,7 +146,7 @@
 }
 
 @InProceedings{KBP16,
-  author      = {Kannan, Ramakrishnan and Ballard, Grey and Park, Haesun},
+  author      = {Kannan, R. and Ballard, G. and Park, H.},
   title       = {A High-Performance Parallel Algorithm for Nonnegative Matrix Factorization},
   booktitle   = {Proceedings of the 21st ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming},
   year        = {2016},
@@ -169,7 +169,7 @@ We propose a high-performance distributed-memory parallel algorithm that compute
 }
 
 @Article{KBP17,
-  author   = {Ramakrishnan Kannan and Grey Ballard and Haesun Park},
+  author   = {R. Kannan and G. Ballard and H. Park},
   title    = {{MPI-FAUN}: An {MPI}-Based Framework for Alternating-Updating Nonnegative Matrix Factorization},
   journal  = {IEEE Transactions on Knowledge and Data Engineering},
   year     = {2018},
@@ -180,7 +180,6 @@ We propose a high-performance distributed-memory parallel algorithm that compute
   abstract = {Non-negative matrix factorization (NMF) is the problem of determining two non-negative low rank factors W and H, for the given input matrix A, such that WH approximates A. NMF is a useful tool for many applications in different domains such as topic modeling in text mining, background separation in video analysis, and community detection in social networks. Despite its popularity in the data mining community, there is a lack of efficient parallel algorithms to solve the problem for big data sets. The main contribution of this work is a new, high-performance parallel computational framework for a broad class of NMF algorithms that iteratively solves alternating non-negative least squares (NLS) subproblems for $mathbf{W}$ and $mathbf{H}$ . It maintains the data and factor matrices in memory (distributed across processors), uses MPI for interprocessor communication, and, in the dense case, provably minimizes communication costs (under mild assumptions). The framework is flexible and able to leverage- a variety of NMF and NLS algorithms, including Multiplicative Update, Hierarchical Alternating Least Squares, and Block Principal Pivoting. Our implementation allows us to benchmark and compare different algorithms on massive dense and sparse data matrices of size that spans from few hundreds of millions to billions. We demonstrate the scalability of our algorithm and compare it with baseline implementations, showing significant performance improvements. The code and the datasets used for conducting the experiments are available online.},
   doi      = {10.1109/TKDE.2017.2767592},
   issn     = {1041-4347},
-  url      = {https://www.computer.org/csdl/trans/tk/2018/03/08089433-abs.html},
 }
 
 @Article{LK+17b,
@@ -195,7 +194,7 @@ We propose a high-performance distributed-memory parallel algorithm that compute
 }
 
 @misc{DC-HYDICE,
-  author       = {David Landgrebe and Larry Biehl},
+  author       = {D. Landgrebe and L. Biehl},
   title        = {MultiSpec - Hyperspectral Images},
   howpublished = {\url{https://engineering.purdue.edu/~biehl/MultiSpec/hyperspectral.html}},
   month        = {February},
@@ -210,7 +209,7 @@ We propose a high-performance distributed-memory parallel algorithm that compute
 }
 
 @misc{SmallK,
-        author       = {Barry Drake and Stephen Lee-Urban and Haesun Park},
+        author       = {B. Drake and S. Lee-Urban and H. Park},
         title        = {SmallK is a {C++}{/}{P}ython high-performance software
                                         library for nonnegative matrix factorization (NMF)
                                         and hierarchical and flat clustering using
@@ -222,34 +221,37 @@ We propose a high-performance distributed-memory parallel algorithm that compute
 
 @inproceedings{XLG03,
   title={Document clustering based on non-negative matrix factorization},
-  author={Xu, Wei and Liu, Xin and Gong, Yihong},
-  booktitle={Proceedings of the 26th annual international ACM SIGIR conference on Research and development in informaion retrieval},
+  author={Xu, W. and Liu, X. and Gong, Y.},
+  booktitle={Proceedings of the 26th Annual International ACM SIGIR Conference on Research and Development in Information Retrieval},
   pages={267--273},
-  year={2003}
+  year={2003},
+  doi={10.1145/860435.860485}
 }
 
 @article{SBPP06,
   title={Document clustering using nonnegative matrix factorization},
-  author={Shahnaz, Farial and Berry, Michael W and Pauca, V Paul and Plemmons, Robert J},
+  author={Shahnaz, F. and Berry, M.W. and Pauca, V.P. and Plemmons, R.J.},
   journal={Information Processing \& Management},
   volume={42},
   number={2},
   pages={373--386},
   year={2006},
-  publisher={Elsevier}
+  publisher={Elsevier},
+  doi={10.1016/j.ipm.2004.11.005}
 }
 
 @inproceedings{DHS05,
   title={On the equivalence of nonnegative matrix factorization and spectral clustering},
-  author={Ding, Chris and He, Xiaofeng and Simon, Horst D},
-  booktitle={Proceedings of the 2005 SIAM international conference on data mining},
+  author={Ding, C. and He, X. and Simon, H.D.},
+  booktitle={Proceedings of the 2005 SIAM International Conference on Data Mining},
   pages={606--610},
   year={2005},
-  organization={SIAM}
+  organization={SIAM},
+  doi={10.1137/1.9781611972757.70},
 }
 
 @Article{FKPB15,
-  author    = {Fairbanks, James P and Kannan, Ramakrishnan and Park, Haesun and Bader, David A},
+  author    = {Fairbanks, J.P. and Kannan, R. and Park, H. and Bader, D.A.},
   title     = {Behavioral clusters in dynamic graphs},
   journal   = {Parallel Computing},
   year      = {2015},
@@ -260,7 +262,7 @@ We propose a high-performance distributed-memory parallel algorithm that compute
 }
 
 @InProceedings{BW09,
-  author    = {Battenberg, Eric and Wessel, David},
+  author    = {Battenberg, E. and Wessel, D.},
   title     = {Accelerating Non-Negative Matrix Factorization for Audio Source Separation on Multi-Core and Many-Core Architectures.},
   booktitle = {ISMIR},
   year      = {2009},
