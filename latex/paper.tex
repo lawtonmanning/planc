@@ -55,9 +55,9 @@ hpark@cc.gatech.edu}
 Nonnegative Matrix Factorization (NMF) is an effective tool for clustering nonnegative data, either for computing a flat partitioning of a dataset or for determining a hierarchy of similarity.
 In this paper, we propose a parallel algorithm for hierarchical clustering that uses a divide-and-conquer approach based on rank-two NMF to split a data set into two cohesive parts.
 Not only does this approach uncover more structure in the data than a flat NMF clustering, but also rank-two NMF can be computed more quickly than for general ranks, providing comparable overall time to solution.
-Furthermore, the rank-two NMF algorithm can be parallelized efficiently using a computational kernel similar to matrix-vector multiplication.
 Our data distribution and parallelization strategies are designed to maintain computational load balance throughout the data-dependent hierarchy of computation while limiting interprocess communication, allowing the algorithm to scale to large dense and sparse data sets.
-We demonstrate the scalability of our parallel algorithm in terms of data size and number of processors, and apply the hierarchical clustering approach to large (dense) hyperspectral imaging and (sparse) text document data. \GB{On 40 nodes of Summit supercomputer, our algorithm achieves (a) linear speedup for solving the Rank-2 Non-negative Least squares kernels and (b) achieves 14x speedup on synthetic matrices. We also demonstrate that in the case of real world matrices, the algorithm scales to 80 summit nodes.} 
+We demonstrate the scalability of our parallel algorithm in terms of data size (up to 800 GB) and number of processors (up to 80 nodes of the Summit supercomputer), applying the hierarchical clustering approach to hyperspectral imaging and image classification data. 
+Our algorithm for Rank-2 NMF scales perfectly on up to 1000s of cores and the entire hierarchical clustering method achieves 5.9x speedup scaling from 10 to 80 nodes on an 800 GB dataset.
 \end{abstract}
 
 %\begin{IEEEkeywords}
@@ -73,12 +73,13 @@ Each pair of corresponding columns of $\M{W}$ and $\M{H}$ form a latent componen
 If the rows of $\M{A}$ correspond to features and the columns to samples, the $i$th row of the $\M{H}$ matrix represents the loading of sample $i$ onto each latent component and provides a soft clustering.
 Because the $\M{W}$ factor is also nonnegative, each column can typically be interpreted as a latent feature vector for each cluster.
 
-While standard NMF provides a flat clustering, NMF can also be used as a tool for hierarchical clustering.
+Hierarchical clustering is the process of recursively breaking a group into two similar groups until every sample is a cluster by itself. That is., we consider all the data points as a single cluster and in each iteration, the data points in the current cluster are split into two separate clusters till there is only one sample in a cluster.
+While standard NMF is interpreted as a flat clustering, it can also be extended for hierarchical clustering.
 Kuang and Park \cite{KP13} propose a method that uses rank-2 NMF to recursively bipartition the samples.
 An NMF with $k=2$ determines a row of $\M{H}$ of length 2 for each sample that determines its part membership.
 By recursively bipartitioning the samples in each part, the method determines a binary tree such that each sample belongs to a unique leaf and internal nodes of the tree determine higher-level clusters of the samples.
 A single latent feature vector for each node can also be used for interpreting clusters.
-Du et al. \cite{DKDP17} show that the latent features vectors of the leaves can also be used to initialize a $\M{W}$ within an algorithm for flat NMF, yielding fast convergence and overall speedup compared to initializing the algorithm with random data.
+Similarly, Du et al. \cite{DKDP17} show that the latent features vectors of the leaves can also be used to initialize a $\M{W}$ within an algorithm for flat NMF, yielding fast convergence and overall speedup compared to initializing the algorithm with random data.
 We discuss the hierarchical method in more detail in \Cref{sec:prelim} and \Cref{sec:seqalgs}.
 
 We illustrate the output of the hierarchical clustering method with an example data set and output tree.
@@ -93,7 +94,7 @@ The algorithm proceeds to split nodes until a target number of leaves is obtaine
 While the hierarchical clustering method offers advantages in terms of interpretation as well as execution time compared to flat NMF, implementations of the algorithm are limited to single workstations and the dataset must fit in the available memory.
 Currently available implementations can utilize multiple cores via MATLAB \cite{KP13} or explicit shared-memory parallelization in the SmallK library \cite{SmallK}.
 The goal of this work is to use distributed-memory parallelism to scale the algorithm to large datasets that require the memory of multiple compute nodes and to high processor counts.
-While flat NMF algorithms have been scaled to HPC platforms \cite{} \GB{add citations beyond our own}, our implementation is the first to our knowledge to scale a hierarchical NMF method to 1000s of cores. 
+While flat NMF algorithms have been scaled to HPC platforms \cite{FKPB15} \GB{add citations beyond our own}, our implementation is the first to our knowledge to scale a hierarchical NMF method to 1000s of cores. 
 As discussed in detail in \Cref{sec:paralgs}, we choose to parallelize the computations associated with each node in the tree, which involve a Rank-2 NMF and the computation of the node's score.
 We choose a data matrix distribution across processors that avoids any redistribution of the input matrix regardless of the data-dependent structure of the tree's splitting decisions so that the communication required involves only the small factor matrices.
 Analysis of the algorithm shows the dependence of execution time on computation and communication costs as well as on $k$, the number of clusters computed.
