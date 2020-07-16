@@ -19,6 +19,9 @@
 \newcommand{\GB}[1]{\textcolor{red}{\textbf{Grey}: #1}}
 \newcommand{\RK}[1]{\textcolor{blue}{\textbf{Ramki}: #1}}
 
+\newcommand{\hyper}{DC-HYDICE}
+\newcommand{\image}{SIIM-ISIC}
+
 
 \begin{document}
 
@@ -487,45 +490,28 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \GB{need shortcut names for datasets: synthetic, DC, and something better than IMAGE}
 
 \begin{itemize}
-	\item \textit{Document Clustering}:
-	These datasets are represented by sparse matrices in term frequency-inverdse document frequency (TFIDF) format.
-	The rows of these matrices represent words and the columns represent individual documents. Each value in the matrix is a TFIDF statistic for
-	a specific word in a document. 
-
-	For H2NMF, we used two popular document clustering datasets: Reuters Newswire Topic Classification (Reuters-21578) and \dots
-	\LM{I can't find the official name for PubMed or a link to it}
-
-	The Reuters matrix is $12411\times 7984$ and is a preprocessed version of Reuters-21578 used in the SmallK implementation of H2NMF.
-	The preprocessed version is the 20 largest prelabeled classes of documents with only single class labels. 
-	\LM{Prof Park, is this explanation of Reuters correct?}
-	As Reuters is small, it is mainly used as a comparison tool between the ours and the SmallK implmentation.
-
-	The PubMed matrix is $141043\times 8200000$. It is not preprocessed and represents the full size dataset in TFIDF format. This version is
-	better suited for scaling as is it is much larger than Reuters and is a good representation of large text classification datasets.
-
 	\item \textit{Hyperspectral Imaging}:
-	The images chosen for this dataset follow a similar pattern to Document Clustering. We chose two datasets: the Hyperspectral digital imagery
-	collection experiment (HYDICE) image of the Washington DC Mall and the Airborne Visible/Infrared Image Spectrometer (AVIRIS) image 
-	of the DC area. 
-
-	The images are formatted into 3-way tensors representing individual images in each spectral band captured. For H2NMF, these tensors 
-	are flattened so that the rows represent spectral bands (191 for HYDICE and 224 for AVIRIS) and the columns represent pixels.
-
-	The HYDICE image is flattened from $1280\times 307\times 191$ to $191\times 392960$ and the AVIRIS image is likewise
-	flattened from $8940\times 747\times 224$ to $224\times 6678180$. Unlike with document clustering, hyperspectral image sizes grow in pixels
-	and not spectral bands. So, for both images, large scaling is impossible given our current data distribtion.
-	\LM{I think this is awkward and I'm not sure if we need to include it}
-	
-
 	\LM{DC: https://engineering.purdue.edu/~biehl/MultiSpec/hyperspectral.html}
-
-	\LM{AVIRIS: https://aviris.jpl.nasa.gov/dataportal/}
-
+	For Hyperspectral imaging, we chose the Hyperspectral digital imagery collection experiment (HYDICE) image of the Washington DC Mall. We will refer
+	to this dataset as \hyper{}.
 	
+	\hyper{} is formatted into a 3-way tensor representing two spatial dimensions of pixels and one dimension of spectral bands. So, a slice along
+	the spectral band dimnesion would be the full \hyper{} image in that spectral band. For H2NMF, these tensors are flattened so that the rows represent the
+	$191$ spectral bands and the columns represent the $392960$ pixels. 
 
-	\item synthetic (dense and sparse)
-	\item HSI: DC and Aviris
-	\item Doc-clustering: Reuters and PubMed
+	Larger hyperspectral datasets tend to not grow larger than around 200 spectral bands and have millions or billions of pixels. So, scaling is 
+	limited for this dataset given our data distribution scheme.
+	\item \textit{Image Classification}:
+	\LM{https://www.kaggle.com/c/siim-isic-melanoma-classification/data}
+	Image Classification datasets contain tens of thousands of images of equal size. The dataset we chose is the SIIM-ISIC Melanoma classification
+	dataset, which we will refer to as \image{}. \image{} consists of $33126$ RGB training images equally sized at $1024 \times 1024$. Unlike with hyperspectral imaging, the resulting
+	matrix used in H2NMF consists of image pixels along the rows and individual images along the columns. So, the resulting sized matrix is
+	$3145728 \times 33126$, which is approximately 800GB in size. 
+
+	Given its size, \image{} can only scale from $10$ Summit nodes.
+	\item \textit{Synthetic Dataset}:
+	Our synthetic dataset is the same shape of \image{} but consists of fewer rows and columns by a factor of $3$. The resulting matrix is $1048576 \times 11042$. 
+	We chose a smaller size dataset to better see the limits of scaling and to scale from fewer Summit nodes.
 \end{itemize}
 
 \subsection{Performance}
