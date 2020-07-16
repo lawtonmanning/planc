@@ -96,12 +96,13 @@ The goal of this work is to use distributed-memory parallelism to scale the algo
 While flat NMF algorithms have been scaled to HPC platforms \cite{} \GB{add citations beyond our own}, our implementation is the first to our knowledge to scale a hierarchical NMF method to 1000s of cores. 
 As discussed in detail in \Cref{sec:paralgs}, we choose to parallelize the computations associated with each node in the tree, which involve a Rank-2 NMF and the computation of the node's score.
 We choose a data matrix distribution across processors that avoids any redistribution of the input matrix regardless of the data-dependent structure of the tree's splitting decisions so that the communication required involves only the small factor matrices.
-Analysis of the algorithm shows the dependence of execution time on computation and communication costs as well as the number of clusters computed.
+Analysis of the algorithm shows the dependence of execution time on computation and communication costs as well as on $k$, the number of clusters computed.
+In particular, we confirm that many of the dominant costs are logarithmic in $k$, which is favorable to the linear or sometimes superlinear dependence of flat NMF algorithms.
 
-We demonstrate in \Cref{sec:perf} the efficiency and scalability of our parallel algorithm on three data sets, including the HSI data of the DC mall and an image classification data set involving skin melanoma.
+We demonstrate in \Cref{sec:results} the efficiency and scalability of our parallel algorithm on three data sets, including the HSI data of the DC mall and an image classification data set involving skin melanoma.
 The experimental results show that our parallelization of Rank-2 NMF is highly scalable, maintaining computation bound performance on 1000s of cores.
 We also show the limits of strong scalability when scaling to large numbers of clusters (leaf nodes), as the execution time shifts to becoming interprocessor bandwidth bound and eventually latency bound.
-The image classification data set requires 800 GB of memory across multiple nodes to process, and in scaling from 10 nodes to 80 nodes of the Summit supercomputer, we demonstrate parallel speedups of 7.1$\times$ for a single Rank-2 NMF and ZZ$\times$ for a complete hierarchical clustering.
+The image classification data set requires 800 GB of memory across multiple nodes to process, and in scaling from 10 nodes to 80 nodes of the Summit supercomputer (see \Cref{sec:summit}), we demonstrate parallel speedups of 7.1$\times$ for a single Rank-2 NMF and ZZ$\times$ for a complete hierarchical clustering.
 
 \GB{we should have perhaps compared against SmallK and also against flat NMF...}
 
@@ -299,6 +300,7 @@ The principal singular values of the children are computed via the power method 
 \end{algorithm}
 
 \subsection{Parallelization}
+\label{sec:paralgs}
 
 In this section, we consider the options for parallelizing Hierarchical Rank-2 NMF Clustering (\Cref{alg:hiernmf2}) and provide an analysis for the approach we take.
 The running time of an algorithm is data dependent because not only does each Rank-2 NMF computation require a variable number of iterations, but also the shape of the tree can vary from a balanced binary tree with $O(\log k)$ levels to a tall, flat tree with $O(k)$ levels.
@@ -480,8 +482,11 @@ The bandwidth cost is also logarithmic in $k$ but does not scale with the number
 The latency cost grows most quickly with the target number of clusters $k$ but is also independent of the matrix dimensions $m$ and $n$.
 
 \section{Experimental Results}
+\label{sec:results}
 
 \subsection{Experimental Platform}
+\label{sec:summit}
+
 All the experiments in this section were conducted on Summit. Summit is a supercomputer created by IBM for the Oak Ridge National Laboratory. 
 There are approximately 4,600 nodes on Summit. Each node contains two IBM POWER9 processors on separate sockets with dual NVLINK bricks to facilitate a transfer rate of 
 25 GB/s between the processors. Each node contains 512 GB of DDR4 memory for use by both processors. Each POWER9 processor utilizes 22 IBM SIMD Multi-Cores (SMCs), 
