@@ -126,7 +126,7 @@ Many block coordinate descent (BCD) approaches are possible \cite{KHP14}, and on
 This NNLS algorithm is an active-set-like method that determines the sets of entries in the solution vectors that are zero and those that are positive through an iterative but finite process.
 
 When the rank of the factorization (the number of columns of $\M{W}$ and $\M{H}$) is 2, the NNLS subproblems can be solved much more quickly because the number of possible active sets is only 4.
-As explained in more detail in \Cref{sec:r2nmf}, the optimal solution across the 4 possibilities \LM{sets} can be determined efficiently to solve the NNLS subproblem more quickly than general-rank approaches like block principal pivoting.
+As explained in more detail in \Cref{sec:r2nmf}, the optimal solution across the 4 sets can be determined efficiently to solve the NNLS subproblem more quickly than general-rank approaches like block principal pivoting.
 Because of the relative ease of solving the NMF problem for the rank-2 case, Kuang and Park \cite{KP13} propose a recursive method to use a rank-2 NMF to partition the input data into 2 parts, whereby each part can be further partitioned via rank-2 NMF of the corresponding original data.
 This approach yields a hierarchical factorization, potentially uncovering more global structure of the input data and allowing for better scalability of the algorithm to large NMF ranks.
 
@@ -184,7 +184,7 @@ We note that there are four possibilities of solutions, as each of the two scala
 As shown by Kuang and Park \cite{KP13}, determining which of the four possible solutions is feasible and optimal can be done efficiently by exploiting the following properties:
 \begin{itemize}
 	\item if the solution to the unconstrained least squares problem admits two positive values, it is the optimal solution to the nonnegatively constrained problem,
-	\item if $\M{W}$ and $\M{A}$ are both nonnegative, then the candidate solution with two zero values is never (uniquely) \LM{why uniquely?} optimal and can be discarded, and
+	\item if $\M{W}$ and $\M{A}$ are both nonnegative, then the candidate solution with two zero values is never (uniquely) optimal and can be discarded, and
 	\item if the solution to the unconstrained problem does not admit two positive values, the better of the two remaining solutions can be determined by comparing $\V{a}_{j}^\Tra\V{w}_1 / \|\V{w}_1\|$ and $\V{a}_{j}^\Tra\V{w}_2 / \|\V{w}_2\|$.
 \end{itemize}
 If the unconstrained problem is solved via the normal equations, then the temporary matrices computed for the normal equations ($\M{W}^\Tra\M{W}$ and $\M{A}^\Tra\M{W}$) can be re-used to determine the better of the two solutions with a single positive variable.
@@ -218,8 +218,7 @@ Solving for $\M{W}$ can be done using inputs $\M{C}=\M{A}\M{H}$ and $\M{G}=\M{H}
 \end{algorithmic}
 \end{algorithm}
 
-Given that the computational complexity of \Cref{alg:r2nnls} is $O(n)$ (or $O(m)$ when computing $\M{W}$), and the complexity of computing $\M{W}^\Tra\M{W}$ and $\M{H}^\Tra\M{H}$ is $O(m+n)$, the typical dominant cost of each iteration of Rank-2 NMF is that of computing $\M{A}^\Tra\M{W}$ and $\M{A}\M{H}$, which is $O(mn)$ when $\M{A}$ is dense and $O(\text{nnz}(A))$ when $\M{A}$ is sparse.
-\LM{should our analysis keep sparse even when we don't have a sparse dataset?}
+Given that the computational complexity of \Cref{alg:r2nnls} is $O(n)$ (or $O(m)$ when computing $\M{W}$), and the complexity of computing $\M{W}^\Tra\M{W}$ and $\M{H}^\Tra\M{H}$ is $O(m+n)$, the typical dominant cost of each iteration of Rank-2 NMF is that of computing $\M{A}^\Tra\M{W}$ and $\M{A}\M{H}$, which is $O(mn)$.
 
 \subsubsection{Hierarchical Clustering}
 
