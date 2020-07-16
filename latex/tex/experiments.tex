@@ -22,7 +22,6 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 	We use the Hyperspectral Digital Imagery Collection Experiment (HYDICE) image of the Washington DC Mall. We will refer
 	to this dataset as \hyper{}\cite{DC-HYDICE}.
-	
 	\hyper{} is formatted into a 3-way tensor representing two spatial dimensions of pixels and one dimension of spectral bands. So, a slice along
 	the spectral band dimension would be the full \hyper{} image in that spectral band. For hierarchical clustering, these tensors are flattened so that the rows represent the
 	$191$ spectral bands and the columns represent the $392960$ pixels.   The data set is approximately 600 MB in size.
@@ -36,7 +35,6 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 	dataset, which we will refer to as \image{}\cite{SIIM-ISIC}, consists of $33126$ RGB training images equally sized at $1024 \times 1024$. Unlike with hyperspectral imaging, the resulting
 	matrix used in hierarchical clustering consists of image pixels along the rows and individual images along the columns. So, the resulting sized matrix is
 	$3145728 \times 33126$, which is approximately 800 GB in size. 
-
 	Given its size, \image{} requries $10$ Summit nodes to perform hierarchical clustering.
 	
 \paragraph{\emph{Synthetic Dataset}}
