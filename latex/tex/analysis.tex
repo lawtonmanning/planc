@@ -1,3 +1,5 @@
+% !TEX root = ../paper.tex
+
 \subsubsection{Analysis}
 \label{sec:analysis}
 
@@ -13,7 +15,7 @@ Thus, the computation cost is $\gamma \cdot O((mn+m+n)/p)$ and typically dominat
 We track the lower order terms corresponding to NNLS solves because their hidden constants are larger than that of the dominating term.
 
 There are four communication collectives each iteration, and each involves all $p$ processors.
-The two all-reduce collectives to compute the Gram matrices of the factor matrices involve $2\times 2$ matrices and incur a communication cost of $(\beta + \alpha) \cdot O(\log p)$.
+The two all-reduce collectives to compute the Gram matrices of the factor matrices involve $2\times 2$ matrices and incur a communication cost of $(\gamma+\beta + \alpha) \cdot O(\log p)$.
 The reduce-scatter and all-gather collectives involve $n\times 2$ matrices (the size of $\M{H}$) and require $\beta \cdot O(n) + \alpha \cdot O(\log p)$ in communication cost (we ignore the computation cost of the reduce-scatter because it is typically dominated by the bandwidth cost).
 If the algorithm performs $\imath$ iterations, the overall cost of \Cref{alg:parrank2nmf} is
 \begin{equation}
