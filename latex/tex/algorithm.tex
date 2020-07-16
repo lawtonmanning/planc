@@ -140,7 +140,7 @@ Note that the principal singular value of the node itself need not be recomputed
 \subsection{Parallelization}
 \label{sec:paralgs}
 
-In this section, we consider the options for parallelizing Hierarchical Rank-2 NMF Clustering (\Cref{alg:hiernmf2}) and provide an analysis for the approach we take.
+In this section, we consider the options for parallelizing Hierarchical Rank-2 NMF Clustering (\Cref{alg:hiernmf2}) and provide an analysis for our approach.
 The running time of an algorithm is data dependent because not only does each Rank-2 NMF computation require a variable number of iterations, but also the shape of the tree can vary from a balanced binary tree with $O(\log k)$ levels to a tall, flat tree with $O(k)$ levels.
 For the sake of analysis, we will assume a fixed number of NMF iterations for every node of the tree and we will analyze the cost of complete levels.
 
