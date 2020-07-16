@@ -125,26 +125,18 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 From \Cref{eq:treecost}, we expect to see perfect strong scaling in a computationally bound hierarchical clustering problem with target cluster count $k=100$.
 As $k$ is large, we expect the latency cost of small problems deep in the tree to limit scalability.
 
-Figure \ref{fig:synhierstrongscaling} shows the limits of scaling as the hierarchical cost is becoming saturated with communication.
-The AllReduce segment would consistently grow if the problem was becoming latency bound, which is not the case.
-So, the problem is becoming bandwidth bound as seen through the ReduceScatter and AllGather segments. 
-However, computation still makes up more than 60\% of the total cost.
+\Cref{fig:synhierspeedup} demonstrates the scalability of the synthetic data set on up to 40 nodes, and we observe a 15$\times$ speedup compared to 1 node.
+\Cref{fig:synhierstrongscaling} shows the relative time breakdown and explains the limitation on scaling.
+On 40 nodes, computation still takes 60\% of the total time, but the all-gather and reduce-scatter costs have grown in relative time because they do not scale with $p$.
+Because all-reduce involves only a constant amount of data and its time remains relatively small, we conclude the communication is bandwidth bound at this scale.
 
-With the much larger \image{} dataset, it's possible to scale much further as seen in Figure \ref{fig:rwhierspeedup} without being overwhelmed by the communication cost.
-From Figure \ref{fig:fig:rwhierstrongscaling}, the communication cost doesn't make up more than 20\% of the total cost even scaling to 80 compute nodes. 
+With the larger \image{} dataset, it's possible to scale much further as seen in \Cref{fig:rwhierspeedup}, where we observe a 5.9$\times$ speedup of 80 compute nodes compared to 10.
+From \Cref{fig:fig:rwhierstrongscaling}, we see that the communication cost constitutes less than 20\% of the total time even at 80 compute nodes. 
 
-Note that in order to compare hierarchical clusters between differing compute nodes, we limited the output to include only complete levels in the tree.
+We note that the speedup of the overall hierarchical clustering algorithm is not as high as for a single Rank-2 NMF (measured at the root node).
+This is due to inefficiencies in the lower levels of the tree, as we explore in the next section.
 
-\begin{itemize}
-	\item theory (\Cref{eq:treecost}) says...
-	\item Fig 7 shows limit of strong scaling for synthetic data (time increases at 50 nodes compared to 40), Fig 8 gives breakdown and explains
-	\begin{itemize}
-		\item drastic performance dropoff may be artifact of all-gather, which should take about the same time as reduce-scatter, but speedup from 30 to 40 nodes is also slight
-		\item by 50 nodes, about 50\% of time in communication; still mostly dominated by bandwidth cost because ag and rs dominate ar
-		\item note the difference between the scaling of single rank-2 and entire tree: poor scaling must be due to lower levels, which we explore in the next section
-	\end{itemize}
-	\item Fig 9 shows reasonable scaling for entire tree -- speedup drops from 7x to 6x over 80 nodes; Fig 10 shows that MM is still 70\% of run time on 80 nodes, which allows for near-linear scaling
-\end{itemize}
+%Note that in order to compare hierarchical clusters between differing compute nodes, we limited the output to include only complete levels in the tree.
 
 \begin{figure}
 \begin{center}
