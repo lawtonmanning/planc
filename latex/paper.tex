@@ -155,7 +155,7 @@ All of the interprocessor communication in the algorithms presented in this work
 Algorithms for implementing the collective operations are built out of pairwise send and receive operations, and we assume the most efficient algorithms are used in our analysis \cite{TRG05,CH+07}.
 The collectives used in our algorithms are all-reduce, all-gather, and reduce-scatter.
 In an all-reduce, all processors start out with the same amount of data and all end with a copy of the same result, which is in our case a sum of all the inputs (and the same size as a single input).
-The cost of an all-reduce of size $n$ words is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$ for $n>p$ and $(\alpha+\beta) \cdot O(\log p)$ for $n<p$. \LM{is the n<p case right? where's the computation?}
+The cost of an all-reduce of size $n$ words is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$ for $n>p$ and $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n\log p)$ for $n<p$.
 In an all-gather, all processors start out with separate data and all end with a copy of the same result, which is the union of all the input data.
 If each processor starts with $n/p$ data and ends with $n$ data, the cost of the all-gather is $\alpha \cdot O(\log p) + \beta \cdot O(n)$.
 In a reduce-scatter, all processors start out with the same amount of data and all end with a subset of the result, which is in our case a sum of all the inputs (and is smaller than its input).
@@ -391,8 +391,7 @@ Given the 1D distribution, only one communication collective is required for the
 That is, the approximate right singular vector $\V{v}$ is redundantly owned on each processor, and the approximate left singular vector $\V{u}$ is distributed across processors.
 Each processor can compute its local $\V[\hat]{u}$ from $\V{v}$ without communication and use the result for its contribution to $\V{v}=\M{A}^\Tra \V{u}$.
 An all-reduce collective is used to obtain a copy of $\V{v}$ on every processor for the next iteration, and the norm is redundantly computed without further communication.
-Again, we use a fixed number of iterations for benchmarking, but the more practical stopping criterion is based on the relative change in $\sigma$.
-\LM{we did not use a fixed number of iterations for benchmarking}
+We used the relative change in $\sigma$ as the stopping criterion for benchmarking.
 
 \begin{algorithm}
 \caption{Parallel Power Method}
