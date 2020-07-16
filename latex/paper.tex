@@ -53,8 +53,8 @@ Nonnegative Matrix Factorization (NMF) is an effective tool for clustering nonne
 In this paper, we propose a parallel algorithm for hierarchical clustering that uses a divide-and-conquer approach based on rank-two NMF to split a data set into two cohesive parts.
 Not only does this approach uncover more structure in the data than a flat NMF clustering, but also rank-two NMF can be computed more quickly than for general ranks, providing comparable overall time to solution.
 Furthermore, the rank-two NMF algorithm can be parallelized efficiently using a computational kernel similar to matrix-vector multiplication.
-Our data distribution and parallelization strategies are designed to maintain computational load balance throughout the data-dependent hierarchy of computation while limiting interprocess communication, allowing the algorithm to scale to large dense and sparse data sets.
-We demonstrate the scalability of our parallel algorithm in terms of data size and number of processors, and apply the hierarchical clustering approach to large (dense) hyperspectral imaging and (sparse) text document data.
+Our data distribution and parallelization strategies are designed to maintain computational load balance throughout the data-dependent hierarchy of computation while limiting interprocess communication, allowing the algorithm to scale to large dense data sets.
+We demonstrate the scalability of our parallel algorithm in terms of data size and number of processors, and apply the hierarchical clustering approach to hyperspectral imaging and image classification data.
 \end{abstract}
 
 %\begin{IEEEkeywords}
@@ -63,7 +63,39 @@ We demonstrate the scalability of our parallel algorithm in terms of data size a
 
 \section{Introduction}
 
-\GB{Prof Park, can you draft an introduction?  We are focusing on the dense case and using HSI and image clustering as applications.  Section 4 is still unfinished, but nearly all of the performance plots are there.  Feel free to leave placeholders for details that aren't obvious, we can clean them up Wednesday night.}
+Nonnegative Matrix Factorization (NMF) has been demonstrated to be an effective tool for unsupervised learning problems including clustering \cite{}. \GB{add citations}
+An NMF consists of two tall-and-skinny non-negative matrices whose product approximates a nonnegative data matrix.
+That is, given an $m\times n$ data matrix $\M{A}$, we seek nonnegative matrices $\M{W}$ and $\M{H}$ that each have $k$ columns so that $\M{A} \approx \M{W}\M{H}^\Tra$.
+Each pair of corresponding columns of $\M{W}$ and $\M{H}$ form a latent component of the NMF.
+If the rows of $\M{A}$ correspond to features and the columns to samples, the $i$th row of the $\M{H}$ matrix represents the loading of sample $i$ onto each latent component and provides a soft clustering.
+Because the $\M{W}$ factor is also nonnegative, each column can typically be interpreted as a latent feature vector for each cluster.
+
+While standard NMF provides a flat clustering, NMF can also be used as a tool for hierarchical clustering.
+Kuang and Park \cite{KP13} propose a method that uses rank-2 NMF to recursively bipartition the samples.
+An NMF with $k=2$ determines a row of $\M{H}$ of length 2 for each sample that determines its part membership.
+By recursively bipartitioning the samples in each part, the method determines a binary tree such that each sample belongs to a unique leaf and internal nodes of the tree determine higher-level clusters of the samples.
+A single latent feature vector for each node can also be used for interpreting clusters.
+
+We illustrate the output of the hierarchical clustering method with an example data set and output tree.
+Following Gillis et al. \cite{GKP15}, we apply the method to a hyperspectral imaging (HSI) data set of the Washington, D.C~national mall, which has pixel dimensions $1280 \times 307$ and 191 spectral bands.
+\Cref{fig:dc} visualizes the output tree with 6 leaves along with their hierarchical relationships.
+The root node, labeled 0, is a flattening of the HSI data to a 2D grayscale image.
+Each other node is represented by an overlay of the member pixels of the clusters (in blue) on the original grayscale image.
+The first bipartitioning separates vegetation (cluster 1) from non-vegetation (cluster 2), the bipartitioning of cluster 1 seems to separate grass (cluster 3) from trees (cluster 4), the bipartitioning of cluster 2 seems to separate buildings (cluster 5) from sidewalks/water (cluster 6), and so on.
+
+\begin{itemize}
+	\item discuss limitation of current implementations of the hierarchical method in MATLAB and shared-memory parallelization in terms of scalability to data size and bandwidth limitations
+	\item brief summary of parallelization approach, point to analysis
+	\item summarize results, highlight 600 GB data set and scaling to 2000-2500 cores, speedups of up to X for rank-2 NMF and up to Y for full hierarchical clustering algorithm
+\end{itemize}
+
+\GB{we should have perhaps compared against SmallK and also against flat NMF...}
+
+\begin{figure}
+\input{fig/dc}
+\caption{Hierarchical Clustering of DC Mall Hyperspectral Image}
+\label{fig:dc}
+\end{figure}
 
 \section{Preliminaries and Related Work}
 \label{sec:prelim}
@@ -639,16 +671,6 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 \caption{Parallel Breakdown plot for levels 0 to 5 on 80 nodes. y-axis is absolute wall clock time in seconds}
 \label{fig:rwparallellevelbreakdown}
 \end{center}
-\end{figure}
-
-
-\subsection{DC Clustering Results}
-
-\subsubsection{Hyperspectral Imaging}
-\begin{figure}
-\input{fig/dc}
-\caption{Hierarchical Cluster from DC Mall Image}
-\label{fig:dc}
 \end{figure}
 
 
