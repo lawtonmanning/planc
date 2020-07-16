@@ -5,7 +5,7 @@
 As shown in the theoretical analysis (\Cref{sec:analysis}) and experimental results (\Cref{sec:hiernmf2scaling}), \Cref{alg:hiernmf2} can efficiently scale to large $p$ as long as the execution time is dominated by local matrix multiplication.
 The principal barriers to scalability are the bandwidth cost due to Rank-2 NMF, which is consistent across levels of the tree and proportional to the number of columns $n$ of the original data set, and the latency cost due to large numbers of tree nodes in lower levels of the tree.
 When $n$ is small relative to $m$ and the number of leaves $k$ and levels $\ell$ are small, then these barriers do not pose a problem until $p$ is very large.
-However, if the input matrix short and fat (i.e., has many samples with few features), then the bandwidth cost can hinder performance for smaller $p$.
+However, if the input matrix is short and fat (i.e., has many samples with few features), then the bandwidth cost can hinder performance for smaller $p$.
 Likewise, if $k$ is large or the tree is lopsided, then achieving scalability for very small problems is more difficult.
 We also note that in the case of sparse $\M{A}$, it becomes more difficult to hide communication behind the cheaper matrix multiplications, and other costs may become more dominant.
 
