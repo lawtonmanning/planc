@@ -52,20 +52,21 @@ for the power iteration was set at $0$, and only complete levels were considered
 
 \subsubsection{Single-Node Scaling for DC Dataset}
 
-\GB{add only speedup plot for entire tree (at least all complete levels) from 1 core to 42 cores}
-
 \hyper{} is small compared to the other datasets, so it can easily fit on one compute node.
 Also, its small number of 191 rows doesn't allow for parallelizing beyond that number of MPI processes.
 So, this dataset was used for a single-node scaling experiment on Summit from 1 to 42 cores.
-Because the hierarchical clustering algorithm is memory bandwidth bound, there should be limited speedup on one node due to it being essentially shared memory 
-parallelism. Figure \LM{FIXME: DC REF} shows that there is enough speedup for it to be worth parallelizing such a small problem. In this experiment, the
-processes were distributed across both sockets so that a minimum amount of shared memory between processes was used.
+Because Rank-2 NMF is memory bandwidth bound, we expect limited speedup on one node due to the memory bandwidth not scaling linearly with the number of cores. 
+\Cref{fig:dcspeedup} shows that there is enough speedup (14$\times$ on 42 cores) for it to be worth parallelizing such a small problem, but perfect scaling requires more memory bandwidth. 
+In this experiment, the processes were distributed across both sockets so that an even number of cores on each socket are used.
 
+\begin{figure}
+\begin{center}
+\includegraphics[height=2in, width=\columnwidth]{plots/dc_hierarchical_speedup.pdf}
+\caption{Strong Scaling Speedup for Hierarchical Clustering on \hyper{}}
+\label{fig:dcspeedup}
+\end{center}
+\end{figure}
 
-\begin{itemize}
-	\item emphasize we start with a small data set that fits on one node and has only 191 rows
-	\item using 1 node (2 sockets), because we are memory bandwidth bound we expect limited speedup but we can save time with parallelism even for this small a data set
-\end{itemize}
 
 \subsubsection{Rank-2 NMF Strong Scaling}
 
