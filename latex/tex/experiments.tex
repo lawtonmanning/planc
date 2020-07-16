@@ -10,7 +10,7 @@ All the experiments in this section were conducted on Summit. Summit is a superc
 There are approximately 4,600 nodes on Summit. 
 Each node contains two IBM POWER9 processors on separate sockets with 512 GB of DDR4 memory.
 Each POWER9 processor utilizes 22 IBM SIMD Multi-Cores (SMCs), although one of these SMCs on each processor is dedicated to memory transfer and is therefore not available for computation. 
-For node scaling experiments, all 42 available SMCs were utilized in each node so that every node computed with 42 separate MPI processes.
+For node scaling experimeheight=2innts, all 42 available SMCs were utilized in each node so that every node computed with 42 separate MPI processes.
 Additionally, every node also supports six NVIDIA Volta V100 accelerators but these were unused by our algorithm. 
 
 Our implementation builds on the PLANC open-source library \cite{EH+19-TR} and uses the Armadillo library (version 9.900.1) for all matrix operations. 
@@ -22,7 +22,6 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 	We use the Hyperspectral Digital Imagery Collection Experiment (HYDICE) image of the Washington DC Mall. We will refer
 	to this dataset as \hyper{}\cite{DC-HYDICE}.
-	
 	\hyper{} is formatted into a 3-way tensor representing two spatial dimensions of pixels and one dimension of spectral bands. So, a slice along
 	the spectral band dimension would be the full \hyper{} image in that spectral band. For hierarchical clustering, these tensors are flattened so that the rows represent the
 	$191$ spectral bands and the columns represent the $392960$ pixels.   The data set is approximately 600 MB in size.
@@ -36,7 +35,6 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 	dataset, which we will refer to as \image{}\cite{SIIM-ISIC}, consists of $33126$ RGB training images equally sized at $1024 \times 1024$. Unlike with hyperspectral imaging, the resulting
 	matrix used in hierarchical clustering consists of image pixels along the rows and individual images along the columns. So, the resulting sized matrix is
 	$3145728 \times 33126$, which is approximately 800 GB in size. 
-
 	Given its size, \image{} requries $10$ Summit nodes to perform hierarchical clustering.
 	
 \paragraph{\emph{Synthetic Dataset}}
@@ -62,8 +60,8 @@ In this experiment, the processes were distributed across both sockets so that a
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=1.5in, width=\columnwidth]{plots/dc_hierarchical_speedup.pdf}
-\caption{Strong Scaling Speedup for Hierarchical Clustering on \hyper{}}
+\includegraphics[height=2in, width=\columnwidth]{plots/dc_hierarchical_speedup.pdf}
+\caption{Strong Scaling for Hierarchical Clustering on \hyper{}}
 \label{fig:dcspeedup}
 \end{center}
 \end{figure}
@@ -100,8 +98,8 @@ For these data sets, we observe nearly perfect strong scaling, with 42$\times$ s
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=1.5in, width=\columnwidth]{plots/synthetic_rank2_strongscaling.pdf}
-\caption{Relative Time Breakdown for Rank-2 NMF on Synthetic Data}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_rank2_strongscaling.pdf}
+\caption{Time Breakdown for Rank-2 NMF on Synthetic}
 \label{fig:synrank2strongscaling}
 \end{center}
 \end{figure}
@@ -113,11 +111,10 @@ The dominant matrix multiplications are between a large matrix and a matrix with
 In each plot, we also see the relative time of all-gather and reduce-scatter increasing, which is because the local computation is decreasing while the communication cost is slightly increasing with $p$.
 This pattern will continue as $p$ increases, which will eventually limit scalability, but for these data sets the MatMul takes around 80\% of the time at over 2000 cores.
 
-
 \begin{figure}
 \begin{center}
-\includegraphics[height=1.5in, width=\columnwidth]{plots/realworld_rank2_strongscaling.pdf}
-\caption{Relative Time Breakdown for Rank-2 NMF on \image{} Data}
+\includegraphics[height=2in, width=\columnwidth]{plots/realworld_rank2_strongscaling.pdf}
+\caption{Time Breakdown for Rank-2 NMF on \image{} }
 \label{fig:rwrank2strongscaling}
 \end{center}
 \end{figure}
@@ -162,7 +159,7 @@ This is due to inefficiencies in the lower levels of the tree, as we explore in 
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=1.5in, width=\columnwidth]{plots/synthetic_hier_strongscaling.pdf}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_hier_strongscaling.pdf}
 \caption{Relative Time Breakdown for Hierarchical Clustering on Synthetic Data}
 \label{fig:synhierstrongscaling}
 \end{center}
@@ -170,8 +167,8 @@ This is due to inefficiencies in the lower levels of the tree, as we explore in 
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=1.5in, width=\columnwidth]{plots/realworld_hier_strongscaling.pdf}
-\caption{Relative Time Breakdown for Hierarchical Clustering on \image{} Data}
+\includegraphics[height=2in, width=\columnwidth]{plots/realworld_hier_strongscaling.pdf}
+\caption{Relative Time Breakdown for Hierarchical Clustering on \image{}}
 \label{fig:rwhierstrongscaling}
 \end{center}
 \end{figure}
@@ -197,16 +194,16 @@ Thus, we see that the poorer scaling at the lower levels of the tree is the main
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=1.5in, width=\columnwidth]{plots/synthetic_sequential_level_breakdown.pdf}
-\caption{Levels Breakdown Timings for 1 Compute Node on Synthetic Data}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_sequential_level_breakdown.pdf}
+\caption{Levels Breakdown Timings for 1 Compute Node on Synthetic}
 \label{fig:seqlevelbreakdown}
 \end{center}
 \end{figure}
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=1.5in, width=\columnwidth]{plots/synthetic_parallel_level_breakdown.pdf}
-\caption{Levels Breakdown Timings for 40 Compute Nodes on Synthetic Data}
+\includegraphics[height=2in, width=\columnwidth]{plots/synthetic_parallel_level_breakdown.pdf}
+\caption{Levels Breakdown Timings for 40 Compute Nodes on Synthetic}
 \label{fig:parallellevelbreakdown}
 \end{center}
 \end{figure}
@@ -214,8 +211,8 @@ Thus, we see that the poorer scaling at the lower levels of the tree is the main
 
 %\begin{figure}
 %\begin{center}
-%\includegraphics[height=1.5in, width=\columnwidth]{plots/realworld_parallel_level_breakdown.pdf}
-%\caption{Levels Breakdown Timings for 80 Compute Nodes on \image{} Data}
+%\includegraphics[height=2in, width=\columnwidth]{plots/realworld_parallel_level_breakdown.pdf}
+%\caption{Levels Breakdown Timings for 80 Compute Nodes on \image{}}
 %\label{fig:rwparallellevelbreakdown}
 %\end{center}
 %\end{figure}
