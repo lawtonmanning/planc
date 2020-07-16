@@ -43,6 +43,8 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 \subsection{Performance}
 \label{sec:perf}
+For all hierarchical clustering experiments in this section, the number of tree leaf nodes $k$ was set at $100$, the tolerance
+for the power iteration was set at $0$, and only complete levels were considered for analysis purposes for both level and strong scaling plots.
 
 \subsubsection{Single-Node Scaling for DC Dataset}
 
@@ -67,9 +69,9 @@ We perform strong scaling experiments for a single Rank-2 NMF (\Cref{alg:parrank
 The theory (\Cref{eq:r2nmfcost}) suggests that perfect strong scaling is possible as long as the execution time is dominated by local computation.
 Both the matrix multiplications and NNLS solves scale linearly with $1/p$ (we expect MatMul to dominate), but the bandwidth cost is independent of $p$ and the latency cost increases slightly with $p$.
 
-\Cref{fig:synrank2speedup,fig:rwrank2speedup} show performance relative to the smallest number of nodes required to store data and factor matrices.
-The synthetic data is chosen to fit on a single node, while the \image{} data requires 10 nodes to store the input matrix as well as temporary and output matrices.
-For these data sets, we observe nearly perfect strong scaling, with 47$\times$ speedup on 50 nodes (over 1 node) for synthetic data and 7.1$\times$ speedup on 80 nodes (over 10 nodes) for \image{} data.
+\Cref{fig:synrank2speedup,fig:rwrank2speedup} show performance relative to the smallest number of compute nodes required to store data and factor matrices.
+The synthetic data is chosen to fit on a single node, while the \image{} data requires 10 compute nodes to store the input matrix as well as temporary and output matrices.
+For these data sets, we observe nearly perfect strong scaling, with 47$\times$ speedup on 50 compute nodes (over 1 compute node) for synthetic data and 7.1$\times$ speedup on 80 compute nodes (over 10 compute nodes) for \image{} data.
 
 \begin{figure}
 \begin{center}
@@ -109,7 +111,6 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 \label{fig:rwrank2strongscaling}
 \end{center}
 \end{figure}
-
 
 
 \subsubsection{Hierarchical Clustering Strong Scaling}
