@@ -499,6 +499,15 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 \subsection{Performance}
 \label{sec:perf}
 
+\subsubsection{Single-Node Scaling for DC Dataset}
+
+\GB{add only speedup plot for entire tree (at least all complete levels) from 1 core to 42 cores}
+
+\begin{itemize}
+	\item emphasize we start with a small data set that fits on one node and has only 191 rows
+	\item using 1 node (2 sockets), because we are memory bandwidth bound we expect limited speedup but we can save time with parallelism even for this small a data set
+\end{itemize}
+
 \subsubsection{Rank-2 NMF Strong Scaling}
 
 We perform strong scaling experiments for a single Rank-2 NMF (\Cref{alg:parrank2nmf}) on the synthetic and IMAGE datasets.
