@@ -2,10 +2,20 @@
 
 \section{Conclusion}
 
-\begin{itemize}
-	\item consider sparse case
-	\item consider parallelizing across tree
-	\item consider redistribution for 2D
-	\item compare performance with flat NMF and also employ DC-NMF
-\end{itemize}
+As shown in the theoretical analysis (\Cref{sec:analysis}) and experimental results (\Cref{sec:hiernmf2scaling}), \Cref{alg:hiernmf2} can efficiently scale to large $p$ as long as the execution time is dominated by local matrix multiplication.
+The principal barriers to scalability are the bandwidth cost due to Rank-2 NMF, which is consistent across levels of the tree and proportional to the number of columns $n$ of the original data set, and the latency cost due to large numbers of tree nodes in lower levels of the tree.
+When $n$ is small relative to $m$ and the number of leaves $k$ and levels $\ell$ are small, then these barriers do not pose a problem until $p$ is very large.
+However, if the input matrix short and fat (i.e., has many samples with few features), then the bandwidth cost can hinder performance for smaller $p$.
+Likewise, if $k$ is large or the tree is lopsided, then achieving scalability for very small problems is more difficult.
+We also note that in the case of sparse $\M{A}$, it becomes more difficult to hide communication behind the cheaper matrix multiplications, and other costs may become more dominant.
 
+One approach for reducing the bandwidth cost of Rank-2 NMF is to choose a more balanced data distribution over a 2D grid, as proposed by Kannan et al. \cite{KBP16}.
+This will reduce the communicated data and achieve a local data matrix that is more square, which can improve local matrix multiplication performance.
+The downside of this approach is that it requires a redistribution of the data for each split, but if many NMF iterations are required, then the single upfront redistribution cost may be amortized.
+
+Another approach to alleviate the rising latency costs of lower levels of the tree is to parallelize across nodes of the tree.
+This will result in fewer processors working on any given node, reducing the synchronization time among them, and it will allow small, latency-bound problems to be solved simultaneously.
+Prioritizing the sequence of node splits is more difficult in this case, but modifying the stopping criterion for splitting to use a score threshold instead of a target number of leaves will allow truly independent computation.
+
+In the future, we also plan to compare performance of \Cref{alg:hiernmf2} with flat NMF algorithms and employ the Divide-and-Conquer NMF technique \cite{DKDP17} of seeding an iterative flat NMF algorithm with the feature vectors of the leaf nodes.
+The parallel technique proposed here can be combined with the existing PLANC library \cite{EH+19-TR} to obtain faster overall convergence for very large datasets.
