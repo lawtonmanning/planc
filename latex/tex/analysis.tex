@@ -1,0 +1,71 @@
+\subsubsection{Analysis}
+\label{sec:analysis}
+
+\paragraph{\emph{Parallel Rank-2 NMF}}
+
+Each iteration of \Cref{alg:parrank2nmf} incurs the same cost, so we analyze per-iteration computation and communication costs.
+We first consider the cost of the Rank-2 NNLS solves, which are local computations.
+In the notation of \Cref{alg:r2nnls}, matrix $\M{G}$ is $2\times 2$, so solving the unconstrained system (via Cholesky decomposition) and then choosing between single-positive-variables solutions if necessary requires constant time per row of $\M{C}$.
+Thus, the cost of \Cref{alg:r2nnls} is proportional to the number of rows of the first input matrix.
+In the context of \Cref{alg:parrank2nmf}, the per-iteration computational cost of rank-2 solves is then $O((m+n)/p)$.
+The other local computations are the matrix multiplications $\M[\hat]{W}^\Tra \M[\hat]{W}$ and $\M[\hat]{H}^\Tra \M[\hat]{H}$, which also amount to $O((m+n)/p)$ flops, and $\M[\hat]{A}^\Tra \M[\hat]{W}$ and $\M[\hat]{A} \M{H}$, which require $O(mn/p)$ flops because they involve the data matrix.
+Thus, the computation cost is $\gamma \cdot O((mn+m+n)/p)$ and typically dominated by the multiplications involving $\M{A}$.
+We track the lower order terms corresponding to NNLS solves because their hidden constants are larger than that of the dominating term.
+
+There are four communication collectives each iteration, and each involves all $p$ processors.
+The two all-reduce collectives to compute the Gram matrices of the factor matrices involve $2\times 2$ matrices and incur a communication cost of $(\beta + \alpha) \cdot O(\log p)$.
+The reduce-scatter and all-gather collectives involve $n\times 2$ matrices (the size of $\M{H}$) and require $\beta \cdot O(n) + \alpha \cdot O(\log p)$ in communication cost (we ignore the computation cost of the reduce-scatter because it is typically dominated by the bandwidth cost).
+If the algorithm performs $\imath$ iterations, the overall cost of \Cref{alg:parrank2nmf} is
+\begin{equation}
+\label{eq:r2nmfcost}
+\gamma \cdot O\left( \frac{\imath (mn+m+n)}{p} \right) + \beta \cdot O(\imath n) + \alpha \cdot O(\imath \log p).
+\end{equation}
+
+\paragraph{\emph{Parallel Power Method}}
+
+Similar to the previous analysis, we consider a single iteration of the power method.
+The local computation is dominated by two matrix-vector products involving the local data matrix of size $O(mn/p)$ words, incurring $O(mn/p)$ flops.
+The single communication collective is an all-reduce of the approximate right singular vector, which is of size $n$, incurring $\beta \cdot O(n) + \alpha \cdot O(\log p)$ communication.
+We ignore the $O(n)$ computation cost of normalizing the vector, as it will typically be dominated by the communication cost of the all-reduce.
+Over $\jmath$ iterations, \Cref{alg:parpowmeth} has an overall cost of
+\begin{equation}
+\label{eq:powmethcost}
+\gamma \cdot O\left( \frac{\jmath mn}{p} \right) + \beta \cdot O(\jmath n) + \alpha \cdot O(\jmath \log p).
+\end{equation}
+Note the per-iteration cost of the power method differs by only a constant from the per-iteration cost of Rank-2 NMF.
+Because the power method involves single vectors rather than factor matrices with two columns, its constants are smaller than half the size of their counterparts.
+
+\paragraph{\emph{Hierarchical Clustering}}
+
+To analyze the overall cost of the hierarchical clustering algorithm, we sum the costs over all nodes in the tree.
+Because the shape of the tree is data dependent and affects the overall costs, for the sake of analysis we will analyze only complete levels.
+The number of rows in any node is $m$, the same as the root node, as each splitting corresponds to a partition of the columns.
+Furthermore, because each split is a partition, every column of $\M{A}$ is represented exactly once in every complete level of the tree.
+If we assume that all nodes perform the same number of NMF iterations ($\imath$) and power method iterations $(\jmath)$, then the dominating costs of a node with $\overline{n}$ columns is
+\begin{equation*}
+\label{eq:nodecost}
+\begin{split}
+\gamma \cdot O\left( \frac{(\imath+\jmath) m\overline{n} + \imath (m+\overline{n}) }{p} \right) + \beta \cdot O((\imath+\jmath) \overline{n}) \\ + \alpha \cdot O((\imath+\jmath) \log p).
+\end{split}
+\end{equation*}
+Because the sum of the number of columns across any level of the tree is $n$, the cost of the $\ell$th level of the tree is
+\begin{equation}
+\label{eq:levelcost}
+\begin{split}
+\gamma \cdot O\left( \frac{(\imath+\jmath) mn + \imath m 2^\ell}{p} \right) + \beta \cdot O((\imath+\jmath) n) \\ + \alpha \cdot O((\imath+\jmath) 2^\ell \log p).
+\end{split}
+\end{equation}
+Note that the only costs that depend on the level index $\ell$ are the latency cost and a lower-order computational cost.
+
+Summing over levels and assuming the tree is nearly balanced and has height $O(\log k)$ where $k$ is the number of frontier nodes, we obtain an overall cost of \Cref{alg:hiernmf2} of
+\begin{equation}
+\label{eq:treecost}
+\begin{split}
+\gamma \cdot O\left( \frac{(\imath+\jmath) mn}{p}  \log k + \frac{\imath mk}{p} \right) + \beta \cdot O((\imath+\jmath) n \log k) \\ + \alpha \cdot O((\imath+\jmath) k \log p).
+\end{split}
+\end{equation}
+
+We see that the leading order computational cost is logarithmic in $k$ and perfectly load balanced.
+If the overall running time is dominated by the computation (and in particular the matrix multiplications involving $\M{A}$), we expect near-perfect strong scaling.
+The bandwidth cost is also logarithmic in $k$ but does not scale with the number of processors.
+The latency cost grows most quickly with the target number of clusters $k$ but is also independent of the matrix dimensions $m$ and $n$.

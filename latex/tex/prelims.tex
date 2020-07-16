@@ -1,0 +1,48 @@
+\section{Preliminaries and Related Work}
+\label{sec:prelim}
+
+\subsection{NMF}
+
+The NMF constrained optimization problem
+$$\min_{\M{W},\M{H}\geq \M{0}} \|\M{A} - \M{W}\M{H}^\Tra\|_2$$
+is nonlinear and nonconvex, and various optimization techniques can be used to approximately solve it.
+A popular approach is to use alternating optimization of the two factor matrices because each subproblem is a nonnegative least squares (NNLS) problem, which is convex and can be solved exactly.
+Many block coordinate descent (BCD) approaches are possible \cite{KHP14}, and one 2-block BCD algorithm that solves the NNLS subproblems exactly is block principal pivoting \cite{KP11}.
+This NNLS algorithm is an active-set-like method that determines the sets of entries in the solution vectors that are zero and those that are positive through an iterative but finite process.
+
+When the rank of the factorization (the number of columns of $\M{W}$ and $\M{H}$) is 2, the NNLS subproblems can be solved much more quickly because the number of possible active sets is only 4.
+As explained in more detail in \Cref{sec:r2nmf}, the optimal solution across the 4 sets can be determined efficiently to solve the NNLS subproblem more quickly than general-rank approaches like block principal pivoting.
+Because of the relative ease of solving the NMF problem for the rank-2 case, Kuang and Park \cite{KP13} propose a recursive method to use a rank-2 NMF to partition the input data into 2 parts, whereby each part can be further partitioned via rank-2 NMF of the corresponding original data.
+This approach yields a hierarchical factorization, potentially uncovering more global structure of the input data and allowing for better scalability of the algorithm to large NMF ranks.
+
+The hierarchical rank-2 NMF method has been applied to document clustering \cite{KP13} and hyperspectral image segmentation \cite{GKP15}.
+The leaves of the tree also yield a set of column vectors that can be aggregated into an approximate $\M{W}$ factor (ignoring their hierarchical structure).
+Using this factor matrix to initialize a higher-rank NMF computation leads to quick convergence and overall faster performance than initializing NMF with random data; this approach is known as Divide-and-Conquer NMF \cite{DKDP17}.
+We focus in this paper on parallelizing the hierarchical algorithms proposed by Kuang and Park \cite{KP13} and Gillis et al. \cite{GKP15}.
+
+\subsection{Parallel NMF}
+
+Scaling algorithms for NMF to large data often requires parallelization in order to fit the data across the memories of multiple compute nodes or speed up the computation to complete in reasonable time.
+Parallelizations of multiple optimization approaches have been proposed for general NMF. \GB{add more citations here, including to SmallK}
+In particular, we build upon the work of Kannan et al. \cite{KBP16,KBP17,EH+19-TR} and the open-source library PLANC, designed for nonnegative matrix and tensor factorizations of dense and sparse data.
+In this parallelization, the alternating optimization approach is employed with various options for the algorithm used to (approximately) solve the NNLS subproblems.
+The efficiency of the parallelization is based on scalable algorithms for the parallel matrix multiplications involved in all NNLS algorithms; these algorithms are based on Cartesian distributions of the input matrix across 1D or 2D processor grids.
+
+\subsection{Communication Model}
+
+We use the $\alpha$-$\beta$-$\gamma$ model \cite{TRG05,CH+07,BCDH+14} for analysis of distributed-memory parallel algorithms. 
+In this model, the cost of sending a single message of $n$ words of data between two processors is $\alpha + \beta \cdot n$, so that $\alpha$ represents the latency cost of the message and $\beta$ represents the bandwidth cost of each word in the message.
+The $\gamma$ parameter represents the computational cost of a single floating point operation (flop).
+In this simplified communication model, we ignore contention in the network, assuming in effect a fully connected network, and other limiting factors in practice such as the number of hops between nodes and the network injection rate \cite{GOS16}.
+We let $p$ represent the number of processors available on the machine.
+
+All of the interprocessor communication in the algorithms presented in this work are encapsulated in collective communication operations that involve the full set of processors.
+Algorithms for implementing the collective operations are built out of pairwise send and receive operations, and we assume the most efficient algorithms are used in our analysis \cite{TRG05,CH+07}.
+The collectives used in our algorithms are all-reduce, all-gather, and reduce-scatter.
+In an all-reduce, all processors start out with the same amount of data and all end with a copy of the same result, which is in our case a sum of all the inputs (and the same size as a single input).
+The cost of an all-reduce of size $n$ words is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$ for $n>p$ and $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n\log p)$ for $n<p$.
+In an all-gather, all processors start out with separate data and all end with a copy of the same result, which is the union of all the input data.
+If each processor starts with $n/p$ data and ends with $n$ data, the cost of the all-gather is $\alpha \cdot O(\log p) + \beta \cdot O(n)$.
+In a reduce-scatter, all processors start out with the same amount of data and all end with a subset of the result, which is in our case a sum of all the inputs (and is smaller than its input).
+If each processor starts with $n$ data and ends with $n/p$ data, the cost of the reduce-scatter is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$.
+In the case of all-reduce and reduce-scatter, the computational cost is typically dominated by the bandwidth cost because $\beta \gg \gamma$.

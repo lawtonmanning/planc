@@ -1,0 +1,8 @@
+\begin{abstract}
+Nonnegative Matrix Factorization (NMF) is an effective tool for clustering nonnegative data, either for computing a flat partitioning of a dataset or for determining a hierarchy of similarity.
+In this paper, we propose a parallel algorithm for hierarchical clustering that uses a divide-and-conquer approach based on rank-two NMF to split a data set into two cohesive parts.
+Not only does this approach uncover more structure in the data than a flat NMF clustering, but also rank-two NMF can be computed more quickly than for general ranks, providing comparable overall time to solution.
+Our data distribution and parallelization strategies are designed to maintain computational load balance throughout the data-dependent hierarchy of computation while limiting interprocess communication, allowing the algorithm to scale to large dense and sparse data sets.
+We demonstrate the scalability of our parallel algorithm in terms of data size (up to 800 GB) and number of processors (up to 80 nodes of the Summit supercomputer), applying the hierarchical clustering approach to hyperspectral imaging and image classification data. 
+Our algorithm for Rank-2 NMF scales perfectly on up to 1000s of cores and the entire hierarchical clustering method achieves 5.9x speedup scaling from 10 to 80 nodes on an 800 GB dataset.
+\end{abstract}
