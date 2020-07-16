@@ -43,8 +43,10 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 \subsection{Performance}
 \label{sec:perf}
-For all hierarchical clustering experiments in this section, the number of tree leaf nodes $k$ was set at $100$, the tolerance
-for the power iteration was set at $0$, and only complete levels were considered for analysis purposes for both level and strong scaling plots.
+For all hierarchical clustering experiments in this section, the number of tree leaf nodes $k$ was set at $100$, 
+the number of NMF iterations was set to $100$,
+the power iteration was allowed to stop iterating after convergence,
+and only complete levels were considered for analysis purposes for both level and strong scaling plots.
 
 \subsubsection{Single-Node Scaling for DC Dataset}
 
