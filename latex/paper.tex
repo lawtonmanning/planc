@@ -79,6 +79,7 @@ An NMF with $k=2$ determines a row of $\M{H}$ of length 2 for each sample that d
 By recursively bipartitioning the samples in each part, the method determines a binary tree such that each sample belongs to a unique leaf and internal nodes of the tree determine higher-level clusters of the samples.
 A single latent feature vector for each node can also be used for interpreting clusters.
 Du et al. \cite{DKDP17} show that the latent features vectors of the leaves can also be used to initialize a $\M{W}$ within an algorithm for flat NMF, yielding fast convergence and overall speedup compared to initializing the algorithm with random data.
+We discuss the hierarchical method in more detail in \Cref{sec:prelim} and \Cref{sec:seqalgs}.
 
 We illustrate the output of the hierarchical clustering method with an example data set and output tree.
 Following Gillis et al. \cite{GKP15}, we apply the method to a hyperspectral imaging (HSI) data set of the Washington, D.C~national mall, which has pixel dimensions $1280 \times 307$ and 191 spectral bands.
@@ -86,16 +87,21 @@ Following Gillis et al. \cite{GKP15}, we apply the method to a hyperspectral ima
 The root node, labeled 0, is a flattening of the HSI data to a 2D grayscale image.
 Each other node is represented by an overlay of the member pixels of the clusters (in blue) on the original grayscale image.
 The first bipartitioning separates vegetation (cluster 1) from non-vegetation (cluster 2), the bipartitioning of cluster 1 separates grass (cluster 3) from trees (cluster 4), the bipartitioning of cluster 2 separates buildings (cluster 5) from sidewalks/water (cluster 6), and so on.
+If the algorithm continues, it chooses to split the leaf node that provides the greatest benefit to the overall tree, which can be quantified as a node's ``score'' in various ways.
+The algorithm proceeds to split nodes until a target number of leaves is obtained, until no node is worth splitting, or some other stopping criterion is met.
 
 While the hierarchical clustering method offers advantages in terms of interpretation as well as execution time compared to flat NMF, implementations of the algorithm are limited to single workstations and the dataset must fit in the available memory.
-Currently available implementations can utilize multiple cores via MATLAB \cite{KP13} or explicit shared-memory parallelization \cite{SmallK}.
+Currently available implementations can utilize multiple cores via MATLAB \cite{KP13} or explicit shared-memory parallelization in the SmallK library \cite{SmallK}.
 The goal of this work is to use distributed-memory parallelism to scale the algorithm to large datasets that require the memory of multiple compute nodes and to high processor counts.
+While flat NMF algorithms have been scaled to HPC platforms \cite{} \GB{add citations beyond our own}, our implementation is the first to our knowledge to scale a hierarchical NMF method to 1000s of cores. 
+As discussed in detail in \Cref{sec:paralgs}, we choose to parallelize the computations associated with each node in the tree, which involve a Rank-2 NMF and the computation of the node's score.
+We choose a data matrix distribution across processors that avoids any redistribution of the input matrix regardless of the data-dependent structure of the tree's splitting decisions so that the communication required involves only the small factor matrices.
+Analysis of the algorithm shows the dependence of execution time on computation and communication costs as well as the number of clusters computed.
 
-\begin{itemize}
-	\item discuss limitation of current implementations of the hierarchical method in MATLAB and shared-memory parallelization in terms of scalability to data size and bandwidth limitations
-	\item brief summary of parallelization approach, point to analysis
-	\item summarize results, highlight 600 GB data set and scaling to 2000-2500 cores, speedups of up to X for rank-2 NMF and up to Y for full hierarchical clustering algorithm
-\end{itemize}
+We demonstrate in \Cref{sec:perf} the efficiency and scalability of our parallel algorithm on three data sets, including the HSI data of the DC mall and an image classification data set involving skin melanoma.
+The experimental results show that our parallelization of Rank-2 NMF is highly scalable, maintaining computation bound performance on 1000s of cores.
+We also show the limits of strong scalability when scaling to large numbers of clusters (leaf nodes), as the execution time shifts to becoming interprocessor bandwidth bound and eventually latency bound.
+The image classification data set requires 800 GB of memory across multiple nodes to process, and in scaling from 10 nodes to 80 nodes of the Summit supercomputer, we demonstrate parallel speedups of 7.1$\times$ for a single Rank-2 NMF and ZZ$\times$ for a complete hierarchical clustering.
 
 \GB{we should have perhaps compared against SmallK and also against flat NMF...}
 
@@ -119,7 +125,7 @@ Many block coordinate descent (BCD) approaches are possible \cite{KHP14}, and on
 This NNLS algorithm is an active-set-like method that determines the sets of entries in the solution vectors that are zero and those that are positive through an iterative but finite process.
 
 When the rank of the factorization (the number of columns of $\M{W}$ and $\M{H}$) is 2, the NNLS subproblems can be solved much more quickly because the number of possible active sets is only 4.
-As explained in more detail in \Cref{sec:r2nmf}, the optimal solution across the 4 possibilities can be determined efficiently to solve the NNLS subproblem more quickly than general-rank approaches like block principal pivoting.
+As explained in more detail in \Cref{sec:r2nmf}, the optimal solution across the 4 possibilities \LM{sets} can be determined efficiently to solve the NNLS subproblem more quickly than general-rank approaches like block principal pivoting.
 Because of the relative ease of solving the NMF problem for the rank-2 case, Kuang and Park \cite{KP13} propose a recursive method to use a rank-2 NMF to partition the input data into 2 parts, whereby each part can be further partitioned via rank-2 NMF of the corresponding original data.
 This approach yields a hierarchical factorization, potentially uncovering more global structure of the input data and allowing for better scalability of the algorithm to large NMF ranks.
 
@@ -130,9 +136,8 @@ We focus in this paper on parallelizing the hierarchical algorithms proposed by 
 
 \subsection{Parallel NMF}
 
-
 Scaling algorithms for NMF to large data often requires parallelization in order to fit the data across the memories of multiple compute nodes or speed up the computation to complete in reasonable time.
-Parallelizations of multiple optimization approaches have been proposed for general NMF.
+Parallelizations of multiple optimization approaches have been proposed for general NMF. \GB{add more citations here, including to SmallK}
 In particular, we build upon the work of Kannan et al. \cite{KBP16,KBP17,EH+19-TR} and the open-source library PLANC, designed for nonnegative matrix and tensor factorizations of dense and sparse data.
 In this parallelization, the alternating optimization approach is employed with various options for the algorithm used to (approximately) solve the NNLS subproblems.
 The efficiency of the parallelization is based on scalable algorithms for the parallel matrix multiplications involved in all NNLS algorithms; these algorithms are based on Cartesian distributions of the input matrix across 1D or 2D processor grids.
@@ -149,7 +154,7 @@ All of the interprocessor communication in the algorithms presented in this work
 Algorithms for implementing the collective operations are built out of pairwise send and receive operations, and we assume the most efficient algorithms are used in our analysis \cite{TRG05,CH+07}.
 The collectives used in our algorithms are all-reduce, all-gather, and reduce-scatter.
 In an all-reduce, all processors start out with the same amount of data and all end with a copy of the same result, which is in our case a sum of all the inputs (and the same size as a single input).
-The cost of an all-reduce of size $n$ words is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$ for $n>p$ and $(\alpha+\beta) \cdot O(\log p)$ for $n<p$.
+The cost of an all-reduce of size $n$ words is $\alpha \cdot O(\log p) + (\beta+\gamma) \cdot O(n)$ for $n>p$ and $(\alpha+\beta) \cdot O(\log p)$ for $n<p$. \LM{is the n<p case right? where's the computation?}
 In an all-gather, all processors start out with separate data and all end with a copy of the same result, which is the union of all the input data.
 If each processor starts with $n/p$ data and ends with $n$ data, the cost of the all-gather is $\alpha \cdot O(\log p) + \beta \cdot O(n)$.
 In a reduce-scatter, all processors start out with the same amount of data and all end with a subset of the result, which is in our case a sum of all the inputs (and is smaller than its input).
@@ -159,6 +164,7 @@ In the case of all-reduce and reduce-scatter, the computational cost is typicall
 \section{Algorithms}
 
 \subsection{Sequential Algorithms}
+\label{sec:seqalgs}
 
 \subsubsection{Rank-2 NMF}
 \label{sec:r2nmf}
@@ -177,7 +183,7 @@ We note that there are four possibilities of solutions, as each of the two scala
 As shown by Kuang and Park \cite{KP13}, determining which of the four possible solutions is feasible and optimal can be done efficiently by exploiting the following properties:
 \begin{itemize}
 	\item if the solution to the unconstrained least squares problem admits two positive values, it is the optimal solution to the nonnegatively constrained problem,
-	\item if $\M{W}$ and $\M{A}$ are both nonnegative, then the candidate solution with two zero values is never (uniquely) optimal and can be discarded, and
+	\item if $\M{W}$ and $\M{A}$ are both nonnegative, then the candidate solution with two zero values is never (uniquely) \LM{why uniquely?} optimal and can be discarded, and
 	\item if the solution to the unconstrained problem does not admit two positive values, the better of the two remaining solutions can be determined by comparing $\V{a}_{j}^\Tra\V{w}_1 / \|\V{w}_1\|$ and $\V{a}_{j}^\Tra\V{w}_2 / \|\V{w}_2\|$.
 \end{itemize}
 If the unconstrained problem is solved via the normal equations, then the temporary matrices computed for the normal equations ($\M{W}^\Tra\M{W}$ and $\M{A}^\Tra\M{W}$) can be re-used to determine the better of the two solutions with a single positive variable.
@@ -212,6 +218,7 @@ Solving for $\M{W}$ can be done using inputs $\M{C}=\M{A}\M{H}$ and $\M{G}=\M{H}
 \end{algorithm}
 
 Given that the computational complexity of \Cref{alg:r2nnls} is $O(n)$ (or $O(m)$ when computing $\M{W}$), and the complexity of computing $\M{W}^\Tra\M{W}$ and $\M{H}^\Tra\M{H}$ is $O(m+n)$, the typical dominant cost of each iteration of Rank-2 NMF is that of computing $\M{A}^\Tra\M{W}$ and $\M{A}\M{H}$, which is $O(mn)$ when $\M{A}$ is dense and $O(\text{nnz}(A))$ when $\M{A}$ is sparse.
+\LM{should our analysis keep sparse even when we don't have a sparse dataset?}
 
 \subsubsection{Hierarchical Clustering}
 
@@ -271,10 +278,12 @@ When a node is selected from the priority queue, it is removed from the set of f
 \end{algorithmic}
 \end{algorithm}
 
+\LM{should we have a little bit more of the description of the scoring method? also the language here is awkward}
 The splitting procedure is specified in \Cref{alg:split}.
 After the Rank-2 NMF is performed, the $\M{H}$ factor is used to determine part membership, and the columns of the $\M{W}$ factor are assigned to the child nodes.
 The score of the node is computed as the reduction in overall NMF error if the node is split, which can be computed from the principal singular values of the subsets of columns of the node and its children.
 The principal singular values of the children are computed via the power method (the principal singular value of the node was computed when its parent's score was computed).
+
 
 \begin{algorithm}
 \caption{Node Splitting via Rank-Two NMF}
@@ -381,6 +390,7 @@ That is, the approximate right singular vector $\V{v}$ is redundantly owned on e
 Each processor can compute its local $\V[\hat]{u}$ from $\V{v}$ without communication and use the result for its contribution to $\V{v}=\M{A}^\Tra \V{u}$.
 An all-reduce collective is used to obtain a copy of $\V{v}$ on every processor for the next iteration, and the norm is redundantly computed without further communication.
 Again, we use a fixed number of iterations for benchmarking, but the more practical stopping criterion is based on the relative change in $\sigma$.
+\LM{we did not use a fixed number of iterations for benchmarking}
 
 \begin{algorithm}
 \caption{Parallel Power Method}
@@ -460,6 +470,7 @@ Because the sum of the number of columns across any level of the tree is $n$, th
 \end{split}
 \end{equation}
 Note that the only cost that depends on the level index $\ell$ is the latency cost.
+\LM{both the computation and the latency dpend on this}
 Summing over levels and assuming the tree is nearly balanced and has height $O(\log k)$ where $k$ is the number of frontier nodes, we obtain an overall cost of \Cref{alg:hiernmf2} of
 \begin{equation}
 \label{eq:treecost}
