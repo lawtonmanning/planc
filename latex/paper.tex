@@ -279,11 +279,11 @@ When a node is selected from the priority queue, it is removed from the set of f
 \end{algorithmic}
 \end{algorithm}
 
-\LM{should we have a little bit more of the description of the scoring method? also the language here is awkward}
 The splitting procedure is specified in \Cref{alg:split}.
 After the Rank-2 NMF is performed, the $\M{H}$ factor is used to determine part membership, and the columns of the $\M{W}$ factor are assigned to the child nodes.
-The score of the node is computed as the reduction in overall NMF error if the node is split, which can be computed from the principal singular values of the subsets of columns of the node and its children.
-The principal singular values of the children are computed via the power method (the principal singular value of the node was computed when its parent's score was computed).
+The score of the node is computed as the reduction in overall NMF error if the node is split, which can be computed from the principal singular values of the subsets of columns of the node and its children, as given in \Cref{line:score}.
+The principal singular values of the children are computed via the power method.
+Note that the principal singular value of the node itself need not be recomputed as it was needed for its parent's score.
 
 
 \begin{algorithm}
@@ -296,7 +296,7 @@ The principal singular values of the children are computed via the power method 
 		\State partition ${\cal N}.\M{A}$ into $\M{A}_1$ and $\M{A}_2$ using $\M{H}$
 		\State ${\cal N}.\text{left} = \text{node}(\M{A}_1,\V{W}_1)$ \hfill \Comment{create left child}
 		\State ${\cal N}.\text{right} = \text{node}(\M{A}_2,\V{W}_2)$ \hfill \Comment{create right child}
-		\State ${\cal N}.\text{score} = \sigma_1^2(\M{A}_1) + \sigma_1^2(\M{A}_2) - \sigma_1^2({\cal N}.\M{A})$
+		\State ${\cal N}.\text{score} = \sigma_1^2(\M{A}_1) + \sigma_1^2(\M{A}_2) - \sigma_1^2({\cal N}.\M{A})$ \label{line:score}
 	\EndFunction
 	\Ensure{$\cal{N}$ has two children and a score}
 \end{algorithmic}
@@ -471,8 +471,8 @@ Because the sum of the number of columns across any level of the tree is $n$, th
 \gamma \cdot O\left( \frac{(\imath+\jmath) mn + \imath m 2^\ell}{p} \right) + \beta \cdot O((\imath+\jmath) n) \\ + \alpha \cdot O((\imath+\jmath) 2^\ell \log p).
 \end{split}
 \end{equation}
-Note that the only cost that depends on the level index $\ell$ is the latency cost.
-\LM{both the computation and the latency dpend on this}
+Note that the only costs that depend on the level index $\ell$ are the latency cost and a lower-order computational cost.
+
 Summing over levels and assuming the tree is nearly balanced and has height $O(\log k)$ where $k$ is the number of frontier nodes, we obtain an overall cost of \Cref{alg:hiernmf2} of
 \begin{equation}
 \label{eq:treecost}
