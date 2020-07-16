@@ -506,9 +506,6 @@ On Summit, we linked this version of Armadillo with OpenBLAS (version 0.3.9) and
 
 
 \subsection{Datasets}
-
-\GB{need shortcut names for datasets: synthetic, DC, and something better than \image{}}
-
 \begin{itemize}
 	\item \textit{Hyperspectral Imaging}:
 	For Hyperspectral imaging, we chose the Hyperspectral digital imagery collection experiment (HYDICE) image of the Washington DC Mall. We will refer
@@ -601,6 +598,11 @@ This pattern will continue as $p$ increases, which will eventually limit scalabi
 
 \GB{4 plots: 2 data sets with speedup/breakdown, note that we include time for complete levels, ignoring nodes in incomplete levels for easier interpretation}
 
+From equation \ref{eq:treecost}, we expect to see perfect strong scaling in a computationally bound H2NMF problem with fixed frontier node $k$ count.
+However, the problem should become latency bound with its $\log p$ cost as we scale. Figure \ref{fig:fig:synhierspeedup} shows this latency limit as
+we scale to 50 compute nodes on the synthetic data. Figure \ref{fig:synhierstrongscaling}
+
+From equation \ref{eq:levelcost}
 \begin{itemize}
 	\item theory (\Cref{eq:treecost}) says...
 	\item Fig 7 shows limit of strong scaling for synthetic data (time increases at 50 nodes compared to 40), Fig 8 gives breakdown and explains
