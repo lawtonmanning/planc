@@ -1,14 +1,16 @@
 #include <queue>
 #include <vector>
 #include "common/parsecommandline.hpp"
+#include "distnmf/distnmftime.hpp"
 #include "distnmf/distr2.hpp"
 #include "distnmf/mpicomm.hpp"
 #include "hiernmf/matutils.hpp"
 
 namespace planc {
   struct NodeTimings {
-    double NMF;
     struct PowerTimings sigma;
+    DistNMFTime * nmf;
+    double total;
   };
   template <class INPUTMATTYPE>
     class Node {
@@ -141,8 +143,8 @@ namespace planc {
           this->accepted = true;
 
           arma::arma_rng::set_seed_random();
-          MAT W = arma::randu<MAT>(itersplit(A.n_rows,pc->pc(),mpicomm->col_rank()),2);
-          MAT H = arma::randu<MAT>(itersplit(A.n_cols,pc->pr(),mpicomm->row_rank()),2);
+          MAT W = arma::randu<MAT>(itersplit(itersplit(global_m,mpicomm->pr(),mpicomm->row_rank()),mpicomm->pc(),mpicomm->col_rank()),2);
+          MAT H = arma::randu<MAT>(itersplit(itersplit(global_n,mpicomm->pc(),mpicomm->col_rank()),mpicomm->pr(),mpicomm->row_rank()),2);
 
           DistR2<INPUTMATTYPE> nmf(A, W, H, *mpicomm, 1);;
           nmf.num_iterations(pc->iterations());
@@ -154,7 +156,8 @@ namespace planc {
 
           mpitic();
           nmf.computeNMF();
-          this->timings.NMF = mpitoc();
+          timings.total = mpitoc();
+          timings.nmf = nmf.times();
 
           W = nmf.getLeftLowRankFactor();
           H = nmf.getRightLowRankFactor();
@@ -170,7 +173,6 @@ namespace planc {
             displs[i] = displs[i-1]+recvcnts[i-1];
           }
           MPI_Allgatherv(lleft.memptr(),lleft.n_elem,MPI_UNSIGNED_LONG_LONG,left.memptr(),recvcnts,displs,MPI_UNSIGNED_LONG_LONG,MPI_COMM_WORLD);
-
 
           UVEC lcols = this->cols(find(left == 1));
           UVEC rcols = this->cols(find(left == 0));
