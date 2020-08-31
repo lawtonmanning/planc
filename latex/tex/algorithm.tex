@@ -200,7 +200,7 @@ For performance benchmarking we use a fixed number of iterations, and in practic
 		\While{not converged}
 			\State \Comment{Compute $\M{H}$}
 			\State $\M[\hat]{G}_W = \M[\hat]{W}^\Tra \M[\hat]{W}$
-			\State $\M{G}_W = \textsc{All-Reduce}(\M[\hat]{G})$
+			\State $\M{G}_W = \textsc{All-Reduce}(\M[\hat]{G}_W)$
 			\State $\M[\hat]{B} = \M[\hat]{A}^\Tra \M[\hat]{W}$ %\hfill \Comment{local matrix multiplication}
 			\State $\M[\hat]{C} = \textsc{Reduce-Scatter}(\M[\hat]{B})$
 			\State $\M[\hat]{H} = \textsc{Rank2-NLS-Solve}(\M[\hat]{C},\M{G}_W)$
