@@ -23,7 +23,7 @@ As shown by Kuang and Park \cite{KP13}, determining which of the four possible s
 \begin{itemize}
 	\item if the solution to the unconstrained least squares problem admits two positive values, it is the optimal solution to the nonnegatively constrained problem,
 	\item if $\M{W}$ and $\M{A}$ are both nonnegative, then the candidate solution with two zero values is never (uniquely) optimal and can be discarded, and
-	\item if the solution to the unconstrained problem does not admit two positive values, the better of the two remaining solutions can be determined by comparing $\V{a}_{j}^\Tra\V{w}_1 / \|\V{w}_1\|$ and $\V{a}_{j}^\Tra\V{w}_2 / \|\V{w}_2\|$.
+	\item if the unconstrained problem does not admit a positive solution, the better of the two remaining solutions can be determined by comparing $\V{a}_{j}^\Tra\V{w}_1 / \|\V{w}_1\|$ and $\V{a}_{j}^\Tra\V{w}_2 / \|\V{w}_2\|$.
 \end{itemize}
 If the unconstrained problem is solved via the normal equations, then the temporary matrices computed for the normal equations ($\M{W}^\Tra\M{W}$ and $\M{A}^\Tra\M{W}$) can be re-used to determine the better of the two solutions with a single positive variable.
 
@@ -172,7 +172,7 @@ In the following subsections, we describe the parallel algorithms for Rank-2 NMF
 
 \begin{figure}
 \input{fig/split}
-\caption{Parallel splitting using Rank-2 NMF and 1D processor distribution.  A Rank-2 NMF computes factor matrices $\M{W}$ and $\M{H}$ to approximate $\M{A}$, the values of $\M{H}$ are used to determine child membership of each column (either red or blue), and the corresponding column of the $\M{W}$ matrix represents the part's feature weighting.  The 1D distribution is depicted for 3 processors to show that the splitting requires no interprocessor redistribution as the children are evenly distributed identically to the parent.}
+\caption{Parallel splitting using Rank-2 NMF and 1D processor distribution.  A Rank-2 NMF computes factor matrices $\M{W}$ and $\M{H}$ to approximate $\M{A}$, the values of $\M{H}$ are used to determine child membership of each column (either red or blue), and the corresponding column of the $\M{W}$ matrix represents the part's feature weighting.  The 1D distribution is depicted for 3 processors to show that splitting requires no interprocessor redistribution as children are evenly distributed identically to the parent.}
 \label{fig:split}
 \end{figure}
 

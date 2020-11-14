@@ -60,7 +60,7 @@ In this experiment, the processes were distributed across both sockets so that a
 
 \begin{figure}
 \begin{center}
-\includegraphics[height=1.4in, width=1.4in]{plots/dc_hierarchical_speedup.pdf}
+\includegraphics[height=1.4in, width=1.5in]{plots/dc_hierarchical_speedup.pdf}
 \caption{Strong Scaling for Clustering on \hyper{}}
 \label{fig:dcspeedup}
 \end{center}
@@ -71,7 +71,7 @@ In this experiment, the processes were distributed across both sockets so that a
 
 We perform strong scaling experiments for a single Rank-2 NMF (\Cref{alg:parrank2nmf}) on the synthetic and \image{} datasets.
 The theory (\Cref{eq:r2nmfcost}) suggests that perfect strong scaling is possible as long as the execution time is dominated by local computation.
-Both the matrix multiplications and NNLS solves scale linearly with $1/p$ (we expect MatMul to dominate), but the bandwidth cost is independent of $p$ and the latency cost increases slightly with $p$.
+Both the matrix multiplications and NNLS solves scale linearly with $1/p$ (we expect MatMul to dominate), but the bandwidth cost is independent of $p$ and latency increases slightly with $p$.
 
 \Cref{fig:synrank2speedup,fig:rwrank2speedup} show performance relative to the smallest number of compute nodes required to store data and factor matrices.
 For these data sets, we observe nearly perfect strong scaling, with 42$\times$ speedup on 40 compute nodes (over 1 compute node) for synthetic data and 7.1$\times$ speedup on 80 compute nodes (over 10 compute nodes) for \image{} data.
@@ -80,14 +80,14 @@ For these data sets, we observe nearly perfect strong scaling, with 42$\times$ s
 \centering
 \begin{subfigure}{1.5in}
 \begin{center}
-\includegraphics[height=1.4in, width=1.4in]{plots/synthetic_rank2_speedup.pdf}
+\includegraphics[height=1.4in, width=1.5in]{plots/synthetic_rank2_speedup.pdf}
 \caption{Synthetic Data}
 \label{fig:synrank2speedup}
 \end{center}
 \end{subfigure}
 \begin{subfigure}{1.5in}
 \begin{center}
-\includegraphics[height=1.4in, width=1.4in]{plots/realworld_rank2_speedup.pdf}
+\includegraphics[height=1.4in, width=1.5in]{plots/realworld_rank2_speedup.pdf}
 \caption{\image{} Data}
 \label{fig:rwrank2speedup}
 \end{center}
@@ -143,14 +143,14 @@ This is due to inefficiencies in the lower levels of the tree, as we explore in 
 \centering
 \begin{subfigure}{1.5in}
 \begin{center}
-\includegraphics[height=1.4in, width=1.4in]{plots/synthetic_hierarchical_speedup.pdf}
+\includegraphics[height=1.4in, width=1.5in]{plots/synthetic_hierarchical_speedup.pdf}
 \caption{Synthetic Data}
 \label{fig:synhierspeedup}
 \end{center}
 \end{subfigure}
 \begin{subfigure}{1.5in}
 \begin{center}
-\includegraphics[height=1.4in, width=1.4in]{plots/realworld_hierarchical_speedup.pdf}
+\includegraphics[height=1.4in, width=1.5in]{plots/realworld_hierarchical_speedup.pdf}
 \caption{\image{} Data}
 \label{fig:rwhierspeedup}
 \end{center}
@@ -222,12 +222,31 @@ Thus, we see that the poorer scaling at the lower levels of the tree is the main
 \subsubsection{Rank Scaling}
 
 To confirm the slow growth in running time of the hierarchical algorithm in terms of the number of clusters $k$, we perform rank scaling experiments for \hyper{} and synthetic data. 
-Assuming a balanced tree and relatively small $k$, \Cref{eq:treecost} shows that the dominant computational cost is proportional to $\log k$, while flat NMF algorithms have a dominant cost that is linear in $k$ \cite{KBP17}.
-\Cref{fig:rankscaling} shows the raw time for various values of $k$, confirming that running time for HierNMF grows more slowly in $k$ than a flat NMF algorithm from PLANC \cite{EH+19-TR} with the same number of columns and processor grid.
+Assuming a balanced tree and relatively small $k$, \Cref{eq:treecost} shows that the dominant computational cost is proportional to $\log k$, while a flat NMF algorithm has a dominant cost that is linear in $k$ \cite{KBP17}.
+\Cref{fig:rankscaling} shows the raw time for various values of $k$, confirming that running time for HierNMF grows more slowly in $k$ than a flat NMF algorithm (based on Block Principal Pivoting) from PLANC \cite{EH+19-TR} with the same number of columns and processor grid.
+We see that for sufficiently large $k$, the hierarchical algorithm outperforms flat NMF and it scales much better with $k$.
 
 
 \begin{figure}
-\caption{\GB{To be added...}}
+\centering
+\begin{subfigure}{1.5in}
+\begin{center}
+\includegraphics[height=1.4in, width=1.5in]{plots/dc_rankscaling.pdf}
+\caption{\hyper{} Data}
+\label{fig:dcrankscaling}
+\end{center}
+\end{subfigure}
+\begin{subfigure}{1.5in}
+\begin{center}
+\includegraphics[height=1.4in, width=1.5in]{plots/synthetic_rankscaling.pdf}
+\caption{Synthetic Data}
+\label{fig:synrankscaling}
+\end{center}
+\end{subfigure}
+\caption{Rank Scaling for Hierarchical and Flat NMF}
 \label{fig:rankscaling}
 \end{figure}
+
+
+
 
