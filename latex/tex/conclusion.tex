@@ -11,7 +11,7 @@ We also note that in the case of sparse $\M{A}$, it becomes more difficult to hi
 
 One approach for reducing the bandwidth cost of Rank-2 NMF is to choose a more balanced data distribution over a 2D grid, as proposed by Kannan et al. \cite{KBP16}.
 This will reduce the communicated data and achieve a local data matrix that is more square, which can improve local matrix multiplication performance.
-The downside of this approach is that it requires a redistribution of the data for each split, but if many NMF iterations are required, then the single upfront redistribution cost may be amortized.
+The downside of this approach is requiring a redistribution of the data for each split, but if many NMF iterations are required, then the single upfront cost may be amortized.
 
 Another approach to alleviate the rising latency costs of lower levels of the tree is to parallelize across nodes of the tree.
 This will result in fewer processors working on any given node, reducing the synchronization time among them, and it will allow small, latency-bound problems to be solved simultaneously.
