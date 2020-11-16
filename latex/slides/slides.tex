@@ -17,6 +17,16 @@
 \newcommand{\hyper}{DC-HYDICE}
 \newcommand{\image}{SIIM-ISIC}
 
+\definecolor{wfugold}{rgb}{0.6196078,0.494117647,0.21960784}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\multiplycolor}{red}
+\newcommand{\zero}{}
+\newcommand{\cred}[1]{\textcolor{red}{#1}}
+\newcommand{\cblue}[1]{\textcolor{blue}{#1}}
+\newcommand{\cgold}[1]{\textcolor{wfugold}{#1}}
+\newcommand{\email}[1]{\href{mailto:#1}{\texttt{#1}}}
+
 \title{Parallel Hierarchical Clustering using \\ Rank-Two Nonnegative Matrix Factorization}
 
 \author{
@@ -38,7 +48,31 @@
 }
 
 \date{
+    27th IEEE International Conference on High Performance Computing, Data, \& Analytics (HiPC 2020)
+}
+
+\usetheme{Warsaw}
+\usecolortheme[named=wfugold]{structure}
+%Madrid
+%\usecolortheme{dolphin}
+%\useinnertheme{rounded}
+%\usefonttheme{serif}
+\setbeamertemplate{navigation symbols}{} % gets rid of navigation bars
+\setbeamertemplate{footline}
+{
+  \hbox{%
+  \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
+    \usebeamerfont{author in head/foot}
+    Manning, Ballard, Kannan, Park
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}
     HiPC 2020
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}
+    \insertframenumber{} \hspace*{2ex} 
+  \end{beamercolorbox}}%
 }
 
 
@@ -143,4 +177,18 @@
         \end{itemize}
     \end{itemize}
 \end{frame}
+
+\begin{frame}
+\frametitle{Author Contact Information}
+
+For questions, please contact
+\begin{itemize}
+	\item Lawton Manning: \email{mannlg15@wfu.edu}
+	\item Grey Ballard: \email{ballard@wfu.edu}
+	\item Ramakrishnan Kannan: \email{kannanr@ornl.gov}
+	\item Haesun Park: \email{hpark@cc.gatech.edu}
+\end{itemize}
+
+\end{frame}
+
 \end{document}
