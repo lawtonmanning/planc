@@ -3,16 +3,32 @@
 \usepackage{cite,doi}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithm,algpseudocode}
-\usepackage{graphicx}
+\usepackage{stackengine,graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{cleveref}
 \usepackage{tikz}
+\usetikzlibrary{3d}
+\usetikzlibrary{patterns}
+\usetikzlibrary{calc}
+\usetikzlibrary{arrows}
+\usetikzlibrary{matrix}
+\usetikzlibrary{positioning}
+\usetikzlibrary{decorations.pathreplacing}
 \usepackage{mathtools}
-\usepackage{../ourmacros}
 \usepackage{subcaption}
 \usepackage{import}
+\usepackage{bm}
+\usepackage[mathscr]{eucal}
+\usepackage{amsbsy}
+\usepackage[section]{placeins}
 \usepackage{adjustbox}
+\stackMath
+
+\usepackage{../ourmacros}
+
+\newcommand{\T}[1]{\boldsymbol{\mathscr{#1}}}
+
 
 \newcommand{\hyper}{DC-HYDICE}
 \newcommand{\image}{SIIM-ISIC}
@@ -27,28 +43,30 @@
 \newcommand{\cgold}[1]{\textcolor{wfugold}{#1}}
 \newcommand{\email}[1]{\href{mailto:#1}{\texttt{#1}}}
 
-\title{Parallel Hierarchical Clustering using \\ Rank-Two Nonnegative Matrix Factorization}
+
+\newlength\matfield
+\newlength\tmplength
+\def\matscale{1.}
+\newcommand{\dimbox}[3]{%
+  \setlength\matfield{\matscale\baselineskip}%
+  \setbox0=\hbox{\vphantom{X}\smash{#3}}%
+  \setlength{\tmplength}{#1\matfield-\ht0-\dp0}%
+  \fboxrule=1pt\fboxsep=-\fboxrule\relax%
+  \fbox{\makebox[#2\matfield]{\addstackgap[.5\tmplength]{\box0}}}%
+}
+\newcommand{\raiserows}[2]{%
+   \setlength\matfield{\matscale\baselineskip}%
+   \raisebox{#1\matfield}{#2}%
+}
+\newcommand{\matbox}[5]{
+  \stackunder{\dimbox{#1}{#2}{$#5$}}{\scriptstyle(#3\times #4)}%
+}
+
+
+\title{Parallel Algorithms for Low-Rank Approximations of Matrices and Tensors}
 
 \author{
-    Lawton Manning\inst{1}
-    \and Grey Ballard\inst{1}\\
-    \and Ramakrishnan Kannan\inst{2}
-    \and Haesun Park\inst{3}
-}
-
-\institute{
-    \inst{1}%
-    Wake Forest University
-    \and
-    \inst{2}%
-    Oak Ridge National Laboratory
-    \and
-    \inst{3}%
-    Georgia Institute of Technology
-}
-
-\date{
-    27th IEEE International Conference on High Performance Computing, Data, \& Analytics (HiPC 2020)
+    Lawton Manning
 }
 
 \usetheme{Warsaw}
@@ -63,11 +81,11 @@
   \hbox{%
   \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
     \usebeamerfont{author in head/foot}
-    Manning, Ballard, Kannan, Park
+    Manning
   \end{beamercolorbox}%
   \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
     \usebeamerfont{title in head/foot}
-    HiPC 2020
+    Thesis Proposal
   \end{beamercolorbox}%
   \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
     \usebeamerfont{date in head/foot}
@@ -80,15 +98,24 @@
 
 \frame{\titlepage}
 
-\begin{frame}{Nonnegative Matrix Factorization (NMF)}
+\begin{frame}{Introduction}
     \begin{itemize}
-        \item $\M{A} \approx \M{W}\M{H}^\Tra$
+        \item Parallel Hierarchical Clustering using Rank-Two Nonnegative Matrix Factorization
+        \item Tensor Train Rounding Using Gram Matrices
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Nonnegative Matrix Factorization (NMF)}
+    \begin{adjustbox}{max totalsize={.4\textwidth}{.5\textheight},center}
+    \import{..}{fig/nmf}
+    \end{adjustbox}
+    \begin{itemize}
         \item approximate $\M{A}$ (features $\times$ samples) into $\M{W}$ (features $\times k$) and $\M{H}$ (samples $\times k$)
         \item nonnegativity gives interpretability of $\M{W}$ and $\M{H}$ as clusters and cluster membership, respectively
         \item applications
             \begin{itemize}
                 \item text document clustering using bag of words or TF-IDF matrices
-                \item hyperspectral imaging segmentation
+                \item hyperspectral image segmentation
             \end{itemize}
     \end{itemize}
 \end{frame}
@@ -106,22 +133,24 @@
 \begin{frame}{Solving NMF}
     \begin{itemize}
         \item constrained optimization: $$\min_{\M{W},\M{H}\geq \M{0}} \|\M{A} - \M{W}\M{H}^\Tra\|_2$$
-        \item alternating update
+        \item Alternating Nonnegatively Constrained Least Squares (ANLS)
         \begin{itemize}
-            \item fix $\M{H}$ and solve the NNLS for $\M{W}$ exactly
+            \item fix $\M{H}$ and solve the NLS for $\M{W}$ exactly
             \item alternate and repeat until convergence
         \end{itemize}
-        \item NNLS Solvers
+
+        \item Block Principal Pivoting (BPP)
         \begin{itemize}
-            \item Block Principal Pivoting (BPP)
-            \item ??? Other Method ???
+            \item solve unconstrained system
+            \item $\M{W}^\Tra\M{W}$ and $\M{W}^\Tra\M{A}$ for $\M{H}$ and likewise for $\M{W}$
+            \item account for negative solutions with active-set method (quadratic in $k$)
         \end{itemize}
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Rank-2 NMF (R2NMF)}
+\begin{frame}{Rank-2 NMF (R2NMF) NLS}
     \begin{itemize}
-        \item when $k = 2$, BPP can be solved quickly as the size of the active set is 4
+        \item when $k = 2$, the NLS can be solved quickly as the size of the active set is 4
         \item Active Sets for R2NMF (row by row)
         \begin{itemize}
             \item both columns nonnegative
@@ -133,11 +162,21 @@
 \end{frame}
 
 \begin{frame}{Parallel R2NMF}
+    \begin{itemize}
+        \item distribute rows of $\M{A}$ onto separate processors
+        \item distribute rows of $\M{W}$ and $\M{H}$ evenly
+        \begin{itemize}
+            \item $\M{W}^\Tra\M{A}$ and $\M{W}^\Tra\M{W}$ for $\M{H}$
+            \item $(\M{A}\M{H})^\Tra$ and $\M{H}^\Tra\M{H}$ for $\M{W}$
+        \end{itemize}
+    \end{itemize}
+        \import{..}{fig/r2nmf}
 \end{frame}
 
 \begin{frame}{Splitting with R2NMF}
     \begin{itemize}
-        \item use columns of $\M{H}^\Tra$ to split the columns of $\M{A}$ into two submatrices
+        \item use columns of $\M{H}^\Tra$ to partition the columns of $\M{A}$ into clusters
+        \item assign the cluster columns into two submatrices
         \item assign the corresponding columns of $\M{W}$ to the submatrices
         \item repeat NMF and split on submatrices
     \end{itemize}
@@ -148,17 +187,19 @@
 
 \begin{frame}{HierNMF}
     \begin{itemize}
-        \item call R2NMF on root node to split into two children
-        \item use the power iteration to select children that least approximate rank-1 matrices
+        \item split root node into two children with R2NMF
+        \item power iteration $S\left(\cal N\right) = \sigma_1^2\left(\cal L\right) +
+        \sigma_1^2\left(\cal R\right) -
+        \sigma_1^2\left(\cal N\right)$
+        \begin{itemize}
+            \item heuristic for choosing next node to split
+            \item requires node to have precomputed children
+        \end{itemize}
         \item repeat until maximum number of nodes is reached or all child matrices are rank-1
     \end{itemize}
     \begin{adjustbox}{max totalsize={.7\textwidth}{.6\textheight},center}
         \import{..}{fig/tree}
     \end{adjustbox}
-\end{frame}
-
-\begin{frame}{Parallel HierNMF}
-    FIXME: Need data distribution figure
 \end{frame}
 
 \begin{frame}{Data Sets}
@@ -178,17 +219,128 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}
-\frametitle{Author Contact Information}
-
-For questions, please contact
-\begin{itemize}
-	\item Lawton Manning: \email{mannlg15@wfu.edu}
-	\item Grey Ballard: \email{ballard@wfu.edu}
-	\item Ramakrishnan Kannan: \email{kannanr@ornl.gov}
-	\item Haesun Park: \email{hpark@cc.gatech.edu}
-\end{itemize}
-
+\begin{frame}{R2NMF Strong Scaling}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/synthetic_rank2_speedup.pdf}
+            \caption{Synthetic  Data}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/realworld_rank2_speedup.pdf}
+            \caption{\image{} Data}
+            \end{figure}
+        \end{column}
+    \end{columns}
 \end{frame}
+
+\begin{frame}{R2NMF Scaling Time Breakdowns}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/synthetic_rank2_strongscaling.pdf}
+            \caption{Synthetic  Data}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/realworld_rank2_strongscaling.pdf}
+            \caption{\image{} Data}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{HierNMF Strong Scaling}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/synthetic_hierarchical_speedup.pdf}
+            \caption{Synthetic  Data}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/realworld_hierarchical_speedup.pdf}
+            \caption{\image{} Data}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{HierNMF Scaling Time Breakdowns}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/synthetic_hier_strongscaling.pdf}
+            \caption{Synthetic  Data}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/realworld_hier_strongscaling.pdf}
+            \caption{\image{} Data}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Tree Level Times on Synthetic Data}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/synthetic_sequential_level_breakdown.pdf}
+            \caption{1 Compute Node}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/synthetic_parallel_level_breakdown.pdf}
+            \caption{40 Compute Nodes}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Rank Scaling for Hierarchical and Flat NMF}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/dc_rankscaling.pdf}
+            \caption{\hyper{}  Data}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/synthetic_rankscaling.pdf}
+            \caption{Synthetic Data}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+
+
+\begin{frame}
+    \frametitle{Author Contact Information}
+    
+    For questions, please contact
+    \begin{itemize}
+        \item Lawton Manning: \email{mannlg15@wfu.edu}
+        \item Grey Ballard: \email{ballard@wfu.edu}
+        \item Ramakrishnan Kannan: \email{kannanr@ornl.gov}
+        \item Haesun Park: \email{hpark@cc.gatech.edu}
+    \end{itemize}
+    
+\end{frame}
+    
 
 \end{document}
