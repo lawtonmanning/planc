@@ -29,7 +29,7 @@
 
 \newcommand{\T}[1]{\boldsymbol{\mathscr{#1}}}
 
-
+\newcommand{\GB}[1]{\textcolor{red}{\textbf{GB}: #1}}
 \newcommand{\hyper}{DC-HYDICE}
 \newcommand{\image}{SIIM-ISIC}
 
@@ -62,11 +62,28 @@
   \stackunder{\dimbox{#1}{#2}{$#5$}}{\scriptstyle(#3\times #4)}%
 }
 
-
-\title{Parallel Algorithms for Low-Rank Approximations of Matrices and Tensors}
+\title{Parallel Hierarchical Clustering using \\ Rank-Two Nonnegative Matrix Factorization}
 
 \author{
-    Lawton Manning
+    Lawton Manning\inst{1}
+    \and Grey Ballard\inst{1}\\
+    \and Ramakrishnan Kannan\inst{2}
+    \and Haesun Park\inst{3}
+}
+
+\institute{
+    \inst{1}%
+    Wake Forest University
+    \and
+    \inst{2}%
+    Oak Ridge National Laboratory
+    \and
+    \inst{3}%
+    Georgia Institute of Technology
+}
+
+\date{
+    27th IEEE International Conference on High Performance Computing, Data, \& Analytics (HiPC 2020)
 }
 
 \usetheme{Warsaw}
@@ -81,11 +98,11 @@
   \hbox{%
   \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
     \usebeamerfont{author in head/foot}
-    Manning
+    Manning, Ballard, Kannan, Park
   \end{beamercolorbox}%
   \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
     \usebeamerfont{title in head/foot}
-    Thesis Proposal
+    HiPC 2020
   \end{beamercolorbox}%
   \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
     \usebeamerfont{date in head/foot}
@@ -98,125 +115,141 @@
 
 \frame{\titlepage}
 
-\begin{frame}{Introduction}
+\begin{frame}{Summary}
+
     \begin{itemize}
-        \item Parallel Hierarchical Clustering using Rank-Two Nonnegative Matrix Factorization
-        \item Tensor Train Rounding Using Gram Matrices
+        \item Nonnegative data can be hierarchically clustered using recursive bipartitioning based on Rank-2 Nonnegative Matrix Factorization (R2-NMF)
+        \vfill
+        \item Scalable parallelization requires efficient iterative algorithm for R2-NMF as well as data distribution conducive to data-dependent hierarchy structure
+        \vfill
+        \item Our approach scales well to 1000s of cores and is able to cluster 800GB image dataset
     \end{itemize}
+    
 \end{frame}
 
-\begin{frame}{Nonnegative Matrix Factorization (NMF)}
+\begin{frame}{Nonnegative Matrix Factorization (NMF) for Clustering}
     \begin{adjustbox}{max totalsize={.4\textwidth}{.5\textheight},center}
     \import{..}{fig/nmf}
     \end{adjustbox}
     \begin{itemize}
-        \item approximate $\M{A}$ (features $\times$ samples) into $\M{W}$ (features $\times k$) and $\M{H}$ (samples $\times k$)
+        \item approximate $\M{A}$ (features $\times$ samples) into $\M{W}$ (features $\times$ clusters) and $\M{H}$ (samples $\times$ clusters)
+        \vfill
         \item nonnegativity gives interpretability of $\M{W}$ and $\M{H}$ as clusters and cluster membership, respectively
-        \item applications
-            \begin{itemize}
-                \item text document clustering using bag of words or TF-IDF matrices
-                \item hyperspectral image segmentation
-            \end{itemize}
+        \vfill
+        \item applications in text document topic modeling and hyperspectral image segmentation, for example
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Hierarchical NMF}
-    \begin{itemize}
-        \item repeatedly use NMF with $k = 2$ to create a hierarchical tree of clusters
-        \item application: hyperspectral imaging
-    \end{itemize}
-    \begin{adjustbox}{max totalsize={.7\textwidth}{.6\textheight},center}
-    \import{..}{fig/dc}
-    \end{adjustbox}
+
+\begin{itemize}
+	\item repeatedly use NMF with $k = 2$ to bipartition nodes in order to create a hierarchical tree of clusters
+	\item application: hyperspectral imaging
+\end{itemize}
+
+\begin{columns}
+\begin{column}{.4\textwidth}
+\GB{put bigger picture of DC mall (node 0) here, add pointers to leaves of tree for particular material (like grass or water)}
+\end{column}
+\begin{column}{.6\textwidth}
+	\begin{adjustbox}{width=\textwidth}
+    		\import{..}{fig/dc}
+   	\end{adjustbox}
+\end{column}
+\end{columns}
+
 \end{frame}
 
 \begin{frame}{Solving NMF}
     \begin{itemize}
-        \item constrained optimization: $$\min_{\M{W},\M{H}\geq \M{0}} \|\M{A} - \M{W}\M{H}^\Tra\|_2$$
-        \item Alternating Nonnegatively Constrained Least Squares (ANLS)
+        \item NMF constrained optimization problem: $$\min_{\M{W},\M{H}\geq \M{0}} \|\M{A} - \M{W}\M{H}^\Tra\|_2$$
+        
+        \vfill
+        
+        \item Alternating Nonnegative Least Squares (ANLS)
         \begin{itemize}
             \item fix $\M{H}$ and solve the NLS for $\M{W}$ exactly
             \item alternate and repeat until convergence
         \end{itemize}
+        
+        \vfill
 
-        \item Block Principal Pivoting (BPP)
+        \item General rank case
         \begin{itemize}
-            \item solve unconstrained system
-            \item $\M{W}^\Tra\M{W}$ and $\M{W}^\Tra\M{A}$ for $\M{H}$ and likewise for $\M{W}$
-            \item account for negative solutions with active-set method (quadratic in $k$)
+            \item can solve each row exactly using iterative active-set method
+            \item determine which values are positive and which are zero
+        \end{itemize}
+        
+        \vfill
+        
+         \item Rank-2 case
+        \begin{itemize}
+            \item 4 possibilities: both positive, one or other is zero, both zeroes 
+            \item quickly solve each and choose the optimal solution
         \end{itemize}
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Rank-2 NMF (R2NMF) NLS}
+\begin{frame}{Parallel R2-NMF}
     \begin{itemize}
-        \item when $k = 2$, the NLS can be solved quickly as the size of the active set is 4
-        \item Active Sets for R2NMF (row by row)
+        \item Use row distribution of $\M{A}$ and row distributions for $\M{W}$ and $\M{H}$ 
+        \item Computational bottlenecks are matrix multiplications
         \begin{itemize}
-            \item both columns nonnegative
-            \item only left column nonnegative
-            \item only right column nonnegative
-            \item both columns negative
-        \end{itemize}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Parallel R2NMF}
-    \begin{itemize}
-        \item distribute rows of $\M{A}$ onto separate processors
-        \item distribute rows of $\M{W}$ and $\M{H}$ evenly
-        \begin{itemize}
-            \item $\M{W}^\Tra\M{A}$ and $\M{W}^\Tra\M{W}$ for $\M{H}$
-            \item $(\M{A}\M{H})^\Tra$ and $\M{H}^\Tra\M{H}$ for $\M{W}$
+            \item compute $\M{W}^\Tra\M{A}$ using reduce-scatter for $\M{H}$
+            \item compute $\M{A}\M{H}$ using all-gather for $\M{W}$
+            \item compute $\M{W}^\Tra\M{W}$ and $\M{H}^\Tra\M{H}$ using all-reduce
         \end{itemize}
     \end{itemize}
         \import{..}{fig/r2nmf}
 \end{frame}
 
-\begin{frame}{Splitting with R2NMF}
+\begin{frame}{Bipartitioning with R2-NMF}
     \begin{itemize}
-        \item use columns of $\M{H}^\Tra$ to partition the columns of $\M{A}$ into clusters
-        \item assign the cluster columns into two submatrices
-        \item assign the corresponding columns of $\M{W}$ to the submatrices
-        \item repeat NMF and split on submatrices
+        \item Use columns of $\M{H}^\Tra$ to bipartition the columns of $\M{A}$
+        \item Assign the cluster columns into two submatrices
+        \item Assign columns of $\M{W}$ as feature signatures of clusters
     \end{itemize}
     \begin{adjustbox}{max totalsize={.7\textwidth}{.6\textheight},center}
         \import{..}{fig/split}
     \end{adjustbox}
 \end{frame}
 
-\begin{frame}{HierNMF}
+\begin{frame}{Hierarchical Clusterings using R2-NMF (HierNMF2)}
     \begin{itemize}
-        \item split root node into two children with R2NMF
-        \item power iteration $S\left(\cal N\right) = \sigma_1^2\left(\cal L\right) +
-        \sigma_1^2\left(\cal R\right) -
-        \sigma_1^2\left(\cal N\right)$
+        \item Split root node into two children with R2-NMF
+        \item Choose next node to split based on scoring metric
         \begin{itemize}
-            \item heuristic for choosing next node to split
-            \item requires node to have precomputed children
-        \end{itemize}
-        \item repeat until maximum number of nodes is reached or all child matrices are rank-1
+        		\item computing score requires pre-computing R2-NMF
+	\end{itemize}
+        \item Repeat until maximum number of frontier nodes is reached
     \end{itemize}
     \begin{adjustbox}{max totalsize={.7\textwidth}{.6\textheight},center}
         \import{..}{fig/tree}
     \end{adjustbox}
 \end{frame}
 
-\begin{frame}{Data Sets}
+\begin{frame}{Experimental Data Sets}
     \begin{itemize}
         \item DC-HYDICE
         \begin{itemize}
             \item Hyperspectral Digital Imagery Collection Experiment (HYDICE) of the National Mall in Washington, DC
         \end{itemize}
+        \vfill
         \item SIIM-ISIC
         \begin{itemize}
             \item Society for Imaging Informatics in Medicine - International Skin Imaging Colloboration image classification of melanoma images
         \end{itemize}
+        \vfill
         \item Synthetic Image classification
         \begin{itemize}
-            \item smaller image classification dataset which has the same aspect ratio as SIIM-ISIC but small enough to fit in memory on one machine
+            \item smaller image classification dataset which has the same aspect ratio as SIIM-ISIC but fits in one node's memory
         \end{itemize}
     \end{itemize}
+    \vfill
+    \begin{center}
+    \scriptsize
+    	All experiments performed on Summit at Oak Ridge Leadership Computing Facility
+    \end{center}
 \end{frame}
 
 \begin{frame}{R2NMF Strong Scaling}
