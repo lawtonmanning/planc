@@ -230,19 +230,19 @@
 
 \begin{frame}{Experimental Data Sets}
     \begin{itemize}
-        \item DC-HYDICE
+        \item DC-HYDICE (191 $\times$ 392{,}960, 600MB)
         \begin{itemize}
             \item Hyperspectral Digital Imagery Collection Experiment (HYDICE) of the National Mall in Washington, DC
         \end{itemize}
         \vfill
-        \item SIIM-ISIC
+        \item SIIM-ISIC (3{,}145{,}728 $\times$ 33{,}126, 800GB)
         \begin{itemize}
             \item Society for Imaging Informatics in Medicine - International Skin Imaging Colloboration image classification of melanoma images
         \end{itemize}
         \vfill
-        \item Synthetic Image classification
+        \item Synthetic (1{,}048{,}576 $\times$ 11{,}042, 86GB)
         \begin{itemize}
-            \item smaller image classification dataset which has the same aspect ratio as SIIM-ISIC but fits in one node's memory
+            \item smaller synthetic image classification dataset which has the same aspect ratio as SIIM-ISIC but fits in one node's memory
         \end{itemize}
     \end{itemize}
     \vfill
@@ -252,76 +252,84 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{R2NMF Strong Scaling}
+\newcommand{\figscal}{.75\textwidth}
+
+\begin{frame}{R2-NMF Strong Scaling and Time Breakdown}
     \centering
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/synthetic_rank2_speedup.pdf}
-            \caption{Synthetic  Data}
+            \includegraphics[width=\figscal]{../plots/synthetic_rank2_speedup.pdf}
+            \caption{Synthetic Scaling}
             \end{figure}
         \end{column}
         \begin{column}{0.5\textwidth}
             \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/realworld_rank2_speedup.pdf}
-            \caption{\image{} Data}
+            \includegraphics[width=\figscal]{../plots/realworld_rank2_speedup.pdf}
+            \caption{\image{} Scaling}
             \end{figure}
         \end{column}
     \end{columns}
+\vspace{-.5cm}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\figscal]{../plots/synthetic_rank2_strongscaling.pdf}
+            \caption{Synthetic Breakdown}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\figscal]{../plots/realworld_rank2_strongscaling.pdf}
+            \caption{\image{} Breakdown}
+            \end{figure}
+        \end{column}
+    \end{columns}
+    
+\begin{itemize}
+\small
+    \item Nearly perfect strong scaling because time dominated by local matrix multiplication
+\end{itemize}
+    
 \end{frame}
 
-\begin{frame}{R2NMF Scaling Time Breakdowns}
+\begin{frame}{Hierarchical Clustering Scaling and Breakdown}
     \centering
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/synthetic_rank2_strongscaling.pdf}
+            \includegraphics[width=\figscal]{../plots/synthetic_hierarchical_speedup.pdf}
             \caption{Synthetic  Data}
             \end{figure}
         \end{column}
         \begin{column}{0.5\textwidth}
             \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/realworld_rank2_strongscaling.pdf}
+            \includegraphics[width=\figscal]{../plots/realworld_hierarchical_speedup.pdf}
             \caption{\image{} Data}
             \end{figure}
         \end{column}
     \end{columns}
-\end{frame}
-
-\begin{frame}{HierNMF Strong Scaling}
-    \centering
+\vspace{-.5cm}
     \begin{columns}
         \begin{column}{0.5\textwidth}
             \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/synthetic_hierarchical_speedup.pdf}
+            \includegraphics[width=\figscal]{../plots/synthetic_hier_strongscaling.pdf}
             \caption{Synthetic  Data}
             \end{figure}
         \end{column}
         \begin{column}{0.5\textwidth}
             \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/realworld_hierarchical_speedup.pdf}
+            \includegraphics[width=\figscal]{../plots/realworld_hier_strongscaling.pdf}
             \caption{\image{} Data}
             \end{figure}
         \end{column}
     \end{columns}
-\end{frame}
-
-\begin{frame}{HierNMF Scaling Time Breakdowns}
-    \centering
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/synthetic_hier_strongscaling.pdf}
-            \caption{Synthetic  Data}
-            \end{figure}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/realworld_hier_strongscaling.pdf}
-            \caption{\image{} Data}
-            \end{figure}
-        \end{column}
-    \end{columns}
+    
+\begin{itemize}
+\small
+    \item Scaling hindered by NNLS computations and communication of small subproblems at leaves of hierarchy
+\end{itemize}
+    
 \end{frame}
 
 \begin{frame}{Tree Level Times on Synthetic Data}
@@ -340,24 +348,31 @@
             \end{figure}
         \end{column}
     \end{columns}
+
+\vfill
+    
+\begin{itemize}
+    \item Evidence that scaling is hindered by leaves of tree
+    \begin{itemize}
+    	\item MatMul costs are constant over levels of balanced tree 
+	\item NNLS and communication costs grow over levels
+    \end{itemize}
+\end{itemize}
+    
 \end{frame}
 
-\begin{frame}{Rank Scaling for Hierarchical and Flat NMF}
-    \centering
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
-            \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/dc_rankscaling.pdf}
-            \caption{\hyper{}  Data}
-            \end{figure}
-        \end{column}
-        \begin{column}{0.5\textwidth}
-            \begin{figure}
-            \includegraphics[width=\textwidth]{../plots/synthetic_rankscaling.pdf}
-            \caption{Synthetic Data}
-            \end{figure}
-        \end{column}
-    \end{columns}
+\begin{frame}{Conclusions and Future Directions}
+
+\begin{itemize}
+	\item Scalability is possible when MatMul dominates, particularly when input data is tall and skinny and tree is balanced
+	\vfill
+	\item 2D distribution of matrix $\M{A}$ could improve scalability but requires redistribution of $\M{A}$ for subtrees
+	\vfill
+	\item Parallelization across tree could improve scalability but requires careful load balancing and decentralizing split orders
+	\vfill
+	\item Hierarchical clustering can also be used to initialize flat NMF, particularly when $k$ is large, for Divide-and-Conquer NMF
+\end{itemize}
+
 \end{frame}
 
 
