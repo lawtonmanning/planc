@@ -2,6 +2,8 @@ paper.pdf
 conference_101719.pdf
 *.out
 *.snm
+*.fls
+*.fdb_latexmk
 *.toc
 *.blg
 *.log

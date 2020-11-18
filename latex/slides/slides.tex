@@ -109,6 +109,8 @@
     \insertframenumber{} \hspace*{2ex} 
   \end{beamercolorbox}}%
 }
+\usepackage{caption}
+\captionsetup[figure]{labelformat=empty}%
 
 
 \begin{document}
@@ -118,11 +120,14 @@
 \begin{frame}{Summary}
 
     \begin{itemize}
-        \item Nonnegative data can be hierarchically clustered using recursive bipartitioning based on Rank-2 Nonnegative Matrix Factorization (R2-NMF)
+        \item Nonnegative data can be hierarchically clustered using recursive bipartitioning based on Rank-2 Nonnegative Matrix Factorization (NMF)
         \vfill
-        \item Scalable parallelization requires efficient iterative algorithm for R2-NMF as well as data distribution conducive to data-dependent hierarchy structure
+        \item Scalable parallelization requires efficient iterative algorithm for Rank-2 NMF as well as data distribution conducive to data-dependent hierarchy structure
         \vfill
         \item Our approach scales well to 1000s of cores and is able to cluster 800GB image dataset
+        \begin{itemize}
+        		\item scaling from 10 to 80 nodes, achieves $7\times$ parallel speedup for Rank-2 NMF and $6\times$ speedup for hierarchical clustering
+        \end{itemize}
     \end{itemize}
     
 \end{frame}
@@ -132,19 +137,19 @@
     \import{..}{fig/nmf}
     \end{adjustbox}
     \begin{itemize}
-        \item approximate $\M{A}$ (features $\times$ samples) into $\M{W}$ (features $\times$ clusters) and $\M{H}$ (samples $\times$ clusters)
+        \item Approximate $\M{A}$ (features $\times$ samples) into $\M{W}$ (features $\times$ clusters) and $\M{H}$ (samples $\times$ clusters)
         \vfill
-        \item nonnegativity gives interpretability of $\M{W}$ and $\M{H}$ as clusters and cluster membership, respectively
+        \item Nonnegativity gives interpretability of $\M{W}$ and $\M{H}$ as clusters and cluster membership, respectively
         \vfill
-        \item applications in text document topic modeling and hyperspectral image segmentation, for example
+        \item Applications in text document topic modeling and hyperspectral image segmentation, for example
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Hierarchical NMF}
 
 \begin{itemize}
-	\item repeatedly use NMF with $k = 2$ to bipartition nodes in order to create a hierarchical tree of clusters
-	\item application: hyperspectral imaging
+	\item Repeatedly use NMF with $k = 2$ to bipartition nodes in order to create a hierarchical tree of clusters
+	\item Application data: hyperspectral image of DC National Mall
 \end{itemize}
 
 \begin{columns}
@@ -154,7 +159,7 @@
 \end{column}
 \begin{column}{.6\textwidth}
 	\begin{adjustbox}{width=\textwidth}
-    		\import{..}{fig/dc}
+    		\import{..}{fig/dc_labels}
    	\end{adjustbox}
 \end{column}
 \end{columns}
@@ -167,7 +172,7 @@
         
         \vfill
         
-        \item Alternating Nonnegative Least Squares (ANLS)
+        \item Algorithm: Alternating Nonnegative Least Squares (ANLS)
         \begin{itemize}
             \item fix $\M{H}$ and solve the NLS for $\M{W}$ exactly
             \item alternate and repeat until convergence
@@ -186,12 +191,12 @@
          \item Rank-2 case
         \begin{itemize}
             \item 4 possibilities: both positive, one or other is zero, both zeroes 
-            \item quickly solve each and choose the optimal solution
+            \item quickly solve all possibilities and choose the optimal solution
         \end{itemize}
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Parallel R2-NMF}
+\begin{frame}{Parallel Rank-2 NMF}
     \begin{itemize}
         \item Use row distribution of $\M{A}$ and row distributions for $\M{W}$ and $\M{H}$ 
         \item Computational bottlenecks are matrix multiplications
@@ -204,7 +209,7 @@
         \import{..}{fig/r2nmf}
 \end{frame}
 
-\begin{frame}{Bipartitioning with R2-NMF}
+\begin{frame}{Bipartitioning with Rank-2 NMF}
     \begin{itemize}
         \item Use columns of $\M{H}^\Tra$ to bipartition the columns of $\M{A}$
         \item Assign the cluster columns into two submatrices
@@ -215,12 +220,12 @@
     \end{adjustbox}
 \end{frame}
 
-\begin{frame}{Hierarchical Clusterings using R2-NMF (HierNMF2)}
+\begin{frame}{Hierarchical Clusterings using Rank-2 NMF (HierNMF2)}
     \begin{itemize}
-        \item Split root node into two children with R2-NMF
+        \item Split root node into two children with Rank-2 NMF
         \item Choose next node to split based on scoring metric
         \begin{itemize}
-        		\item computing score requires pre-computing R2-NMF
+        		\item computing score requires pre-computing Rank-2 NMF
 	\end{itemize}
         \item Repeat until maximum number of frontier nodes is reached
     \end{itemize}
@@ -243,19 +248,21 @@
         \vfill
         \item Synthetic (1{,}048{,}576 $\times$ 11{,}042, 86GB)
         \begin{itemize}
-            \item smaller synthetic image classification dataset which has the same aspect ratio as SIIM-ISIC but fits in one node's memory
+            \item smaller synthetic dataset which has the same aspect ratio as SIIM-ISIC but fits in one compute node's memory
         \end{itemize}
     \end{itemize}
     \vfill
-    \begin{center}
     \scriptsize
     	All experiments performed on Summit at Oak Ridge Leadership Computing Facility
-    \end{center}
+	\begin{itemize}
+		\item each compute node has 21 available cores on each of 2 sockets
+	\end{itemize}
+    
 \end{frame}
 
 \newcommand{\figscal}{.75\textwidth}
 
-\begin{frame}{R2-NMF Strong Scaling and Time Breakdown}
+\begin{frame}{Rank-2 NMF Strong Scaling and Time Breakdown}
     \centering
     \begin{columns}
         \begin{column}{0.5\textwidth}
@@ -289,7 +296,7 @@
     
 \begin{itemize}
 \small
-    \item Nearly perfect strong scaling because time dominated by local matrix multiplication
+    \item Nearly perfect strong scaling because time dominated by local matrix multiplication (MatMul)
 \end{itemize}
     
 \end{frame}
@@ -328,7 +335,7 @@
     
 \begin{itemize}
 \small
-    \item Scaling hindered by NNLS computations and communication of small subproblems at leaves of hierarchy
+    \item Reasonable scaling, though limited by NNLS computations and communication of small subproblems at leaves of hierarchy
 \end{itemize}
     
 \end{frame}
@@ -362,14 +369,41 @@
     
 \end{frame}
 
+\begin{frame}{Comparison with Flat NMF}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/dc_rankscaling.pdf}
+            \caption{DC-HYDICE}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\textwidth]{../plots/synthetic_rankscaling.pdf}
+            \caption{Synthetic}
+            \end{figure}
+        \end{column}
+    \end{columns}
+
+\vfill
+    
+\begin{itemize}
+    \item Hierarchical clustering scales better than flat NMF with number of clusters $k$, potentially useful for flat clustering
+\end{itemize}
+    
+\end{frame}
+
 \begin{frame}{Conclusions and Future Directions}
 
 \begin{itemize}
 	\item Scalability is possible when MatMul dominates, particularly when input data is tall and skinny and tree is balanced
 	\vfill
-	\item 2D distribution of matrix $\M{A}$ could improve scalability but requires redistribution of $\M{A}$ for subtrees
-	\vfill
-	\item Parallelization across tree could improve scalability but requires careful load balancing and decentralizing split orders
+	\item Possibilities for improving scalability
+	\begin{itemize}
+		\item 2D distribution of matrix $\M{A}$ could improve scalability but requires redistribution of $\M{A}$ for subtrees
+		\item Parallelization across tree could improve scalability but requires careful load balancing and decentralizing split orders
+	\end{itemize}
 	\vfill
 	\item Hierarchical clustering can also be used to initialize flat NMF, particularly when $k$ is large, for Divide-and-Conquer NMF
 \end{itemize}
