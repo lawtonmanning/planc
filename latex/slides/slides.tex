@@ -199,6 +199,9 @@
 \begin{frame}{Parallel Rank-2 NMF}
     \begin{itemize}
         \item Use row distribution of $\M{A}$ and row distributions for $\M{W}$ and $\M{H}$ 
+        \begin{itemize}
+        		\item example distribution across 3 processors shown below
+	\end{itemize}
         \item Computational bottlenecks are matrix multiplications
         \begin{itemize}
             \item compute $\M{W}^\Tra\M{A}$ using reduce-scatter for $\M{H}$
@@ -226,6 +229,7 @@
         \item Choose next node to split based on scoring metric
         \begin{itemize}
         		\item computing score requires pre-computing Rank-2 NMF
+		\item score based on largest singular value of matrix columns of the node and of each child, computed via power method
 	\end{itemize}
         \item Repeat until maximum number of frontier nodes is reached
     \end{itemize}
