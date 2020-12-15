@@ -1,0 +1,257 @@
+\documentclass{beamer}
+
+\usepackage{cite,doi}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithm,algpseudocode}
+\usepackage{stackengine,graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{cleveref}
+\usepackage{tikz}
+\usetikzlibrary{3d}
+\usetikzlibrary{patterns}
+\usetikzlibrary{calc}
+\usetikzlibrary{arrows}
+\usetikzlibrary{matrix}
+\usetikzlibrary{positioning}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage{mathtools}
+\usepackage{subcaption}
+\usepackage{import}
+\usepackage{bm}
+\usepackage[mathscr]{eucal}
+\usepackage{amsbsy}
+\usepackage[section]{placeins}
+\usepackage{adjustbox}
+\stackMath
+
+\usepackage{../ourmacros}
+
+\newcommand{\T}[1]{\boldsymbol{\mathscr{#1}}}
+
+\newcommand{\GB}[1]{\textcolor{red}{\textbf{GB}: #1}}
+\newcommand{\hyper}{DC-HYDICE}
+\newcommand{\image}{SIIM-ISIC}
+
+\definecolor{wfugold}{rgb}{0.6196078,0.494117647,0.21960784}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\multiplycolor}{red}
+\newcommand{\zero}{}
+\newcommand{\cred}[1]{\textcolor{red}{#1}}
+\newcommand{\cblue}[1]{\textcolor{blue}{#1}}
+\newcommand{\cgold}[1]{\textcolor{wfugold}{#1}}
+\newcommand{\email}[1]{\href{mailto:#1}{\texttt{#1}}}
+
+
+\newlength\matfield
+\newlength\tmplength
+\def\matscale{1.}
+\newcommand{\dimbox}[3]{%
+  \setlength\matfield{\matscale\baselineskip}%
+  \setbox0=\hbox{\vphantom{X}\smash{#3}}%
+  \setlength{\tmplength}{#1\matfield-\ht0-\dp0}%
+  \fboxrule=1pt\fboxsep=-\fboxrule\relax%
+  \fbox{\makebox[#2\matfield]{\addstackgap[.5\tmplength]{\box0}}}%
+}
+\newcommand{\raiserows}[2]{%
+   \setlength\matfield{\matscale\baselineskip}%
+   \raisebox{#1\matfield}{#2}%
+}
+\newcommand{\matbox}[5]{
+  \stackunder{\dimbox{#1}{#2}{$#5$}}{\scriptstyle(#3\times #4)}%
+}
+
+\title{Parallel Hierarchical Clustering using \\ Rank-Two Nonnegative Matrix Factorization}
+
+\author{
+    Lawton Manning\inst{1}
+    \and Grey Ballard\inst{1}\\
+    \and Ramakrishnan Kannan\inst{2}
+    \and Haesun Park\inst{3}
+}
+
+\institute{
+    \inst{1}%
+    Wake Forest University
+    \and
+    \inst{2}%
+    Oak Ridge National Laboratory
+    \and
+    \inst{3}%
+    Georgia Institute of Technology
+}
+
+\date{
+    27th IEEE International Conference on High Performance Computing, Data, \& Analytics (HiPC 2020)
+}
+
+\usetheme{Warsaw}
+\usecolortheme[named=wfugold]{structure}
+%Madrid
+%\usecolortheme{dolphin}
+%\useinnertheme{rounded}
+%\usefonttheme{serif}
+\setbeamertemplate{navigation symbols}{} % gets rid of navigation bars
+\setbeamertemplate{footline}
+{
+  \hbox{%
+  \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
+    \usebeamerfont{author in head/foot}
+    Manning, Ballard, Kannan, Park
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}
+    HiPC 2020
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}
+    \insertframenumber{} \hspace*{2ex} 
+  \end{beamercolorbox}}%
+}
+\usepackage{caption}
+\captionsetup[figure]{labelformat=empty}%
+
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Nonnegative Matrix Factorization (NMF)}
+    \begin{adjustbox}{max totalsize={.4\textwidth}{.5\textheight},center}
+        \import{..}{fig/nmf}
+    \end{adjustbox}
+    \begin{itemize}
+        \item Approximate $\M{A}$ (features $\times$ samples) into:
+        \begin{itemize}
+            \item $\M{W}$ (features $\times$ clusters): feature signatures
+            \item $\M{H}$ (samples $\times$ clusters): cluster membership
+        \end{itemize}
+        \vfill
+        \item Clustering applications
+        \begin{itemize}
+            \item text document topic modeling
+            \item hyperspectral image segmentation
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Hierarchical Clustering}
+    \begin{columns}
+        \begin{column}{.4\textwidth}
+            \begin{itemize}
+                \item Recursively bipartition data to form binary tree
+                \vfill
+                \item Decision choices
+                \begin{itemize}
+                    \item how to split
+                    \begin{itemize}
+                        \item Rank-2 NMF
+                    \end{itemize}
+                    \item choosing node to split
+                    \begin{itemize}
+                        \item based on Rank-2 NMF
+                    \end{itemize}
+                \end{itemize}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.6\textwidth}
+            \begin{adjustbox}{width=\textwidth}
+                \import{..}{fig/dc_labels}
+           \end{adjustbox}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Splitting with Rank-2 NMF}
+    \begin{itemize}
+        \item Use columns of $\M{H}^\Tra$ to bipartition the columns of $\M{A}$
+        \item Assign the cluster columns into two submatrices
+        \item Assign columns of $\M{W}$ as feature signatures of clusters
+    \end{itemize}
+    \begin{adjustbox}{max totalsize={.7\textwidth}{.6\textheight},center}
+        \import{..}{fig/split}
+    \end{adjustbox}
+\end{frame}
+
+\begin{frame}{Solving NMF}
+    $$\min_{\M{W},\M{H}\geq \M{0}} \|\M{A} - \M{W}\M{H}^\Tra\|_2$$
+    \begin{itemize}
+        \item Alternating Nonnegative Least Squares (ANLS)
+        \begin{itemize}
+            \item fix H, solve for W using NLS
+            \item alternate and repeat
+        \end{itemize}
+        \vfill
+        \item Rank-2 NLS
+        \begin{itemize}
+            \item optimized version of general rank-$k$ algorithm
+            \item 4 possibilities: ++,+0,0+,00
+            \item solve each and choose optimal
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Parallel Rank-2 NMF}
+    \begin{itemize}
+        \item Use row distribution of $\M{A}$, $\M{W}$, and $\M{H}$ 
+        \begin{itemize}
+        		\item example distribution across 3 processors shown below
+        \end{itemize}
+        \vfill
+        \item Computational bottlenecks are matrix multiplications
+        \begin{itemize}
+            \item compute $\M{W}^\Tra\M{A}$ using reduce-scatter for $\M{H}$
+            \item compute $\M{A}\M{H}$ using all-gather for $\M{W}$
+            \item compute $\M{W}^\Tra\M{W}$ and $\M{H}^\Tra\M{H}$ using all-reduce
+        \end{itemize}
+    \end{itemize}
+    \import{..}{fig/r2nmf}
+\end{frame}
+
+
+\newcommand{\figscal}{\textwidth}
+
+\begin{frame}{Hierarchical Clustering Scaling and Breakdown}
+    \centering
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\figscal]{../plots/realworld_hierarchical_speedup.pdf}
+            \caption{\image{} Data}
+            \end{figure}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \begin{figure}
+            \includegraphics[width=\figscal]{../plots/realworld_hier_strongscaling.pdf}
+            \caption{\image{} Data}
+            \end{figure}
+        \end{column}
+    \end{columns}
+    \begin{itemize}
+    \small
+        \item SIIM-ISIC (3{,}145{,}728 $\times$ 33{,}126, 800GB)
+        \begin{itemize}
+            \item Society for Imaging Informatics in Medicine - International Skin Imaging Colloboration image classification of melanoma images
+        \end{itemize}
+        \item Reasonable scaling that is dominated by MatMul
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Conclusions and Future Directions}
+
+\begin{itemize}
+	\item Scalability is possible when MatMul dominates, particularly when input data is tall and skinny and tree is balanced
+	\vfill
+	\item Possibilities for improving scalability
+	\begin{itemize}
+		\item general 2D data distribution
+		\item parallelization across hierarchical tree
+	\end{itemize}
+	\vfill
+	\item HierNMF2 as a preprocessing step for Flat NMF
+\end{itemize}
+
+\end{frame}
+
+\end{document}
