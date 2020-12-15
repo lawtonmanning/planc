@@ -124,8 +124,8 @@
     \begin{itemize}
         \item Approximate $\M{A}$ (features $\times$ samples) into:
         \begin{itemize}
-            \item $\M{W}$ (features $\times$ clusters): feature signatures
-            \item $\M{H}$ (samples $\times$ clusters): cluster membership
+            \item $\M{W}$ (features $\times$ clusters): columns denote feature signatures
+            \item $\M{H}$ (samples $\times$ clusters): rows denote cluster membership
         \end{itemize}
         \vfill
         \item Clustering applications
@@ -136,24 +136,24 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Hierarchical Clustering}
+\begin{frame}{Hierarchical Clustering: HierNMF2}
     \begin{columns}
         \begin{column}{.4\textwidth}
-            \begin{itemize}
-                \item Recursively bipartition data to form binary tree
-                \vfill
-                \item Decision choices
+                Recursively bipartition data to form binary tree
+                
+                \vspace{1cm}
+               
+               Decision choices
                 \begin{itemize}
                     \item how to split
                     \begin{itemize}
                         \item Rank-2 NMF
                     \end{itemize}
-                    \item choosing node to split
+                    \item which to split
                     \begin{itemize}
-                        \item based on Rank-2 NMF
+                        \item each node assigned score computed from Rank-2 NMF
                     \end{itemize}
                 \end{itemize}
-            \end{itemize}
         \end{column}
         \begin{column}{0.6\textwidth}
             \begin{adjustbox}{width=\textwidth}
@@ -186,7 +186,7 @@
         \item Rank-2 NLS
         \begin{itemize}
             \item optimized version of general rank-$k$ algorithm
-            \item 4 possibilities: ++,+0,0+,00
+            \item 4 possibilities: ++, +0, 0+, 00
             \item solve each and choose optimal
         \end{itemize}
     \end{itemize}
@@ -201,8 +201,8 @@
         \vfill
         \item Computational bottlenecks are matrix multiplications
         \begin{itemize}
-            \item compute $\M{W}^\Tra\M{A}$ using reduce-scatter for $\M{H}$
-            \item compute $\M{A}\M{H}$ using all-gather for $\M{W}$
+            \item compute $\M{W}^\Tra\M{A}$ using reduce-scatter
+            \item compute $\M{A}\M{H}$ using all-gather of $\M{H}$
             \item compute $\M{W}^\Tra\M{W}$ and $\M{H}^\Tra\M{H}$ using all-reduce
         \end{itemize}
     \end{itemize}
@@ -234,14 +234,14 @@
         \begin{itemize}
             \item Society for Imaging Informatics in Medicine - International Skin Imaging Colloboration image classification of melanoma images
         \end{itemize}
-        \item Reasonable scaling that is dominated by MatMul
+        \item Reasonable scaling (6x from 10 to 80 nodes), dominated by MatMul
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Conclusions and Future Directions}
 
 \begin{itemize}
-	\item Scalability is possible when MatMul dominates, particularly when input data is tall and skinny and tree is balanced
+	\item Scales well when local MatMul dominates, particularly when input data is tall and skinny and tree is balanced
 	\vfill
 	\item Possibilities for improving scalability
 	\begin{itemize}
@@ -249,7 +249,7 @@
 		\item parallelization across hierarchical tree
 	\end{itemize}
 	\vfill
-	\item HierNMF2 as a preprocessing step for Flat NMF
+	\item HierNMF2 can be used as preprocessing step for Flat NMF
 \end{itemize}
 
 \end{frame}
